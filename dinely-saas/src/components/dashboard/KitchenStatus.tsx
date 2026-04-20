@@ -19,8 +19,11 @@ export function KitchenStatus() {
     <DashboardCard className="h-full">
       <ChartCardHeader title="Kitchen Status" subtitle="Real-time capacity" />
 
-      <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-center sm:gap-8">
-        <div className="relative shrink-0" style={{ width: SIZE, height: SIZE }}>
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          className="relative mx-auto shrink-0 sm:mx-0"
+          style={{ width: SIZE, height: SIZE }}
+        >
           <svg
             width={SIZE}
             height={SIZE}
@@ -28,27 +31,24 @@ export function KitchenStatus() {
             className="-rotate-90"
             aria-hidden
           >
-            {/* Full track */}
             <circle
               cx={CENTER}
               cy={CENTER}
               r={RADIUS}
               fill="none"
-              stroke="#f0f0f0"
+              stroke="#f3f4f6"
               strokeWidth={STROKE}
             />
-            {/* Fluent — full green arc (77%) */}
             <circle
               cx={CENTER}
               cy={CENTER}
               r={RADIUS}
               fill="none"
-              stroke="#22c51f"
+              stroke="#22c55e"
               strokeWidth={STROKE}
               strokeLinecap="round"
               strokeDasharray={`${fluentLength} ${CIRCUMFERENCE}`}
             />
-            {/* Congested — orange arc (23%), continues after green */}
             <circle
               cx={CENTER}
               cy={CENTER}
@@ -61,42 +61,71 @@ export function KitchenStatus() {
               strokeDashoffset={-fluentLength}
             />
           </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-bold tracking-tight text-neutral-800">{capacity}%</span>
-            <span className="mt-0.5 text-xs font-semibold text-neutral-400">Capacity</span>
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span className="text-3xl font-semibold tracking-tight text-neutral-900">
+              {capacity}%
+            </span>
+            <span className="mt-1 text-xs font-semibold uppercase tracking-[0.24em] text-neutral-400">
+              Capacity
+            </span>
           </div>
         </div>
 
-        <ul className="w-full min-w-[180px] space-y-4 sm:w-auto">
-          <li>
-            <div className="flex items-center justify-between text-sm font-semibold">
-              <span className="flex items-center gap-2 text-neutral-600">
-                <span className="h-3 w-3 rounded-full bg-[#22c51f]" />
-                Fluent
-              </span>
-              <span className="text-[#22c51f]">{fluent}%</span>
+        <div className="flex w-full flex-col gap-4 sm:max-w-[280px]">
+          <div className="rounded-3xl border border-neutral-100 bg-neutral-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-400">
+              Current load
+            </p>
+            <div className="mt-3 space-y-4">
+              <div>
+                <div className="flex items-center justify-between text-sm font-semibold text-neutral-800">
+                  <span className="flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-full bg-emerald-500" />
+                    Fluent
+                  </span>
+                  <span>{fluent}%</span>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white shadow-inner">
+                  <div
+                    className="h-full rounded-full bg-emerald-500"
+                    style={{ width: `${fluent}%` }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between text-sm font-semibold text-neutral-800">
+                  <span className="flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-full bg-amber-500" />
+                    Congested
+                  </span>
+                  <span className="text-amber-600">{congested}%</span>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white shadow-inner">
+                  <div
+                    className="h-full rounded-full bg-amber-500"
+                    style={{ width: `${congested}%` }}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-neutral-100">
-              <div className="h-full rounded-full bg-[#22c51f]" style={{ width: `${fluent}%` }} />
-            </div>
-          </li>
-          <li>
-            <div className="flex items-center justify-between text-sm font-semibold">
-              <span className="flex items-center gap-2 text-neutral-600">
-                <span className="h-3 w-3 rounded-full bg-[#f59e0b]" />
-                Congested
-              </span>
-              <span className="text-amber-600">{congested}%</span>
-            </div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-neutral-100">
-              <div className="h-full rounded-full bg-[#f59e0b]" style={{ width: `${congested}%` }} />
-            </div>
-          </li>
-          <li className="rounded-lg bg-neutral-50 px-3 py-2.5 text-xs font-medium text-neutral-500">
-            <span className="font-bold text-neutral-700">12</span> orders in queue ·{" "}
-            <span className="font-bold text-neutral-700">~8 min</span> avg. wait
-          </li>
-        </ul>
+          </div>
+
+          <div className="rounded-3xl bg-white px-4 py-4 shadow-sm ring-1 ring-neutral-100">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-400">
+              Queue overview
+            </p>
+            <p className="mt-3 text-sm font-semibold text-neutral-900">
+              <span className="text-emerald-600">12 orders</span> in queue ·{" "}
+              <span className="text-neutral-700">~8 min</span> avg. wait
+            </p>
+            <p className="mt-2 text-xs text-neutral-500">
+              Kitchen is operating smoothly with a light queue and quick
+              turnaround.
+            </p>
+          </div>
+        </div>
       </div>
     </DashboardCard>
   );
