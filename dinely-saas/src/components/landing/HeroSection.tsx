@@ -3,81 +3,6 @@ import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 import { Button } from "../ui/Button";
 
-function DashboardPreview() {
-  const tables = Array.from({ length: 12 }, (_, index) => index);
-
-  return (
-    <div className="relative mx-auto min-h-90 w-full max-w-140 lg:min-h-125">
-      <div className="absolute right-0 top-2 w-full max-w-125 rounded-lg border-2 border-[#22c51f] bg-white shadow-xl">
-        <div className="flex">
-          <aside className="w-24 border-r border-neutral-100 p-3">
-            <p className="text-base font-bold text-[#22c51f]">Table</p>
-            {[
-              "Dashboard",
-              "Bookings",
-              "Menu",
-              "Clients",
-              "Orders",
-              "Settings",
-            ].map((item, index) => (
-              <div
-                key={item}
-                className={`mt-2 rounded px-2 py-1 text-[9px] font-semibold ${
-                  index === 1
-                    ? "bg-green-100 text-[#22c51f]"
-                    : "text-neutral-500"
-                }`}
-              >
-                {item}
-              </div>
-            ))}
-          </aside>
-          <div className="flex-1 p-4">
-            <h3 className="text-base font-bold">Restaurant map</h3>
-            <div className="mt-3 grid grid-cols-4 gap-2 rounded-md border border-neutral-100 bg-neutral-50 p-3">
-              {tables.map((table) => (
-                <div
-                  key={table}
-                  className={`h-12 rounded border p-1.5 text-center text-[9px] font-bold ${
-                    table % 3 === 0
-                      ? "border-orange-200 bg-orange-50 text-orange-500"
-                      : table % 3 === 1
-                        ? "border-blue-200 bg-blue-50 text-blue-500"
-                        : "border-green-200 bg-green-50 text-[#22c51f]"
-                  }`}
-                >
-                  <span className="block">B-{table + 1}</span>
-                  <span className="font-medium">
-                    {table % 3 === 2 ? "Free" : "Booked"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="absolute bottom-0 right-0 w-[92%] max-w-135 rounded-lg border border-green-200 bg-white p-4 shadow-2xl shadow-green-200">
-        <div className="grid grid-cols-3 gap-3 text-[11px]">
-          {["Starter Plan", "Professional Plan", "Enterprise Plan"].map(
-            (plan, index) => (
-              <div
-                key={plan}
-                className={`rounded-lg border p-3 ${index === 1 ? "border-[#22c51f] shadow-md" : "border-green-100"}`}
-              >
-                <p className="font-bold text-[#22c51f]">{plan}</p>
-                <p className="mt-2 text-base font-bold text-orange-400">
-                  ${index === 0 ? 9 : index === 1 ? 14 : 20}
-                </p>
-                <div className="mt-3 h-2 rounded bg-green-100" />
-                <div className="mt-2 h-2 w-2/3 rounded bg-green-100" />
-              </div>
-            ),
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function HeroSection() {
   return (
@@ -152,7 +77,25 @@ export function HeroSection() {
               </Button>
             </div>
           </div>
-          <DashboardPreview />
+          <div className="relative mx-auto w-full max-w-[800px] lg:max-w-none">
+            {/* Decorative background glow */}
+            <div className="absolute -inset-4 rounded-[32px] bg-gradient-to-tr from-[#78d96d]/20 via-transparent to-orange-400/20 opacity-70 blur-2xl lg:-inset-8"></div>
+            
+            {/* Professional glassmorphism container */}
+            <div className="relative rounded-[24px] border border-neutral-200/50 bg-white/40 p-2 shadow-2xl shadow-[#78d96d]/10 backdrop-blur-md sm:p-3 lg:p-4">
+              {/* Inner frame for the image */}
+              <div className="overflow-hidden rounded-[16px] border border-neutral-100/80 bg-white shadow-inner">
+                <Image
+                  src="/image.png"
+                  alt="Dashboard Preview"
+                  width={1200}
+                  height={800}
+                  className="h-auto w-full object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
