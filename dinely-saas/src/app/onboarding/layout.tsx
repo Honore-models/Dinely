@@ -16,15 +16,15 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
   const backHref = currentStep <= 1 ? "/" : `/onboarding/step-${currentStep - 1}`;
 
   return (
-    <main className="grid min-h-screen bg-white lg:grid-cols-[392px_1fr]">
+    <main className="grid min-h-screen bg-white lg:grid-cols-[340px_1fr] xl:grid-cols-[360px_1fr]">
       <div className="hidden lg:block">
         <StepperProgress currentStep={currentStep} />
       </div>
-      <section className="px-6 py-8 lg:px-8">
-        <div className="mx-auto max-w-5xl">
+      <section className="px-5 py-5 lg:px-7">
+        <div className="mx-auto max-w-[920px]">
           <Link
             href={backHref}
-            className="inline-flex items-center gap-2 rounded-md border-2 border-[#22c51f] px-4 py-2 text-base font-bold text-[#22c51f]"
+            className="inline-flex items-center gap-2 rounded-md border-2 border-[#22c51f] px-4 py-1.5 text-sm font-bold text-[#22c51f]"
           >
             <ChevronLeft size={20} /> {currentStep === 4 ? "Go back to plans" : "Back"}
           </Link>

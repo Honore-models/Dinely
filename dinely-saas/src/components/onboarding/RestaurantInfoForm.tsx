@@ -39,15 +39,15 @@ export function RestaurantInfoForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-14">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
       <p className="font-bold text-neutral-500">Step 2/4</p>
-      <h1 className="mt-5 text-3xl font-bold text-neutral-800">Tell Us About Your Restaurant</h1>
-      <p className="mt-2 text-lg font-semibold text-neutral-600">
+      <h1 className="mt-3 text-2xl font-bold text-neutral-800">Tell Us About Your Restaurant</h1>
+      <p className="mt-1 text-base font-semibold text-neutral-600">
         Add your restaurant details so we can set up your profile and help you start managing your business.
       </p>
-      <div className="mt-8 h-px bg-neutral-200" />
+      <div className="mt-5 h-px bg-neutral-200" />
 
-      <div className="mt-9 grid gap-x-24 gap-y-6 md:grid-cols-2">
+      <div className="mt-6 grid gap-x-16 gap-y-4 md:grid-cols-2">
         <Input label="Restaurant Name" placeholder="e.g. Taste of Kigali" error={errors.name?.message} {...register("name")} />
         <label className="block">
           <span className="mb-2 block text-base font-semibold text-black">Restaurant Type</span>
@@ -72,16 +72,16 @@ export function RestaurantInfoForm() {
         <Input label="Email" type="email" placeholder="restaurant@email.com" error={errors.email?.message} {...register("email")} />
       </div>
 
-      <label className="mt-16 grid min-h-32 cursor-pointer place-items-center rounded-xl border-2 border-dashed border-green-200 bg-green-50/20 text-center transition hover:bg-green-50">
+      <label className="mt-8 grid min-h-28 cursor-pointer place-items-center rounded-xl border-2 border-dashed border-green-200 bg-green-50/20 text-center transition hover:bg-green-50">
         <input type="file" className="sr-only" accept="image/*" />
         <span>
           <Upload className="mx-auto text-[#22c51f]" />
-          <span className="mt-2 block text-xl font-bold">Click to Upload your restaurant Logo</span>
+          <span className="mt-2 block text-lg font-bold">Click to Upload your restaurant Logo</span>
           <span className="mt-1 block text-sm font-medium text-neutral-400">Max 100mb filesize</span>
         </span>
       </label>
 
-      <div className="mt-10 flex justify-end">
+      <div className="mt-6 flex justify-end">
         <Button type="submit">Next</Button>
       </div>
     </form>

@@ -33,18 +33,18 @@ export default function StepThreePage() {
   const { selectedPlan, setSelectedPlan, billingCycle, setBillingCycle } = useOnboardingStore();
 
   return (
-    <div className="mt-14">
+    <div className="mt-8">
       <p className="font-bold text-neutral-500">Step 3/4</p>
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-[#22c51f]">Choose your plan</h1>
-        <p className="mt-4 text-lg font-semibold text-neutral-600">
+        <h1 className="text-2xl font-bold text-[#22c51f]">Choose your plan</h1>
+        <p className="mt-3 text-base font-semibold text-neutral-600">
           Select a subscription plan that fits your restaurant&apos;s needs. You can upgrade or cancel anytime.
         </p>
-        <div className="mt-7">
+        <div className="mt-5">
           <ToggleBilling value={billingCycle} onChange={setBillingCycle} />
         </div>
       </div>
-      <div className="mt-9 grid items-center gap-5 lg:grid-cols-3">
+      <div className="mt-7 grid items-center gap-4 lg:grid-cols-3">
         {plans.map((plan) => (
           <PlanCard
             key={plan.name}
@@ -54,7 +54,7 @@ export default function StepThreePage() {
           />
         ))}
       </div>
-      <div className="mt-10 flex items-end justify-between gap-6">
+      <div className="mt-7 flex items-end justify-between gap-6">
         <div>
           <h2 className="text-lg font-bold">Any Question?</h2>
           <p className="mt-1 text-sm font-semibold text-neutral-500">

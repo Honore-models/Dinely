@@ -29,8 +29,8 @@ interface StepperProgressProps {
 
 export function StepperProgress({ currentStep }: StepperProgressProps) {
   return (
-    <aside className="flex h-full flex-col justify-center rounded-r-2xl bg-green-50/40 px-10 py-10 shadow-md shadow-neutral-200">
-      <div className="space-y-7">
+    <aside className="flex h-full min-h-screen flex-col justify-center rounded-r-2xl bg-green-50/40 px-7 py-8 shadow-md shadow-neutral-200">
+      <div className="space-y-5">
         {steps.map((step, index) => {
           const isActive = step.number === currentStep;
           const isCompleted = step.number < currentStep;
@@ -38,7 +38,7 @@ export function StepperProgress({ currentStep }: StepperProgressProps) {
           return (
             <div key={step.number} className="relative flex gap-4">
               {index < steps.length - 1 ? (
-                <div className="absolute left-[14px] top-10 h-[86px] w-px bg-green-200" />
+                <div className="absolute left-[14px] top-9 h-[70px] w-px bg-green-200" />
               ) : null}
               <div
                 className={`relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 text-sm font-bold ${
@@ -50,8 +50,8 @@ export function StepperProgress({ currentStep }: StepperProgressProps) {
                 {isCompleted ? <Check size={16} /> : step.number}
               </div>
               <div>
-                <h2 className={`text-2xl font-bold ${isActive ? "text-black" : "text-neutral-950"}`}>{step.title}</h2>
-                <p className="mt-2 max-w-xs text-sm font-medium leading-snug text-neutral-600">{step.description}</p>
+                <h2 className={`text-xl font-bold ${isActive ? "text-black" : "text-neutral-950"}`}>{step.title}</h2>
+                <p className="mt-1.5 max-w-xs text-xs font-medium leading-snug text-neutral-600">{step.description}</p>
               </div>
             </div>
           );

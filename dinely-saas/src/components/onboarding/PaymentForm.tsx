@@ -25,20 +25,20 @@ export function PaymentForm() {
   const total = price + tax;
 
   return (
-    <div className="mt-14">
+    <div className="mt-8">
       <p className="font-bold text-neutral-500">Step 4/4</p>
-      <h1 className="mt-4 text-3xl font-bold text-neutral-800">Complete your setup</h1>
-      <p className="mt-1 text-lg font-semibold text-neutral-600">
+      <h1 className="mt-3 text-2xl font-bold text-neutral-800">Complete your setup</h1>
+      <p className="mt-1 text-base font-semibold text-neutral-600">
         Confirm your plan and add payment details to activate your restaurant account.
       </p>
-      <div className="mt-5 h-px bg-neutral-200" />
+      <div className="mt-4 h-px bg-neutral-200" />
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_335px]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_315px]">
         <form className="max-w-lg">
-          <h2 className="mb-7 flex items-center gap-4 text-2xl font-bold text-neutral-500">
+          <h2 className="mb-4 flex items-center gap-3 text-xl font-bold text-neutral-500">
             <CreditCard className="fill-[#22c51f] text-[#22c51f]" /> Payment Details
           </h2>
-          <div className="space-y-5">
+          <div className="space-y-3">
             <Input label="Cardholder Name" placeholder="Name on card" icon={<User size={20} />} />
             <label className="block">
               <span className="mb-2 block text-base font-semibold text-black">Card Details</span>
@@ -71,7 +71,7 @@ export function PaymentForm() {
                 <Input label="" placeholder="ZIP/Postal Code" icon={<MapPin size={20} />} />
               </div>
             </label>
-            <div className="flex items-center gap-4 rounded-lg border border-green-100 bg-green-50 p-4">
+            <div className="flex items-center gap-4 rounded-lg border border-green-100 bg-green-50 p-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#63d658] text-white">
                 <ShieldCheck />
               </span>
@@ -96,18 +96,18 @@ export function PaymentForm() {
           </div>
         </form>
 
-        <aside className="rounded-xl border border-green-100 bg-white p-8 shadow-lg shadow-green-100">
-          <h2 className="text-2xl font-bold">Order Summary</h2>
-          <div className="mt-5 flex items-center gap-4">
+        <aside className="rounded-xl border border-green-100 bg-white p-6 shadow-lg shadow-green-100">
+          <h2 className="text-xl font-bold">Order Summary</h2>
+          <div className="mt-4 flex items-center gap-3">
             <span className="grid h-12 w-14 place-items-center rounded-lg bg-green-100">
               <Award className="fill-yellow-300 text-yellow-400" />
             </span>
             <div>
-              <p className="text-lg font-bold text-neutral-700">{selectedPlan} Plan</p>
+              <p className="text-base font-bold text-neutral-700">{selectedPlan} Plan</p>
               <p className="font-semibold text-neutral-400">Monthly Subscription</p>
             </div>
           </div>
-          <div className="mt-8 space-y-3 border-b border-neutral-200 pb-5 text-sm font-bold text-neutral-700">
+          <div className="mt-6 space-y-3 border-b border-neutral-200 pb-4 text-sm font-bold text-neutral-700">
             <p className="flex justify-between">
               <span>Subscription(Monthly)</span>
               <span>${price.toFixed(2)}</span>
@@ -117,13 +117,13 @@ export function PaymentForm() {
               <span>${tax.toFixed(2)}</span>
             </p>
           </div>
-          <p className="mt-6 flex justify-between text-base font-bold">
+          <p className="mt-5 flex justify-between text-base font-bold">
             <span>Total Due Today</span>
             <span className="text-[#22c51f]">${total.toFixed(2)}</span>
           </p>
-          <div className="mt-6 border-t border-neutral-200 pt-5">
+          <div className="mt-5 border-t border-neutral-200 pt-4">
             <h3 className="font-bold text-[#22c51f]">What&apos;s Included?</h3>
-            <ul className="mt-5 space-y-5">
+            <ul className="mt-4 space-y-4">
               {planFeatures[selectedPlan].map((feature) => (
                 <li key={feature} className="flex items-center gap-3 text-sm font-bold text-neutral-700">
                   <CheckCircle2 className="text-[#22c51f]" size={19} /> {feature}
