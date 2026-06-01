@@ -1,16 +1,13 @@
-import Image from "next/image";
+import { HeroSection } from "../components/landing/HeroSection";
+import { PricingSection } from "../components/landing/PricingSection";
+import { StatsBar } from "../components/landing/StatsBar";
 
 export default function Home() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <Image
-        src="/Group 103.png"
-        alt="Vercel Logo"
-        width={100}
-        height={30}
-        priority
-      />
-    </div>
+    <main>
+      <HeroSection />
+      <StatsBar />
+      <PricingSection />
+    </main>
   );
 }
