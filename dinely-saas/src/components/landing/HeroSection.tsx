@@ -76,32 +76,7 @@ export function HeroSection() {
                 Get Started as a Restaurant
               </Button>
 
-              {/* Professional Subtle Arrow */}
-              <div className="absolute -bottom-12 left-56 hidden w-20 md:block lg:-bottom-16 lg:left-64 lg:w-28">
-                <svg
-                  viewBox="0 0 100 100"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="opacity-70"
-                  style={{ animation: "floatArrow 4s ease-in-out infinite" }}
-                >
-                  <path
-                    d="M 10 10 Q 10 80 85 85"
-                    stroke="#78d96d"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeDasharray="120"
-                    strokeDashoffset="0"
-                  />
-                  <path
-                    d="M 70 70 L 85 85 L 70 100"
-                    stroke="#78d96d"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
+
             </div>
           </div>
           <div className="relative mx-auto w-full max-w-[800px] lg:max-w-none">
