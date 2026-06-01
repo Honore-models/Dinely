@@ -6,12 +6,12 @@ import { Button } from "../ui/Button";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section className="relative flex h-full w-full items-center overflow-hidden bg-white">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.06)_1px,transparent_1px)] bg-size-[88px_88px]" />
-      <div className="relative mx-auto max-w-7xl px-6 pb-10 pt-24">
+      <div className="relative mx-auto w-full max-w-7xl px-6">
 
 
-        <div className="grid items-center gap-8 pt-12 lg:min-h-[calc(100vh-104px)] lg:grid-cols-[0.95fr_1.05fr] lg:pt-8">
+        <div className="grid items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
             <h1 className="max-w-xl text-4xl font-bold leading-tight text-neutral-700 md:text-[44px]">
               Discover <span className="text-[#78d96d]">Restaurants.</span>
@@ -76,25 +76,27 @@ export function HeroSection() {
                 Get Started as a Restaurant
               </Button>
 
-              {/* Animated Round Arrow */}
-              <div className="absolute -bottom-32 left-32 hidden w-48 md:block lg:-bottom-40 lg:left-48 lg:w-64">
+              {/* Professional Subtle Arrow */}
+              <div className="absolute -bottom-12 left-56 hidden w-20 md:block lg:-bottom-16 lg:left-64 lg:w-28">
                 <svg
-                  viewBox="0 0 250 200"
+                  viewBox="0 0 100 100"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
-                  className="animate-[pulse_3s_ease-in-out_infinite] drop-shadow-sm"
+                  className="opacity-70"
                   style={{ animation: "floatArrow 4s ease-in-out infinite" }}
                 >
                   <path
-                    d="M 20 100 C 20 180, 100 180, 90 110 C 80 50, 30 70, 40 120 C 50 180, 160 160, 220 60"
+                    d="M 10 10 Q 10 80 85 85"
                     stroke="#78d96d"
-                    strokeWidth="4"
+                    strokeWidth="3"
                     strokeLinecap="round"
+                    strokeDasharray="120"
+                    strokeDashoffset="0"
                   />
                   <path
-                    d="M 190 60 L 220 60 L 210 90"
+                    d="M 70 70 L 85 85 L 70 100"
                     stroke="#78d96d"
-                    strokeWidth="4"
+                    strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
