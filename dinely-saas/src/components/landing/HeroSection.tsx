@@ -83,7 +83,7 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-white">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.06)_1px,transparent_1px)] bg-size-[88px_88px]" />
-      <div className="relative mx-auto max-w-7xl px-6 pb-10 pt-5">
+      <div className="relative mx-auto max-w-7xl px-6 pb-10 pt-24">
 
 
         <div className="grid items-center gap-8 pt-12 lg:min-h-[calc(100vh-104px)] lg:grid-cols-[0.95fr_1.05fr] lg:pt-8">
