@@ -9,9 +9,9 @@ interface PhoneInputProps extends InputHTMLAttributes<HTMLInputElement> {
 export function PhoneInput({ label = "Phone Number", error, className = "", ...props }: PhoneInputProps) {
   return (
     <label className="block">
-      <span className="mb-2 block text-base font-semibold text-black">{label}</span>
+      <span className="mb-1 block text-base font-semibold text-black">{label}</span>
       <div
-        className={`flex h-[52px] overflow-hidden rounded-lg border border-neutral-200 bg-white transition focus-within:border-[#22c51f] focus-within:ring-4 focus-within:ring-green-100 ${className}`}
+        className={`flex h-11 overflow-hidden rounded-lg border border-neutral-200 bg-white transition focus-within:border-[#22c51f] focus-within:ring-4 focus-within:ring-green-100 ${className}`}
       >
         <button
           type="button"
