@@ -39,24 +39,24 @@ export function OwnerInfoForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-2">
       <p className="font-bold text-neutral-500">Step 1/4</p>
-      <h1 className="mt-3 text-2xl font-bold text-neutral-800">Restaurant Owner Info</h1>
+      <h1 className="mt-1 text-2xl font-bold text-neutral-800">Restaurant Owner Info</h1>
       <p className="mt-1 text-base font-semibold text-neutral-600">
         Set up your account to manage your restaurant. This information is used to access your dashboard.
       </p>
-      <div className="mt-5 h-px bg-neutral-200" />
+      <div className="mt-3 h-px bg-neutral-200" />
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[210px_1fr]">
+      <div className="mt-4 grid gap-4 lg:grid-cols-[210px_1fr]">
         <div>
           <p className="text-base font-semibold leading-snug text-neutral-600">
             Let&apos;s get to know you! Share your details so we can set up your restaurant account.
           </p>
-          <Link href="/privacy" className="mt-7 inline-flex items-center text-base font-bold text-[#22c51f]">
+          <Link href="/privacy" className="mt-4 inline-flex items-center text-sm font-bold text-[#22c51f]">
             Terms &amp; Privacy Policy
           </Link>
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-2">
           <Input label="First Name" placeholder="eg. John" error={errors.firstName?.message} {...register("firstName")} />
           <Input label="Last Name" placeholder="eg. Park" error={errors.lastName?.message} {...register("lastName")} />
           <div className="md:col-span-2">
@@ -75,14 +75,14 @@ export function OwnerInfoForm() {
               <span className="font-bold">or</span>
               <span className="h-px flex-1 bg-neutral-200" />
             </div>
-            <Button type="button" variant="outline" className="w-full border-neutral-200 text-black">
+            <Button type="button" variant="outline" className="h-11 w-full border-neutral-200 text-black">
               <span className="text-3xl font-bold text-[#4285f4]">G</span> Sign Up with Google
             </Button>
           </div>
         </div>
       </div>
-      <div className="mt-6 flex justify-end">
-        <Button type="submit">Next</Button>
+      <div className="mt-4 flex justify-end">
+        <Button type="submit" className="h-11 px-8">Next</Button>
       </div>
     </form>
   );
