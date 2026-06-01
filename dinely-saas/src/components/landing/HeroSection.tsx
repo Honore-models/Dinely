@@ -7,8 +7,8 @@ function DashboardPreview() {
   const tables = Array.from({ length: 12 }, (_, index) => index);
 
   return (
-    <div className="relative mx-auto min-h-[360px] w-full max-w-[560px] lg:min-h-[500px]">
-      <div className="absolute right-0 top-2 w-full max-w-[500px] rounded-lg border-2 border-[#22c51f] bg-white shadow-xl">
+    <div className="relative mx-auto min-h-90 w-full max-w-140 lg:min-h-125">
+      <div className="absolute right-0 top-2 w-full max-w-125 rounded-lg border-2 border-[#22c51f] bg-white shadow-xl">
         <div className="flex">
           <aside className="w-24 border-r border-neutral-100 p-3">
             <p className="text-base font-bold text-[#22c51f]">Table</p>
