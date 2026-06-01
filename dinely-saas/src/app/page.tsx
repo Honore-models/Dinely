@@ -3,7 +3,7 @@ import { Header } from "../components/landing/Header";
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-hidden">
+    <main className="h-screen overflow-hidden">
       <Header />
       <HeroSection />
     </main>
