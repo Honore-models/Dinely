@@ -39,15 +39,15 @@ export function RestaurantInfoForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
       <p className="font-bold text-neutral-500">Step 2/4</p>
-      <h1 className="mt-1 text-2xl font-bold text-neutral-800">Tell Us About Your Restaurant</h1>
+      <h1 className="mt-2 text-2xl font-bold text-neutral-800">Tell Us About Your Restaurant</h1>
       <p className="mt-1 text-base font-semibold text-neutral-600">
         Add your restaurant details so we can set up your profile and help you start managing your business.
       </p>
-      <div className="mt-3 h-px bg-neutral-200" />
+      <div className="mt-4 h-px bg-neutral-200" />
 
-      <div className="mt-4 grid gap-x-8 gap-y-3 md:grid-cols-2">
+      <div className="mt-6 grid gap-x-12 gap-y-5 md:grid-cols-2">
         <Input label="Restaurant Name" placeholder="e.g. Taste of Kigali" error={errors.name?.message} {...register("name")} />
         <label className="block">
           <span className="mb-1 block text-base font-semibold text-black">Restaurant Type</span>
@@ -81,7 +81,7 @@ export function RestaurantInfoForm() {
         </span>
       </label>
 
-      <div className="mt-4 flex justify-end">
+      <div className="mt-8 flex justify-end">
         <Button type="submit" className="h-11 px-8">Next</Button>
       </div>
     </form>

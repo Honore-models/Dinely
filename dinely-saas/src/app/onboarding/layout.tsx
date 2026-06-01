@@ -20,11 +20,11 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
       <div className="hidden lg:block">
         <StepperProgress currentStep={currentStep} />
       </div>
-      <section className="flex flex-col px-4 py-4 lg:px-6">
-        <div className="mx-auto flex h-full w-full max-w-[920px] flex-col">
+      <section className="overflow-y-auto px-4 py-8 lg:px-8">
+        <div className="mx-auto flex min-h-full w-full max-w-[960px] flex-col justify-center">
           <Link
             href={backHref}
-            className="inline-flex items-center gap-2 rounded-md border-2 border-[#22c51f] px-4 py-1.5 text-sm font-bold text-[#22c51f]"
+            className="mb-8 inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#22c51f] px-4 py-1.5 text-sm font-bold text-[#22c51f] transition-colors hover:bg-green-50"
           >
             <ChevronLeft size={20} /> {currentStep === 4 ? "Go back to plans" : "Back"}
           </Link>

@@ -39,15 +39,15 @@ export function OwnerInfoForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
       <p className="font-bold text-neutral-500">Step 1/4</p>
-      <h1 className="mt-1 text-2xl font-bold text-neutral-800">Restaurant Owner Info</h1>
+      <h1 className="mt-2 text-2xl font-bold text-neutral-800">Restaurant Owner Info</h1>
       <p className="mt-1 text-base font-semibold text-neutral-600">
         Set up your account to manage your restaurant. This information is used to access your dashboard.
       </p>
-      <div className="mt-3 h-px bg-neutral-200" />
+      <div className="mt-4 h-px bg-neutral-200" />
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[210px_1fr]">
+      <div className="mt-6 grid gap-8 lg:grid-cols-[280px_1fr]">
         <div>
           <p className="text-base font-semibold leading-snug text-neutral-600">
             Let&apos;s get to know you! Share your details so we can set up your restaurant account.
