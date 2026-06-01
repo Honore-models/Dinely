@@ -33,3 +33,12 @@ select {
   --color-dinely: #7cc243;
   --color-dinely-dark: #1f7a28;
 }
+
+@keyframes floatArrow {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}

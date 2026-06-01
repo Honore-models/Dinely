@@ -65,7 +65,7 @@ export function HeroSection() {
               </div>
             </div>
 
-            <div className="mt-10 flex flex-col items-start gap-5">
+            <div className="relative mt-10 flex flex-col items-start gap-5">
               <Link
                 href="/home"
                 className="inline-flex items-center gap-5 text-xl font-bold text-[#63c900]"
@@ -75,6 +75,31 @@ export function HeroSection() {
               <Button href="/onboarding/step-1" className="text-black">
                 Get Started as a Restaurant
               </Button>
+
+              {/* Animated Round Arrow */}
+              <div className="absolute -bottom-32 left-32 hidden w-48 md:block lg:-bottom-40 lg:left-48 lg:w-64">
+                <svg
+                  viewBox="0 0 250 200"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="animate-[pulse_3s_ease-in-out_infinite] drop-shadow-sm"
+                  style={{ animation: "floatArrow 4s ease-in-out infinite" }}
+                >
+                  <path
+                    d="M 20 100 C 20 180, 100 180, 90 110 C 80 50, 30 70, 40 120 C 50 180, 160 160, 220 60"
+                    stroke="#78d96d"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M 190 60 L 220 60 L 210 90"
+                    stroke="#78d96d"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
           <div className="relative mx-auto w-full max-w-[800px] lg:max-w-none">
