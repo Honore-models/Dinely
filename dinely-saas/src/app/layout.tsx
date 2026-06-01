@@ -9,7 +9,8 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "Dinely",
-  description: "Discover restaurants and manage bookings, menus, and performance.",
+  description:
+    "Discover restaurants and manage bookings, menus, and performance.",
 };
 
 export default function RootLayout({
