@@ -17,24 +17,22 @@ export const AmexIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export const VisaIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60" {...props}>
-    <rect width="100" height="60" rx="6" fill="#fff" stroke="#eee" />
-    <path fill="#1434CB" d="M37.8 18.5L33.4 41h6L44 18.5zM68.5 18.5c-2.2-.4-4.6-.8-6.4-.8-6.6 0-11.3 3.5-11.5 8.5-.1 3.7 3.3 5.7 5.8 7 2.6 1.3 3.5 2.1 3.5 3.3 0 1.8-2.1 2.6-4.1 2.6-2.8 0-4.3-.4-6.3-1.3l-1.1 5.1c1.8.8 4.6 1.5 7.7 1.5 7.1 0 11.6-3.4 11.7-8.7.1-2.9-1.7-5.2-5.6-7.1-2.3-1.1-3.7-1.8-3.7-3 0-1 1.2-2.1 4-2.1 2.3 0 3.9.4 5.2 1.1l.9-4.6zM86.3 18.5h-4.8c-1.5 0-2.7.5-3.4 2.1l-9.6 21.6h6.3l1.2-3.6h7.6l.7 3.6h5.6l-10-23.7zM77.6 34.8l2.9-7.7 1.6 7.7h-4.5zM19.8 18.5H13.5c-1.5 0-2.6.4-3.3 2.1L1 41h6.4l1.3-3.6h7.8L19.8 18.5zm-4.5 5.1l1.5-4.1 .9 4.1h-2.4z" />
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 30" {...props}>
+    <path fill="#1434CB" d="M37.8 0.5L33.4 23h6L44 0.5zM68.5 0.5c-2.2-.4-4.6-.8-6.4-.8-6.6 0-11.3 3.5-11.5 8.5-.1 3.7 3.3 5.7 5.8 7 2.6 1.3 3.5 2.1 3.5 3.3 0 1.8-2.1 2.6-4.1 2.6-2.8 0-4.3-.4-6.3-1.3l-1.1 5.1c1.8.8 4.6 1.5 7.7 1.5 7.1 0 11.6-3.4 11.7-8.7.1-2.9-1.7-5.2-5.6-7.1-2.3-1.1-3.7-1.8-3.7-3 0-1 1.2-2.1 4-2.1 2.3 0 3.9.4 5.2 1.1l.9-4.6zM86.3 0.5h-4.8c-1.5 0-2.7.5-3.4 2.1l-9.6 21.6h6.3l1.2-3.6h7.6l.7 3.6h5.6l-10-23.7zM77.6 16.8l2.9-7.7 1.6 7.7h-4.5zM19.8 0.5H13.5c-1.5 0-2.6.4-3.3 2.1L1 23h6.4l1.3-3.6h7.8L19.8 0.5zm-4.5 5.1l1.5-4.1 .9 4.1h-2.4z" />
   </svg>
 );
 
 export const MastercardIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60" {...props}>
-    <rect width="100" height="60" rx="6" fill="#fff" stroke="#eee" />
-    <circle cx="38" cy="30" r="18" fill="#EB001B"/>
-    <circle cx="62" cy="30" r="18" fill="#F79E1B"/>
-    <path fill="#FF5F00" d="M50 44c-4.4 0-8.2-2.3-10.4-5.8A17.9 17.9 0 0044 30a17.9 17.9 0 00-4.4-8.2c2.2-3.5 6-5.8 10.4-5.8s8.2 2.3 10.4 5.8A17.9 17.9 0 0056 30a17.9 17.9 0 004.4 8.2c-2.2 3.5-6 5.8-10.4 5.8z"/>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" {...props}>
+    <circle cx="38" cy="30" r="26" fill="#EB001B"/>
+    <circle cx="74" cy="30" r="26" fill="#F79E1B"/>
+    <path fill="#FF5F00" d="M56 55.3c-6.4 0-11.8-3.3-15-8.4A25.9 25.9 0 0048 30a25.9 25.9 0 00-7-16.9c3.2-5 8.6-8.4 15-8.4s11.8 3.3 15 8.4A25.9 25.9 0 0064 30a25.9 25.9 0 007 16.9c-3.2 5-8.6 8.4-15 8.4z"/>
+    <text x="56" y="75" fontFamily="sans-serif" fontSize="15" fill="#000" textAnchor="middle" fontWeight="bold" letterSpacing="0.5">mastercard</text>
   </svg>
 );
 
 export const PaypalIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60" {...props}>
-    <rect width="100" height="60" rx="6" fill="#fff" stroke="#eee" />
     <path fill="#003087" d="M33 42h-6.2l4.4-28h13.1c4.8 0 8 .9 8 6 0 4-2.5 8.3-7.5 8.3H41l-2.5 13.7z"/>
     <path fill="#0079C1" d="M39.2 34h3.9c6.3 0 10-3.8 10-9.6 0-1.2-.2-2.3-.5-3.3-1.9 4.6-6.2 8.3-12.3 8.3h-3L36 42h6.2l-3-8z"/>
   </svg>
