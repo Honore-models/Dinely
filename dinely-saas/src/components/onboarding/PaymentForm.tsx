@@ -47,14 +47,14 @@ export function PaymentForm() {
                 <div className="relative md:col-span-2">
                   <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={22} />
                   <input
-                    className="h-11 w-full rounded-lg border border-neutral-200 pr-24 pl-14 text-base font-semibold outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-4 focus:ring-green-100"
+                    className="h-11 w-full rounded-lg border border-neutral-200 pr-40 pl-14 text-base font-semibold outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-4 focus:ring-green-100"
                     placeholder="1234 1234 1234 1234"
                   />
-                  <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-1">
-                    <AmexIcon className="h-5 w-auto" />
-                    <VisaIcon className="h-5 w-auto" />
-                    <MastercardIcon className="h-5 w-auto" />
-                    <PaypalIcon className="h-5 w-auto" />
+                  <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-2">
+                    <AmexIcon className="h-6 w-auto" />
+                    <VisaIcon className="h-6 w-auto" />
+                    <MastercardIcon className="h-7 w-auto" />
+                    <PaypalIcon className="h-6 w-auto" />
                   </div>
                 </div>
                 <Input label="" placeholder="MM/YY" icon={<CreditCard size={20} />} />

@@ -26,7 +26,7 @@ export function PlanCard({
     <button
       type="button"
       onClick={() => onClick(name)}
-      className={`flex min-h-[250px] w-full flex-col rounded-xl border bg-white p-3 text-left transition hover:-translate-y-1 hover:shadow-lg ${
+      className={`flex min-h-[320px] w-full flex-col rounded-xl border bg-white p-3 text-left transition hover:-translate-y-1 hover:shadow-lg ${
         isSelected ? "border-2 border-[#22c51f] shadow-md shadow-green-100" : "border-green-200"
       }`}
     >
