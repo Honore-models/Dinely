@@ -29,7 +29,8 @@ interface StepperProgressProps {
 
 export function StepperProgress({ currentStep }: StepperProgressProps) {
   return (
-    <aside className="flex h-full min-h-screen flex-col justify-center rounded-r-2xl bg-green-50/40 px-7 py-8 shadow-md shadow-neutral-200">
+    <div className="h-full py-4 pl-4 pr-0">
+      <aside className="flex h-full flex-col justify-center rounded-2xl bg-green-50/40 px-7 py-8 shadow-md shadow-neutral-200">
       <div className="space-y-5">
         {steps.map((step, index) => {
           const isActive = step.number === currentStep;
@@ -57,6 +58,7 @@ export function StepperProgress({ currentStep }: StepperProgressProps) {
           );
         })}
       </div>
-    </aside>
+      </aside>
+    </div>
   );
 }
