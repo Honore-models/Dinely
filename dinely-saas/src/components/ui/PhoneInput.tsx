@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import type { InputHTMLAttributes } from "react";
+import { RwandaFlagIcon } from "./Icons";
 
 interface PhoneInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -18,7 +19,7 @@ export function PhoneInput({ label = "Phone Number", error, className = "", ...p
           aria-label="Select country"
           className="flex w-24 shrink-0 items-center justify-center gap-2 border-r border-neutral-200"
         >
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-[#72c652] text-sm">RW</span>
+          <RwandaFlagIcon className="h-6 w-auto rounded-[4px] shadow-sm" />
           <ChevronDown size={18} />
         </button>
         <input

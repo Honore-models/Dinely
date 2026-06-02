@@ -10,6 +10,7 @@ import { useOnboardingStore } from "../../store/onboardingStore";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { PhoneInput } from "../ui/PhoneInput";
+import { GoogleIcon } from "../ui/Icons";
 
 const ownerSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
@@ -75,8 +76,8 @@ export function OwnerInfoForm() {
               <span className="font-bold">or</span>
               <span className="h-px flex-1 bg-neutral-200" />
             </div>
-            <Button type="button" variant="outline" className="h-11 w-full border-neutral-200 text-black">
-              <span className="text-3xl font-bold text-[#4285f4]">G</span> Sign Up with Google
+            <Button type="button" variant="outline" className="h-11 w-full gap-2 border-neutral-200 text-black">
+              <GoogleIcon className="h-6 w-6" /> Sign Up with Google
             </Button>
           </div>
         </div>

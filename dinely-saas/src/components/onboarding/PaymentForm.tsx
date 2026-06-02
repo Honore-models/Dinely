@@ -5,6 +5,7 @@ import { Award, Building2, CheckCircle2, CreditCard, LockKeyhole, MapPin, Shield
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { useOnboardingStore, type PlanName } from "../../store/onboardingStore";
+import { VisaIcon, MastercardIcon, PaypalIcon, AmexIcon } from "../ui/Icons";
 
 const planPrices: Record<PlanName, number> = {
   Starter: 9,
@@ -46,10 +47,15 @@ export function PaymentForm() {
                 <div className="relative md:col-span-2">
                   <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={22} />
                   <input
-                    className="h-11 w-full rounded-lg border border-neutral-200 px-14 text-base font-semibold outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-4 focus:ring-green-100"
+                    className="h-11 w-full rounded-lg border border-neutral-200 pr-24 pl-14 text-base font-semibold outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-4 focus:ring-green-100"
                     placeholder="1234 1234 1234 1234"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-blue-700">VISA</span>
+                  <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-1">
+                    <AmexIcon className="h-5 w-auto" />
+                    <VisaIcon className="h-5 w-auto" />
+                    <MastercardIcon className="h-5 w-auto" />
+                    <PaypalIcon className="h-5 w-auto" />
+                  </div>
                 </div>
                 <Input label="" placeholder="MM/YY" icon={<CreditCard size={20} />} />
                 <Input label="" placeholder="CVC" icon={<LockKeyhole size={20} />} />
