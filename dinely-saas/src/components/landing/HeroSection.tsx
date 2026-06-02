@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 import { Button } from "../ui/Button";
+import { motion } from "framer-motion";
 
 
 export function HeroSection() {
@@ -12,7 +15,11 @@ export function HeroSection() {
 
 
         <div className="grid items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
             <h1 className="max-w-xl text-4xl font-bold leading-tight text-neutral-700 md:text-[44px]">
               Discover <span className="text-[#78d96d]">Restaurants.</span>
               <br />
@@ -78,8 +85,13 @@ export function HeroSection() {
 
 
             </div>
-          </div>
-          <div className="relative mx-auto w-full max-w-[800px] lg:max-w-none">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, x: 20 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="relative mx-auto w-full max-w-[800px] lg:max-w-none"
+          >
             {/* Decorative background glow */}
             <div className="absolute -inset-4 rounded-[32px] bg-gradient-to-tr from-[#78d96d]/20 via-transparent to-orange-400/20 opacity-70 blur-2xl lg:-inset-8"></div>
             
@@ -97,7 +109,7 @@ export function HeroSection() {
                 />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
