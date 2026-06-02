@@ -23,18 +23,39 @@ export const VisaIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export const MastercardIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" {...props}>
-    <circle cx="38" cy="30" r="26" fill="#EB001B"/>
-    <circle cx="74" cy="30" r="26" fill="#F79E1B"/>
-    <path fill="#FF5F00" d="M56 55.3c-6.4 0-11.8-3.3-15-8.4A25.9 25.9 0 0048 30a25.9 25.9 0 00-7-16.9c3.2-5 8.6-8.4 15-8.4s11.8 3.3 15 8.4A25.9 25.9 0 0064 30a25.9 25.9 0 007 16.9c-3.2 5-8.6 8.4-15 8.4z"/>
-    <text x="56" y="75" fontFamily="sans-serif" fontSize="15" fill="#000" textAnchor="middle" fontWeight="bold" letterSpacing="0.5">mastercard</text>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60" {...props}>
+    <circle cx="42" cy="26" r="18" fill="#EB001B" />
+    <circle cx="58" cy="26" r="18" fill="#F79E1B" />
+    <path
+      fill="#FF5F00"
+      d="M50 44c-4.3 0-8.3-2-11.2-5.6A20.1 20.1 0 0 0 44.7 26c0-4.9-1.7-9.4-5.9-12.4C41.7 10 45.7 8 50 8c4.3 0 8.3 2 11.2 5.6A20.1 20.1 0 0 0 55.3 26c0 4.9 1.7 9.4 5.9 12.4C58.3 42 54.3 44 50 44z"
+    />
+    <text
+      x="50"
+      y="54"
+      fontFamily="Arial, Helvetica, sans-serif"
+      fontSize="12"
+      fill="#111"
+      textAnchor="middle"
+      fontWeight="700"
+      letterSpacing="0.2"
+    >
+      mastercard
+    </text>
   </svg>
 );
 
 export const PaypalIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60" {...props}>
-    <path fill="#003087" d="M33 42h-6.2l4.4-28h13.1c4.8 0 8 .9 8 6 0 4-2.5 8.3-7.5 8.3H41l-2.5 13.7z"/>
-    <path fill="#0079C1" d="M39.2 34h3.9c6.3 0 10-3.8 10-9.6 0-1.2-.2-2.3-.5-3.3-1.9 4.6-6.2 8.3-12.3 8.3h-3L36 42h6.2l-3-8z"/>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" {...props}>
+    <path
+      fill="#003087"
+      d="M26 14h14.2c8.2 0 13.4 4.3 12.2 12.7-1.3 9-8.4 14.2-17.5 14.2H28l-2.3 14H14.8L26 14z"
+    />
+    <path
+      fill="#0070E0"
+      d="M30.2 18.8h11.3c4.7 0 7.2 2.9 6.5 7.6-1 6.6-5.9 10.2-12.5 10.2h-4.3l-2.2 13.4h-7.4l2.3-14.1h6.8c9.1 0 16.2-5.2 17.5-14.2.1-.9.2-1.8.1-2.6C46.7 22.4 43 18.8 36.2 18.8h-6z"
+      opacity="0.9"
+    />
   </svg>
 );
 

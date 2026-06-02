@@ -51,10 +51,10 @@ export function PaymentForm() {
                     placeholder="1234 1234 1234 1234"
                   />
                   <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-2">
-                    <AmexIcon className="h-6 w-auto" />
-                    <VisaIcon className="h-6 w-auto" />
-                    <MastercardIcon className="h-7 w-auto" />
-                    <PaypalIcon className="h-6 w-auto" />
+                    <AmexIcon className="h-6 w-[34px]" />
+                    <VisaIcon className="h-6 w-[34px]" />
+                    <MastercardIcon className="h-7 w-[44px]" />
+                    <PaypalIcon className="h-6 w-[26px]" />
                   </div>
                 </div>
                 <Input label="" placeholder="MM/YY" icon={<CreditCard size={20} />} />
