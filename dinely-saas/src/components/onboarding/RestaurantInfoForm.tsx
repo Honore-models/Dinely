@@ -74,7 +74,7 @@ export function RestaurantInfoForm() {
 
       <label className="mt-4 grid min-h-20 cursor-pointer place-items-center rounded-xl border-2 border-dashed border-green-200 bg-green-50/20 text-center transition hover:bg-green-50">
         <input type="file" className="sr-only" accept="image/*" />
-        <span className="flex flex-col items-center justify-center py-2">
+        <span className="flex flex-col items-center justify-center py-5 px-10">
           <Upload className="text-[#22c51f]" size={20} />
           <span className="mt-1 block text-base font-bold">Click to Upload your restaurant Logo</span>
           <span className="mt-1 block text-sm font-medium text-neutral-400">Max 100mb filesize</span>

@@ -1,50 +1,54 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Mail, LockKeyhole } from "lucide-react";
+import { AuthDivider } from "../../../components/auth/AuthDivider";
+import { AuthFormPanel } from "../../../components/auth/AuthFormPanel";
+import { AuthGoogleButton } from "../../../components/auth/AuthGoogleButton";
+import { AuthHero } from "../../../components/auth/AuthHero";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
 
 export default function LoginPage() {
   return (
-    <main className="grid min-h-screen bg-white lg:grid-cols-2">
-      <section className="hidden bg-[#165b24] p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <Image src="/logo.svg" alt="Dinely" width={150} height={58} className="brightness-0 invert" priority />
-        <div>
-          <h1 className="max-w-md text-5xl font-bold leading-tight">Run every restaurant shift from one clean dashboard.</h1>
-          <p className="mt-6 max-w-md text-lg text-green-50">
-            Track bookings, orders, menus, and guest activity without losing focus on service.
-          </p>
-        </div>
-      </section>
-      <section className="flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">
-          <h2 className="text-3xl font-bold text-neutral-950">Welcome back</h2>
-          <p className="mt-2 font-semibold text-neutral-500">Sign in to continue managing your restaurant.</p>
-          <form className="mt-8 space-y-5">
-            <Input label="Email Address" type="email" placeholder="owner@restaurant.com" icon={<Mail size={19} />} />
-            <Input label="Password" type="password" placeholder="Enter your password" icon={<LockKeyhole size={19} />} />
-            <div className="flex items-center justify-between text-sm font-semibold">
-              <label className="flex items-center gap-2 text-neutral-600">
-                <input type="checkbox" className="h-4 w-4 rounded border-neutral-300 accent-[#22c51f]" />
-                Remember me
-              </label>
-              <Link href="/forgot-password" className="text-[#22c51f]">
-                Forgot password?
-              </Link>
-            </div>
-            <Button className="w-full">Sign in</Button>
-            <Button type="button" variant="outline" className="w-full border-neutral-200 text-black">
-              <span className="text-2xl font-bold text-[#4285f4]">G</span> Sign in with Google
-            </Button>
-          </form>
-          <p className="mt-8 text-center font-semibold text-neutral-600">
+    <main className="flex min-h-screen flex-col lg:grid lg:grid-cols-2">
+      <AuthHero description="Sign in to manage your restaurant, track orders, and keep every shift running smoothly." />
+
+      <AuthFormPanel
+        title="Welcome back"
+        subtitle="Sign in to continue managing your restaurant."
+        footer={
+          <p className="text-center text-sm text-neutral-600">
             New to Dinely?{" "}
-            <Link href="/register" className="text-[#22c51f]">
+            <Link href="/register" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
               Create account
             </Link>
           </p>
-        </div>
-      </section>
+        }
+      >
+        <form className="mt-7 space-y-5">
+          <Input label="Email address" type="email" placeholder="owner@restaurant.com" icon={<Mail size={18} />} />
+          <Input
+            label="Password"
+            type="password"
+            placeholder="Enter your password"
+            icon={<LockKeyhole size={18} />}
+          />
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <label className="flex cursor-pointer items-center gap-2.5 text-neutral-600">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-neutral-300 text-[#22c51f] focus:ring-[#22c51f]/30"
+              />
+              Remember me
+            </label>
+            <Link href="/forgot-password" className="font-medium text-[#22c51f] hover:text-[#1bad1a]">
+              Forgot password?
+            </Link>
+          </div>
+          <Button className="h-12 w-full rounded-lg text-sm">Sign in</Button>
+          <AuthDivider />
+          <AuthGoogleButton label="Continue with Google" />
+        </form>
+      </AuthFormPanel>
     </main>
   );
 }
