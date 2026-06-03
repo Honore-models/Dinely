@@ -1,21 +1,26 @@
 import Link from "next/link";
+import { Mail } from "lucide-react";
+import { AuthFormPanel } from "../../../components/auth/AuthFormPanel";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
 
 export default function ForgotPasswordPage() {
   return (
-    <main className="grid min-h-screen place-items-center px-6">
-      <form className="w-full max-w-md rounded-xl border border-neutral-100 bg-white p-8 shadow-sm">
-        <h1 className="text-3xl font-bold">Reset password</h1>
-        <p className="mt-2 font-semibold text-neutral-500">Enter your email and we will send reset instructions.</p>
-        <div className="mt-6">
-          <Input label="Email Address" type="email" placeholder="owner@restaurant.com" />
-        </div>
-        <Button className="mt-6 w-full">Send reset link</Button>
-        <Link href="/login" className="mt-5 block text-center font-bold text-[#22c51f]">
-          Back to login
-        </Link>
+    <AuthFormPanel
+      title="Reset password"
+      subtitle="Enter your email and we will send you reset instructions."
+      footer={
+        <p className="text-center text-sm text-neutral-600">
+          <Link href="/login" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
+            Back to sign in
+          </Link>
+        </p>
+      }
+    >
+      <form className="mt-7 space-y-5">
+        <Input label="Email address" type="email" placeholder="owner@restaurant.com" icon={<Mail size={18} />} />
+        <Button className="h-12 w-full rounded-lg text-sm">Send reset link</Button>
       </form>
-    </main>
+    </AuthFormPanel>
   );
 }
