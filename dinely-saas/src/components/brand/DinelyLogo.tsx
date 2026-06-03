@@ -4,9 +4,9 @@ interface DinelyLogoProps {
   width?: number;
   height?: number;
   className?: string;
-  /** White card behind logo — for dark or colored backgrounds */
-  onDark?: boolean;
   priority?: boolean;
+  /** Transparent SVG variant for the green brand panel */
+  onDark?: boolean;
 }
 
 export function DinelyLogo({
@@ -16,9 +16,9 @@ export function DinelyLogo({
   onDark = false,
   priority = false,
 }: DinelyLogoProps) {
-  const logo = (
+  return (
     <Image
-      src="/logo.png"
+      src={onDark ? "/logo-on-dark.svg" : "/logo.png"}
       alt="Dinely"
       width={width}
       height={height}
@@ -26,14 +26,4 @@ export function DinelyLogo({
       priority={priority}
     />
   );
-
-  if (onDark) {
-    return (
-      <span className="inline-flex w-fit items-center rounded-xl bg-white px-4 py-2.5 shadow-md">
-        {logo}
-      </span>
-    );
-  }
-
-  return <span className="inline-flex w-fit items-center">{logo}</span>;
 }
