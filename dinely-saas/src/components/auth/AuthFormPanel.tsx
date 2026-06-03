@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { DinelyLogo } from "../brand/DinelyLogo";
 import { AuthBrandPanel } from "./AuthBrandPanel";
 
 interface AuthFormPanelProps {
@@ -13,13 +13,13 @@ interface AuthFormPanelProps {
 
 export function AuthFormPanel({ title, subtitle, children, footer, wide }: AuthFormPanelProps) {
   return (
-    <main className="grid h-dvh overflow-hidden bg-white lg:grid-cols-[minmax(300px,38%)_1fr]">
+    <main className="fixed inset-0 grid overflow-hidden bg-white lg:grid-cols-[minmax(300px,38%)_1fr]">
       <AuthBrandPanel />
 
       <section className="flex min-h-0 flex-col overflow-hidden">
         <header className="shrink-0 px-5 pt-4 sm:px-8 lg:hidden">
           <Link href="/">
-            <Image src="/logo.svg" alt="Dinely" width={96} height={36} priority />
+            <DinelyLogo width={108} height={40} priority />
           </Link>
         </header>
 
@@ -35,7 +35,7 @@ export function AuthFormPanel({ title, subtitle, children, footer, wide }: AuthF
           </div>
         </div>
 
-        <footer className="shrink-0 px-5 pb-5 pt-2 sm:px-8 lg:px-12 xl:px-16">{footer}</footer>
+        <footer className="shrink-0 px-5 pb-4 pt-1 max-[700px]:pb-3 sm:px-8 lg:px-12 xl:px-16">{footer}</footer>
       </section>
     </main>
   );

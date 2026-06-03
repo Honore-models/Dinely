@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { DinelyLogo } from "../components/brand/DinelyLogo";
 
 export default function Loading() {
   return (
@@ -7,14 +7,9 @@ export default function Loading() {
         {/* Soft pulsing background glow */}
         <div className="absolute h-32 w-32 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] rounded-full bg-[#78d96d]/10"></div>
         
-        <Image 
-          src="/logo.svg" 
-          alt="Dinely" 
-          width={150} 
-          height={60} 
-          className="relative z-10"
-          priority
-        />
+        <div className="relative z-10">
+          <DinelyLogo width={150} height={56} priority />
+        </div>
       </div>
       
       {/* Animated dots indicator */}

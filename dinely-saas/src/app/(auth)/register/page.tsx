@@ -25,7 +25,7 @@ export default function RegisterPage() {
         </p>
       }
     >
-      <form className="grid grid-cols-2 gap-x-3 gap-y-3">
+      <form className="grid grid-cols-2 gap-x-3 gap-y-2.5 max-[700px]:gap-y-2">
         <Input size={compact} label="First name" placeholder="John" icon={<User size={icon} />} />
         <Input size={compact} label="Last name" placeholder="Park" icon={<User size={icon} />} />
         <div className="col-span-2">
