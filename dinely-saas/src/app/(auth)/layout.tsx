@@ -1,3 +1,3 @@
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <div className="h-dvh overflow-hidden">{children}</div>;
 }

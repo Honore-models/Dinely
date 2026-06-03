@@ -31,7 +31,7 @@ export function AuthGoogleButton({ label, className = "", ...props }: AuthGoogle
   return (
     <button
       type="button"
-      className={`inline-flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-neutral-200 bg-white text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22c51f] ${className}`}
+      className={`inline-flex h-10 w-full items-center justify-center gap-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-medium text-neutral-700 transition hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22c51f] ${className}`}
       {...props}
     >
       <GoogleIcon />

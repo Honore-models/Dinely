@@ -7,14 +7,17 @@ import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
 import { PhoneInput } from "../../../components/ui/PhoneInput";
 
+const compact = "compact" as const;
+const icon = 16;
+
 export default function RegisterPage() {
   return (
     <AuthFormPanel
       wide
       title="Create your account"
-      subtitle="Set up your owner profile to get started with Dinely."
+      subtitle="Set up your owner profile in under a minute."
       footer={
-        <p className="text-center text-sm text-neutral-600">
+        <p className="text-center text-xs text-neutral-600 sm:text-sm">
           Already have an account?{" "}
           <Link href="/login" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
             Sign in
@@ -22,33 +25,35 @@ export default function RegisterPage() {
         </p>
       }
     >
-      <form className="mt-7 grid gap-5 sm:grid-cols-2">
-        <Input label="First name" placeholder="John" icon={<User size={18} />} />
-        <Input label="Last name" placeholder="Park" icon={<User size={18} />} />
-        <div className="sm:col-span-2">
+      <form className="grid grid-cols-2 gap-x-3 gap-y-3">
+        <Input size={compact} label="First name" placeholder="John" icon={<User size={icon} />} />
+        <Input size={compact} label="Last name" placeholder="Park" icon={<User size={icon} />} />
+        <div className="col-span-2">
           <Input
+            size={compact}
             label="Email address"
             type="email"
             placeholder="you@restaurant.com"
-            icon={<Mail size={18} />}
+            icon={<Mail size={icon} />}
           />
         </div>
-        <div className="sm:col-span-2">
-          <PhoneInput placeholder="+250 784 955 081" />
+        <div className="col-span-2">
+          <PhoneInput size={compact} placeholder="+250 784 955 081" />
         </div>
-        <div className="sm:col-span-2">
+        <div className="col-span-2">
           <Input
+            size={compact}
             label="Password"
             type="password"
             placeholder="Create a strong password"
-            icon={<LockKeyhole size={18} />}
+            icon={<LockKeyhole size={icon} />}
           />
         </div>
-        <Button className="h-12 w-full rounded-lg text-sm sm:col-span-2">Create account</Button>
-        <div className="sm:col-span-2">
+        <Button className="col-span-2 h-10 w-full rounded-lg text-sm">Create account</Button>
+        <div className="col-span-2">
           <AuthDivider />
         </div>
-        <div className="sm:col-span-2">
+        <div className="col-span-2">
           <AuthGoogleButton label="Continue with Google" />
         </div>
       </form>
