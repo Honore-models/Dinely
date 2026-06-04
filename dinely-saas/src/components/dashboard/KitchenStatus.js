@@ -77,7 +77,7 @@ function KitchenStatus() {
                 Queue overview
               </p>
               <p className="mt-3 text-sm font-semibold text-neutral-900">
-                <span className="text-emerald-600">12 orders</span> in queue · {" "}
+                <span className="text-emerald-600">12 orders</span> in queue ·{" "}
                 <span className="text-neutral-700">~8 min</span> avg. wait
               </p>
               <p className="mt-2 text-xs text-neutral-500">
@@ -90,5 +90,3 @@ function KitchenStatus() {
       </div>
     </DashboardCard_1.DashboardCard>);
 }
-<div className="flex w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-</>;
