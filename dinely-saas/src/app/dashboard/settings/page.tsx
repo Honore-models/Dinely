@@ -1,3 +1,5 @@
+import { DashboardPlaceholder } from "../../../components/dashboard/DashboardPlaceholder";
+
 export default function SettingsPage() {
-  return <main className="p-8 text-2xl font-bold">Settings</main>;
+  return <DashboardPlaceholder title="Settings" description="Account, billing, notifications, and integrations." />;
 }

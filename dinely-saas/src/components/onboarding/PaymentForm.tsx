@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Award, Building2, CheckCircle2, CreditCard, LockKeyhole, MapPin, ShieldCheck, User } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
@@ -20,6 +21,7 @@ const planFeatures: Record<PlanName, string[]> = {
 };
 
 export function PaymentForm() {
+  const router = useRouter();
   const { selectedPlan } = useOnboardingStore();
   const price = planPrices[selectedPlan];
   const tax = selectedPlan === "Professional" ? 3.9 : Number((price * 0.1).toFixed(2));
@@ -86,7 +88,11 @@ export function PaymentForm() {
                 <span className="block">You will only be charged after Confirmation</span>
               </p>
             </div>
-            <Button type="button" className="h-12 w-full text-xl">
+            <Button
+              type="button"
+              className="h-12 w-full text-xl"
+              onClick={() => router.push("/dashboard")}
+            >
               <LockKeyhole size={22} /> Activate Subscription
             </Button>
             <p className="flex items-start gap-2 text-sm font-semibold text-neutral-600">

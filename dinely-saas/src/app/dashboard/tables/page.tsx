@@ -1,3 +1,5 @@
+import { DashboardPlaceholder } from "../../../components/dashboard/DashboardPlaceholder";
+
 export default function TablesPage() {
-  return <main className="p-8 text-2xl font-bold">Tables</main>;
+  return <DashboardPlaceholder title="Tables" description="Configure table layouts and seating capacity." />;
 }

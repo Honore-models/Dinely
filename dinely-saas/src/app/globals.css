@@ -34,6 +34,11 @@ select {
   --color-dinely-dark: #1f7a28;
 }
 
+/* Dashboard scroll & focus polish */
+main:focus-visible {
+  outline: none;
+}
+
 @keyframes floatArrow {
   0%,
   100% {

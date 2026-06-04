@@ -1,3 +1,5 @@
+import { DashboardPlaceholder } from "../../../components/dashboard/DashboardPlaceholder";
+
 export default function OrdersPage() {
-  return <main className="p-8 text-2xl font-bold">Orders</main>;
+  return <DashboardPlaceholder title="Orders" description="Track and fulfill incoming orders in real time." />;
 }

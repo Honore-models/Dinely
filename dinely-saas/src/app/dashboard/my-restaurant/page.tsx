@@ -1,3 +1,10 @@
+import { DashboardPlaceholder } from "../../../components/dashboard/DashboardPlaceholder";
+
 export default function MyRestaurantPage() {
-  return <main className="p-8 text-2xl font-bold">My restaurant</main>;
+  return (
+    <DashboardPlaceholder
+      title="My Restaurant"
+      description="Update your profile, hours, contact details, and branding."
+    />
+  );
 }

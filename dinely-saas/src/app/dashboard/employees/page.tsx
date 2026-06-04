@@ -1,3 +1,5 @@
+import { DashboardPlaceholder } from "../../../components/dashboard/DashboardPlaceholder";
+
 export default function EmployeesPage() {
-  return <main className="p-8 text-2xl font-bold">Employees</main>;
+  return <DashboardPlaceholder title="Employees" description="Manage staff roles, schedules, and permissions." />;
 }

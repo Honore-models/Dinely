@@ -1,3 +1,5 @@
+import { DashboardPlaceholder } from "../../../components/dashboard/DashboardPlaceholder";
+
 export default function ClientsPage() {
-  return <main className="p-8 text-2xl font-bold">Clients</main>;
+  return <DashboardPlaceholder title="Clients" description="View and manage your restaurant customers." />;
 }
