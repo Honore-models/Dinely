@@ -75,7 +75,7 @@ export function KitchenStatus() {
         <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-center sm:gap-4">
           <div className="flex-1 sm:max-w-[320px]">
             <div className="rounded-3xl border border-neutral-100 bg-neutral-50 p-4">
-              <p className="text-xs font-semibold tracking-[0.24em] text-neutral-400">
+              <p className="text-xs font-sans font-semibold tracking-[0.24em] text-neutral-400">
                 Current load
               </p>
               <div className="mt-3 space-y-4">
