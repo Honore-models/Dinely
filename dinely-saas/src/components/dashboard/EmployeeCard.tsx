@@ -40,9 +40,11 @@ export function EmployeeCard({
                 {name.charAt(0)}
               </div>
             )}
-            {!isActive && (
-              <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-red-500 ring-2 ring-white" />
-            )}
+            <div
+              className={`absolute bottom-1 right-1 h-4 w-4 rounded-full ring-2 ring-white ${
+                isActive ? "bg-emerald-500" : "bg-red-500"
+              }`}
+            />
           </div>
           <div>
             <h4 className="font-semibold text-neutral-900">{name}</h4>
