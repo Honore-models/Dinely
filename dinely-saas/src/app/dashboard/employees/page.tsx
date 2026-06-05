@@ -16,6 +16,8 @@ export default function EmployeesPage() {
       email: "robert@gmail.com",
       phone: "+120 9834 24411",
       isActive: true,
+      image:
+        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=256&q=80",
     },
     {
       id: "2",
@@ -26,46 +28,56 @@ export default function EmployeesPage() {
       email: "jason@gmail.com",
       phone: "+120 9834 24411",
       isActive: false,
+      image:
+        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=256&q=80",
     },
     {
       id: "3",
-      name: "Robert Fisher",
-      role: "CEO",
+      name: "Amina Khan",
+      role: "Finance Lead",
       department: "Sales",
       hireDate: "09/7/2026",
-      email: "robert@gmail.com",
+      email: "amina@gmail.com",
       phone: "+120 9834 24411",
       isActive: true,
+      image:
+        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=256&q=80",
     },
     {
       id: "4",
-      name: "Robert Fisher",
-      role: "CEO",
+      name: "Ethan Brown",
+      role: "Operations",
       department: "Sales",
       hireDate: "09/7/2026",
-      email: "robert@gmail.com",
+      email: "ethan@gmail.com",
       phone: "+120 9834 24411",
       isActive: true,
+      image:
+        "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?auto=format&fit=crop&w=256&q=80",
     },
     {
       id: "5",
       name: "Bessie Cooper",
-      role: "CEO",
+      role: "HR Director",
       department: "Sales",
       hireDate: "09/7/2026",
-      email: "robert@gmail.com",
+      email: "bessie@gmail.com",
       phone: "+120 9834 24411",
       isActive: false,
+      image:
+        "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=256&q=80",
     },
     {
       id: "6",
-      name: "Robert Fisher",
-      role: "CEO",
+      name: "Liam Chen",
+      role: "Customer Success",
       department: "Sales",
       hireDate: "09/7/2026",
-      email: "robert@gmail.com",
+      email: "liam@gmail.com",
       phone: "+120 9834 24411",
       isActive: true,
+      image:
+        "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=256&q=80",
     },
   ]);
 

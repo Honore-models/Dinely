@@ -11,6 +11,8 @@ export default function MyRestaurantPage() {
     hours: "Daily · 08:00-22:00",
     about:
       "Welcome to a place where vibrant flavours and fresh ingredients come together to create an unforgettable dining experience. Our warm, inviting atmosphere sets the perfect stage for everything from casual lunches to special celebrations",
+    image:
+      "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=1200&q=80",
   };
 
   const topOrders = [
@@ -20,7 +22,8 @@ export default function MyRestaurantPage() {
       description:
         "A refreshing mix of crisp, colorful vegetables tossed with light dressing, delivering a clean and healthy burst of flavor.",
       price: "$120.00",
-      image: "https://via.placeholder.com/200x150?text=Salad",
+      image:
+        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=200&q=80",
     },
     {
       id: "2",
@@ -28,7 +31,8 @@ export default function MyRestaurantPage() {
       description:
         "Paired with juicy, well-seasoned chicken legs—tender on the inside and perfectly roasted for a rich, savory finish.",
       price: "$720.00",
-      image: "https://via.placeholder.com/200x150?text=Chicken",
+      image:
+        "https://images.unsplash.com/photo-1514516870926-9f2d7f4addb7?auto=format&fit=crop&w=200&q=80",
     },
   ];
 
