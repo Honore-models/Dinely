@@ -9,31 +9,45 @@ const strokeColors = {
   orange: "#d4956a",
 };
 
-/** Top-down chair icon — rounded seat with backrest line */
+const fillColors = {
+  green: "#f2faf0",
+  orange: "#fdf8f4",
+};
+
+/** Top-down chair icon — modern rounded seat with curved backrest */
 export function TableChair({ color, rotation = 0, className = "" }: TableChairProps) {
   const stroke = strokeColors[color];
+  const fill = fillColors[color];
 
   return (
     <svg
       width={22}
-      height={18}
-      viewBox="0 0 22 18"
+      height={22}
+      viewBox="0 0 22 22"
       fill="none"
       className={className}
       style={{ transform: `rotate(${rotation}deg)` }}
       aria-hidden
     >
+      {/* Rounded Chair Seat */}
       <rect
-        x={2}
-        y={4}
-        width={18}
+        x={3}
+        y={7}
+        width={16}
         height={12}
         rx={4}
         stroke={stroke}
-        strokeWidth={2}
-        fill="white"
+        strokeWidth={1.5}
+        fill={fill}
       />
-      <line x1={5} y1={4} x2={17} y2={4} stroke={stroke} strokeWidth={2} strokeLinecap="round" />
+      {/* Modern Curved Backrest */}
+      <path
+        d="M 3 8 Q 11 3 19 8"
+        stroke={stroke}
+        strokeWidth={2.5}
+        fill="none"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

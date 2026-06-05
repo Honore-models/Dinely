@@ -13,7 +13,7 @@ const tableColors = {
 };
 
 function chairColorForTable(status: FloorTable["status"]): "green" | "orange" {
-  return status === "available" ? "orange" : "green";
+  return status === "available" ? "green" : "orange";
 }
 
 interface ChairPlacement {
@@ -29,12 +29,12 @@ function getChairPlacements(table: FloorTable): ChairPlacement[] {
   const count = table.shape === "circle" ? 10 : table.seats;
 
   if (table.shape === "circle") {
-    const radius = 92;
+    const radius = 52.5; // percent radius of the table surface to give a clean tucked-in look (8px overlap)
     return Array.from({ length: count }, (_, i) => {
       const angle = (i / count) * 360 - 90;
       const rad = (angle * Math.PI) / 180;
-      const x = 50 + (radius / 2.1) * Math.cos(rad);
-      const y = 50 + (radius / 2.1) * Math.sin(rad);
+      const x = 50 + radius * Math.cos(rad);
+      const y = 50 + radius * Math.sin(rad);
       return {
         left: `${x}%`,
         top: `${y}%`,
@@ -46,27 +46,27 @@ function getChairPlacements(table: FloorTable): ChairPlacement[] {
 
   if (table.shape === "square") {
     return [
-      { top: "0%", left: "50%", transform: "translate(-50%, -100%)", rotation: 0 },
-      { top: "50%", right: "0%", transform: "translate(100%, -50%)", rotation: 90 },
-      { bottom: "0%", left: "50%", transform: "translate(-50%, 100%)", rotation: 180 },
-      { top: "50%", left: "0%", transform: "translate(-100%, -50%)", rotation: 270 },
+      { top: "-14px", left: "50%", transform: "translateX(-50%)", rotation: 0 },
+      { top: "50%", right: "-14px", transform: "translateY(-50%)", rotation: 90 },
+      { bottom: "-14px", left: "50%", transform: "translateX(-50%)", rotation: 180 },
+      { top: "50%", left: "-14px", transform: "translateY(-50%)", rotation: 270 },
     ];
   }
 
   return [
-    { top: "0%", left: "15%", transform: "translate(-50%, -100%)", rotation: 0 },
-    { top: "0%", left: "50%", transform: "translate(-50%, -100%)", rotation: 0 },
-    { top: "0%", left: "85%", transform: "translate(-50%, -100%)", rotation: 0 },
-    { bottom: "0%", left: "15%", transform: "translate(-50%, 100%)", rotation: 180 },
-    { bottom: "0%", left: "50%", transform: "translate(-50%, 100%)", rotation: 180 },
-    { bottom: "0%", left: "85%", transform: "translate(-50%, 100%)", rotation: 180 },
+    { top: "-14px", left: "18%", transform: "translateX(-50%)", rotation: 0 },
+    { top: "-14px", left: "50%", transform: "translateX(-50%)", rotation: 0 },
+    { top: "-14px", left: "82%", transform: "translateX(-50%)", rotation: 0 },
+    { bottom: "-14px", left: "18%", transform: "translateX(-50%)", rotation: 180 },
+    { bottom: "-14px", left: "50%", transform: "translateX(-50%)", rotation: 180 },
+    { bottom: "-14px", left: "82%", transform: "translateX(-50%)", rotation: 180 },
   ];
 }
 
 const containerSize = {
-  "rect-large": "min-h-[160px] min-w-[280px]",
-  circle: "min-h-[200px] min-w-[200px]",
-  square: "min-h-[150px] min-w-[150px]",
+  "rect-large": "h-[120px] w-[240px]",
+  circle: "h-[150px] w-[150px]",
+  square: "h-[120px] w-[120px]",
 };
 
 const surfaceSize = {
@@ -85,34 +85,40 @@ export function TableNode({ table }: TableNodeProps) {
   const placements = getChairPlacements(table);
 
   return (
-    <div className="flex items-center justify-center py-4">
+    <div className="flex items-center justify-center py-2">
       <div
         className={`relative flex items-center justify-center ${containerSize[table.shape]}`}
       >
-        {placements.map((pos, i) => (
+        {/* Surface-relative wrapper */}
+        <div className={`relative ${surfaceSize[table.shape]}`}>
+          {/* Chairs */}
+          {placements.map((pos, i) => (
+            <div
+              key={i}
+              className="absolute z-20"
+              style={{
+                top: pos.top,
+                left: pos.left,
+                right: pos.right,
+                bottom: pos.bottom,
+                transform: pos.transform,
+              }}
+            >
+              <TableChair color={chairColor} rotation={pos.rotation} />
+            </div>
+          ))}
+
+          {/* Table Surface */}
           <div
-            key={i}
-            className="absolute z-20"
+            className="absolute inset-0 z-10 grid place-items-center"
             style={{
-              top: pos.top,
-              left: pos.left,
-              right: pos.right,
-              bottom: pos.bottom,
-              transform: pos.transform,
+              backgroundColor: colors.surface,
+              border: `2px solid ${colors.border}`,
+              borderRadius: "inherit",
             }}
           >
-            <TableChair color={chairColor} rotation={pos.rotation} />
+            <span className="text-sm font-bold tracking-tight text-[#5c5348]">{table.label}</span>
           </div>
-        ))}
-
-        <div
-          className={`relative z-10 grid place-items-center ${surfaceSize[table.shape]}`}
-          style={{
-            backgroundColor: colors.surface,
-            border: `2px solid ${colors.border}`,
-          }}
-        >
-          <span className="text-sm font-bold tracking-tight text-[#5c5348]">{table.label}</span>
         </div>
       </div>
     </div>
