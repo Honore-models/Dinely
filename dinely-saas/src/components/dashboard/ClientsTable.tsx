@@ -7,10 +7,11 @@ interface Client {
   email: string;
   phone: string;
   lastVisit: string;
-  status: "active" | "new" | "inactive";
-}
+  import React, { useState } from "react";
+  import ClientProfileModal from "./ClientProfileModal";
 
 const clients: Client[] = [
+    const [selected, setSelected] = useState<null | Client>(null);
   {
     id: "1001",
     name: "John Lee",
@@ -28,37 +29,47 @@ const clients: Client[] = [
     status: "new",
   },
   {
-    id: "8072",
-    name: "Peterson",
-    email: "peterson@gmail.com",
-    phone: "+120 9834 24411",
-    lastVisit: "19, May 2026",
-    status: "active",
-  },
-  {
-    id: "1234",
-    name: "Ming joe",
-    email: "mingjoe@gmail.com",
-    phone: "+120 3449 3999",
-    lastVisit: "14, January 2026",
-    status: "active",
-  },
-  {
-    id: "980",
-    name: "Ashraf.K",
-    email: "ashraf.k@gmail.com",
-    phone: "+120 2525 2546",
-    lastVisit: "02, October 2026",
-    status: "new",
-  },
-];
-
-export function ClientsTable() {
-  return (
-    <section>
-      <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-neutral-100">
-        <h3 className="mb-4 text-lg font-semibold text-neutral-900">Clients</h3>
-
+              <tbody className="divide-y divide-neutral-100 text-sm text-neutral-700">
+                {clients.map((c) => (
+                  <tr
+                    key={c.id}
+                    className="odd:bg-white even:bg-neutral-50 hover:bg-neutral-100 cursor-pointer"
+                    onClick={() => setSelected(c)}
+                  >
+                    <td className="py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-full bg-neutral-200 flex items-center justify-center text-sm font-medium text-neutral-700">
+                          {c.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                        </div>
+                        <div className="font-medium text-neutral-900">{c.name}</div>
+                      </div>
+                    </td>
+                    <td className="py-4">
+                      <a
+                        className="text-sm text-neutral-700 hover:underline"
+                        href={`mailto:${c.email}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {c.email}
+                      </a>
+                    </td>
+                    <td className="py-4">{c.phone}</td>
+                    <td className="py-4">{c.id}</td>
+                    <td className="py-4">{c.lastVisit}</td>
+                    <td className="py-4">
+                      {c.status === "active" && (
+                        <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">active</span>
+                      )}
+                      {c.status === "new" && (
+                        <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">New</span>
+                      )}
+                      {c.status === "inactive" && (
+                        <span className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-600">inactive</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
@@ -88,6 +99,10 @@ export function ClientsTable() {
                       </div>
                     </div>
                   </td>
+
+  {selected && (
+    <ClientProfileModal client={selected} onClose={() => setSelected(null)} />
+  )}
                   <td className="py-4">
                     <a
                       className="text-sm text-neutral-700 hover:underline"
