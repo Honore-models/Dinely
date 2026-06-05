@@ -7,7 +7,6 @@ import { useState } from "react";
 import { DinelyLogo } from "../brand/DinelyLogo";
 import { dashboardNav } from "../../lib/dashboard/nav";
 import { restaurantProfile } from "../../lib/dashboard/mockData";
-import { useOnboardingStore } from "../../store/onboardingStore";
 
 function isActive(pathname: string, href: string) {
   if (href === "/dashboard") return pathname === "/dashboard";
@@ -16,11 +15,10 @@ function isActive(pathname: string, href: string) {
 
 export function DashboardSidebar() {
   const pathname = usePathname();
-  const { restaurantInfo } = useOnboardingStore();
   const [bookingsOpen, setBookingsOpen] = useState(
     pathname.startsWith("/dashboard/bookings"),
   );
-  const restaurantName = restaurantInfo.name || restaurantProfile.name;
+  const restaurantName = restaurantProfile.name;
 
   return (
     <aside className="flex h-full w-[260px] shrink-0 flex-col border-r border-neutral-200/80 bg-white">
@@ -44,9 +42,6 @@ export function DashboardSidebar() {
       </div>
 
       <nav className="mt-6 flex-1 overflow-y-auto px-3 pb-4">
-        <p className="mb-2 px-3 text-[11px] font-bold uppercase tracking-widest text-neutral-400">
-          Main menu
-        </p>
         <div className="space-y-1">
           {dashboardNav.map((item) => {
             const active = isActive(pathname, item.href);
