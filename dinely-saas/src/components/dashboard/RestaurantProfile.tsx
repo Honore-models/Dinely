@@ -7,9 +7,9 @@ import {
   Phone,
   MapPin,
   Mail,
-  Linkedin,
+  Link,
   MessageCircle,
-  Twitter,
+  Share2,
   Camera,
   Send,
   Edit,
@@ -132,7 +132,7 @@ export function RestaurantProfile({
             href="#"
             className="p-2 hover:bg-neutral-100 rounded-full transition"
           >
-            <Linkedin size={20} className="text-neutral-600" />
+            <Link size={20} className="text-neutral-600" />
           </a>
           <a
             href="#"
@@ -144,7 +144,7 @@ export function RestaurantProfile({
             href="#"
             className="p-2 hover:bg-neutral-100 rounded-full transition"
           >
-            <Twitter size={20} className="text-neutral-600" />
+            <Share2 size={20} className="text-neutral-600" />
           </a>
           <a
             href="#"
