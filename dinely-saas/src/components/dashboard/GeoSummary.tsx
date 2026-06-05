@@ -12,14 +12,24 @@ export function GeoSummary() {
     <DashboardCard className="h-full">
       <ChartCardHeader title="Geographic Summary" subtitle="Customer activity by region" />
 
-      <div className="relative overflow-hidden rounded-lg bg-[#f8fafb]">
+      <div
+        className="relative overflow-hidden rounded-xl border border-neutral-100 bg-[#f8fafc] shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.01)]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(226, 232, 240, 0.6) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(226, 232, 240, 0.6) 1px, transparent 1px)
+          `,
+          backgroundSize: "20px 20px",
+        }}
+      >
         <svg viewBox="0 0 400 200" className="h-[200px] w-full" aria-hidden>
           {/* Simplified world landmass */}
           <path
             d="M30 130 C50 90 90 75 130 85 C170 70 210 80 250 75 C290 68 330 85 370 95 L370 175 L30 175 Z"
             fill="#eef2f5"
-            stroke="#dde4ea"
-            strokeWidth={1}
+            fillOpacity={0.7}
+            stroke="#cbd5e1"
+            strokeWidth={1.5}
           />
           {/* Regional activity blobs */}
           <ellipse cx={100} cy={115} rx={38} ry={24} fill={regions[0].mapFill} opacity={0.55} />

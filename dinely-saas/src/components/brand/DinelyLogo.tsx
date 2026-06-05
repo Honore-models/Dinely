@@ -18,7 +18,7 @@ export function DinelyLogo({
 }: DinelyLogoProps) {
   return (
     <Image
-      src={onDark ? "/logo-on-dark.svg" : "/logo.png"}
+      src={onDark ? "/logo-on-dark.svg" : "/logo.svg"}
       alt="Dinely"
       width={width}
       height={height}

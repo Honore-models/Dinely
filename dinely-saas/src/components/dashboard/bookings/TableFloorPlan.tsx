@@ -22,7 +22,13 @@ export function TableFloorPlan() {
         </div>
       </div>
 
-      <div className="mt-8 px-2 py-4 sm:px-6">
+      <div
+        className="mt-8 px-4 py-8 sm:px-8 rounded-2xl border border-neutral-100 bg-neutral-50/40 shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.02)] overflow-hidden"
+        style={{
+          backgroundImage: "radial-gradient(#e5e7eb 1.5px, transparent 1.5px)",
+          backgroundSize: "24px 24px",
+        }}
+      >
         <div className="mx-auto grid max-w-[600px] grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-0">
           {floorTables.map((table) => (
             <TableNode key={table.id} table={table} />

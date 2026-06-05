@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, LogOut, Utensils } from "lucide-react";
+import { ChevronDown, LogOut, UtensilsCrossed } from "lucide-react";
 import { useState } from "react";
 import { DinelyLogo } from "../brand/DinelyLogo";
 import { dashboardNav } from "../../lib/dashboard/nav";
@@ -28,18 +28,18 @@ export function DashboardSidebar() {
         <DinelyLogo width={108} height={38} />
       </div>
 
-      <div className="px-4">
+      <div className="px-6 pb-2">
         <button
           type="button"
-          className="flex w-full items-center gap-3 rounded-xl border border-neutral-200/80 bg-neutral-50/60 px-3.5 py-3 text-left transition hover:border-neutral-200 hover:bg-neutral-50"
+          className="flex w-full items-center gap-3 bg-transparent py-2 text-left transition hover:opacity-80"
         >
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#22c51f] text-white shadow-sm">
-            <Utensils size={18} />
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#22c51f] text-neutral-900">
+            <UtensilsCrossed size={18} strokeWidth={2} />
           </span>
-          <span className="min-w-0 flex-1 truncate text-sm font-bold text-neutral-800">
+          <span className="min-w-0 flex-1 truncate text-[15px] font-bold text-neutral-950">
             {restaurantName}
           </span>
-          <ChevronDown size={16} className="shrink-0 text-neutral-400" />
+          <ChevronDown size={18} className="shrink-0 text-neutral-950" strokeWidth={2.5} />
         </button>
       </div>
 
