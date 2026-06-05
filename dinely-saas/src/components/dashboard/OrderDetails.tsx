@@ -91,158 +91,172 @@ export function OrderDetails({
     .toUpperCase();
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="bg-white rounded-lg p-6">
+      {/* Page Header */}
+      <div className="mb-6">
         <Link
           href="/dashboard/orders"
-          className="flex items-center gap-2 text-emerald-600 font-semibold hover:text-emerald-700"
+          className="flex items-center gap-2 text-emerald-600 font-bold text-lg hover:text-emerald-700 transition"
         >
           <ChevronLeft size={20} />
           Order Details
         </Link>
-        <button className="text-neutral-400 hover:text-neutral-600">
-          <MoreVertical size={20} />
-        </button>
       </div>
 
-      <div className="mb-6 border-b border-neutral-200 pb-6">
-        <div className="flex items-start justify-between">
+      {/* Order Header */}
+      <div className="flex items-center justify-between mb-4 pb-4 border-b border-neutral-200">
+        <div className="flex items-center gap-3">
+          <Clock size={20} className="text-emerald-600" />
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <Clock size={18} className="text-neutral-400" />
-              <div>
-                <h3 className="text-lg font-semibold text-neutral-900">
-                  {orderID}
-                </h3>
-                <p className="text-sm text-neutral-500">
-                  {date} · {time}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div
-            className={`flex items-center gap-2 font-semibold ${getStatusColor(status)}`}
-          >
-            {getStatusIcon(status)}
-            {status}
+            <h2 className="text-lg font-bold text-neutral-900">{orderID}</h2>
+            <p className="text-xs text-neutral-500">
+              {date} · {time}
+            </p>
           </div>
         </div>
+        <span className={`font-bold text-sm ${getStatusColor(status)}`}>
+          {status}
+        </span>
       </div>
 
-      <div className="mb-6 border-b border-neutral-200 pb-6">
-        <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900 mb-4">
-          <User size={16} className="text-emerald-600" />
+      {/* Customer Information */}
+      <div className="mb-4 pb-4 border-b border-neutral-200">
+        <h4 className="flex items-center gap-2 text-sm font-bold text-neutral-900 mb-3">
+          <User size={18} className="text-emerald-600" />
           Customer Information
         </h4>
-        <div className="flex gap-4">
-          <div className="h-12 w-12 rounded-full bg-neutral-200 flex items-center justify-center text-sm font-semibold text-neutral-700">
-            {initials}
-          </div>
+        <div className="flex gap-3">
+          <img
+            src={
+              customer.avatar || `https://i.pravatar.cc/48?u=${customer.name}`
+            }
+            alt={customer.name}
+            className="h-10 w-10 rounded-full"
+          />
           <div className="flex-1">
-            <p className="font-semibold text-neutral-900">{customer.name}</p>
-            <div className="flex items-center gap-2 text-sm text-neutral-600 mt-1">
-              <Phone size={14} />
-              {customer.phone}
+            <p className="font-semibold text-neutral-900 text-sm">
+              {customer.name}
+            </p>
+            <div className="flex items-center gap-1 text-xs text-neutral-600 mt-1">
+              <Phone size={12} />
+              <span>{customer.phone}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-neutral-600 mt-1">
-              <MapPin size={14} />
-              {customer.address}
-            </div>
+            <p className="text-xs text-neutral-600 mt-1">{customer.address}</p>
           </div>
         </div>
       </div>
 
-      <div className="mb-6 border-b border-neutral-200 pb-6">
-        <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900 mb-4">
+      {/* Order Type */}
+      <div className="flex items-center justify-between mb-4 pb-4 border-b border-neutral-200">
+        <h4 className="flex items-center gap-2 text-sm font-bold text-neutral-900">
           {type === "Delivery" && (
-            <Truck size={16} className="text-emerald-600" />
+            <Truck size={18} className="text-emerald-600" />
           )}
           {type === "Takeaway" && (
-            <Package size={16} className="text-emerald-600" />
+            <Package size={18} className="text-emerald-600" />
           )}
           {type === "Dine-in" && (
-            <UtensilsCrossed size={16} className="text-emerald-600" />
+            <UtensilsCrossed size={18} className="text-emerald-600" />
           )}
           Order Type
         </h4>
-        <p className="text-neutral-700 font-medium">{type}</p>
+        <p className="text-sm font-semibold text-neutral-900">{type}</p>
       </div>
 
-      <div className="mb-6 border-b border-neutral-200 pb-6">
-        <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900 mb-4">
-          <ShoppingBag size={16} className="text-emerald-600" />
+      {/* Order Items */}
+      <div className="mb-4 pb-4 border-b border-neutral-200">
+        <h4 className="flex items-center gap-2 text-sm font-bold text-neutral-900 mb-3">
+          <ShoppingBag size={18} className="text-emerald-600" />
           Order Items
         </h4>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {items.map((item, idx) => (
-            <div key={idx} className="flex items-center justify-between">
-              <p className="text-neutral-700">
-                <span className="font-semibold text-emerald-600">
+            <div
+              key={idx}
+              className="flex items-center justify-between text-sm"
+            >
+              <div>
+                <span className="font-bold text-emerald-600">
                   {item.quantity}X
-                </span>{" "}
-                {item.name}
-              </p>
-              <p className="font-semibold text-neutral-900">{item.price}</p>
+                </span>
+                <span className="text-neutral-700 ml-2">{item.name}</span>
+              </div>
+              <span className="font-semibold text-neutral-900">
+                {item.price}
+              </span>
             </div>
           ))}
-          <div className="border-t border-neutral-200 pt-3 mt-3">
-            <div className="flex items-center justify-between text-neutral-700 mb-2">
-              <p>SubTotal</p>
-              <p className="font-medium">{subtotal}</p>
+          <div className="border-t border-neutral-200 pt-2 mt-2 space-y-1">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-neutral-600">SubTotal</span>
+              <span className="font-semibold text-neutral-900">{subtotal}</span>
             </div>
-            <div className="flex items-center justify-between text-neutral-700 mb-3">
-              <p>Delivery Fee</p>
-              <p className="font-medium">{deliveryFee}</p>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-neutral-600">Delivery Fee</span>
+              <span className="font-semibold text-neutral-900">
+                {deliveryFee}
+              </span>
             </div>
-            <div className="flex items-center justify-between font-semibold text-neutral-900 text-lg">
-              <p>Total</p>
-              <p>{total}</p>
+            <div className="flex items-center justify-between font-bold text-neutral-900">
+              <span>Total</span>
+              <span>{total}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mb-6 border-b border-neutral-200 pb-6">
-        <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900 mb-4">
-          <CreditCard size={16} className="text-emerald-600" />
-          Payment Information
+      {/* Payment Information */}
+      <div className="mb-4 pb-4 border-b border-neutral-200">
+        <h4 className="flex items-center gap-2 text-sm font-bold text-neutral-900 mb-3">
+          <CreditCard size={18} className="text-emerald-600" />
+          Payment information
         </h4>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
-            <p className="text-xs text-neutral-500 mb-1">Method</p>
-            <p className="font-medium text-neutral-900">{payment.method}</p>
+            <p className="text-xs text-neutral-500 font-semibold mb-1">
+              Method
+            </p>
+            <p className="text-sm text-neutral-900">{payment.method}</p>
           </div>
           <div>
-            <p className="text-xs text-neutral-500 mb-1">Status</p>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
-              <p className="font-medium text-neutral-900">{payment.status}</p>
+            <p className="text-xs text-neutral-500 font-semibold mb-1">
+              Status
+            </p>
+            <div className="flex items-center gap-1">
+              <CheckCircle size={14} className="text-emerald-600" />
+              <p className="text-sm font-semibold text-emerald-600">
+                {payment.status}
+              </p>
             </div>
           </div>
-          <div className="col-span-2">
-            <p className="text-xs text-neutral-500 mb-1">Transaction ID</p>
-            <p className="font-mono text-sm text-neutral-900">
+          <div>
+            <p className="text-xs text-neutral-500 font-semibold mb-1">
+              Transaction ID
+            </p>
+            <p className="text-xs font-mono text-neutral-900">
               {payment.transactionID}
             </p>
           </div>
         </div>
       </div>
 
+      {/* Action Buttons */}
       <div className="flex items-center gap-3">
-        <button className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold rounded-lg px-4 py-3 hover:bg-emerald-700 transition">
-          <CheckCircle size={18} />
+        <button className="flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold rounded-lg px-4 py-2 text-sm hover:bg-emerald-700 transition">
+          <CheckCircle size={16} />
           Mark As Ready
         </button>
-        <button className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold rounded-lg px-4 py-3 hover:bg-blue-700 transition">
-          <Clock size={18} />
+        <button className="flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 text-sm hover:bg-blue-700 transition">
+          <Clock size={16} />
           Start Preparing
         </button>
-        <button className="flex-1 flex items-center justify-center gap-2 bg-red-600 text-white font-semibold rounded-lg px-4 py-3 hover:bg-red-700 transition">
-          <XCircle size={18} />
+        <button className="flex items-center justify-center gap-2 bg-red-50 text-red-600 font-semibold rounded-lg px-4 py-2 text-sm hover:bg-red-100 transition border border-red-200">
+          <XCircle size={16} />
           Cancel Order
         </button>
-        <button className="border border-neutral-300 text-neutral-700 font-semibold rounded-lg px-4 py-3 hover:bg-neutral-50 transition">
-          <MoreVertical size={18} />
+        <button className="flex items-center justify-center gap-1 border border-neutral-300 text-neutral-700 font-semibold rounded-lg px-4 py-2 text-sm hover:bg-neutral-50 transition">
+          <span>More Actions</span>
+          <MoreVertical size={16} />
         </button>
       </div>
     </div>
