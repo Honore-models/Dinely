@@ -131,7 +131,7 @@ export function OrderDetails({
 
       <div className="mb-6 border-b border-neutral-200 pb-6">
         <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900 mb-4">
-          <span className="text-lg">👤</span>
+          <User size={16} className="text-emerald-600" />
           Customer Information
         </h4>
         <div className="flex gap-4">
@@ -154,7 +154,15 @@ export function OrderDetails({
 
       <div className="mb-6 border-b border-neutral-200 pb-6">
         <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900 mb-4">
-          <span className="text-lg">🚗</span>
+          {type === "Delivery" && (
+            <Truck size={16} className="text-emerald-600" />
+          )}
+          {type === "Takeaway" && (
+            <Package size={16} className="text-emerald-600" />
+          )}
+          {type === "Dine-in" && (
+            <UtensilsCrossed size={16} className="text-emerald-600" />
+          )}
           Order Type
         </h4>
         <p className="text-neutral-700 font-medium">{type}</p>
@@ -162,7 +170,7 @@ export function OrderDetails({
 
       <div className="mb-6 border-b border-neutral-200 pb-6">
         <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900 mb-4">
-          <span className="text-lg">📦</span>
+          <ShoppingBag size={16} className="text-emerald-600" />
           Order Items
         </h4>
         <div className="space-y-3">
@@ -196,7 +204,7 @@ export function OrderDetails({
 
       <div className="mb-6 border-b border-neutral-200 pb-6">
         <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900 mb-4">
-          <span className="text-lg">💳</span>
+          <CreditCard size={16} className="text-emerald-600" />
           Payment Information
         </h4>
         <div className="grid grid-cols-2 gap-4">

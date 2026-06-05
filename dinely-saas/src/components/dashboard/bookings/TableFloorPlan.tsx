@@ -8,7 +8,9 @@ export function TableFloorPlan() {
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-100 pb-4">
         <div>
           <h2 className="text-[15px] font-bold text-neutral-900">Floor plan</h2>
-          <p className="mt-0.5 text-xs font-medium text-neutral-400">Table availability overview</p>
+          <p className="mt-0.5 text-xs font-medium text-neutral-400">
+            Table availability overview
+          </p>
         </div>
         <div className="flex gap-5 text-xs font-semibold text-neutral-600">
           <span className="flex items-center gap-2">
@@ -29,7 +31,7 @@ export function TableFloorPlan() {
           backgroundSize: "24px 24px",
         }}
       >
-        <div className="mx-auto grid max-w-[600px] grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-0">
+        <div className="mx-auto grid max-w-150 grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-0">
           {floorTables.map((table) => (
             <TableNode key={table.id} table={table} />
           ))}
