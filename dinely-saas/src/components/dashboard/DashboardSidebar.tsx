@@ -21,7 +21,7 @@ export function DashboardSidebar() {
   const restaurantName = restaurantProfile.name;
 
   return (
-    <aside className="flex h-full w-[260px] shrink-0 flex-col border-r border-neutral-200/80 bg-white">
+    <aside className="flex h-full w-65 shrink-0 flex-col border-r border-neutral-200/80 bg-white">
       <div className="px-6 py-6">
         <DinelyLogo width={108} height={38} />
       </div>
@@ -37,7 +37,11 @@ export function DashboardSidebar() {
           <span className="min-w-0 flex-1 truncate text-[15px] font-bold text-neutral-950">
             {restaurantName}
           </span>
-          <ChevronDown size={18} className="shrink-0 text-neutral-950" strokeWidth={2.5} />
+          <ChevronDown
+            size={18}
+            className="shrink-0 text-neutral-950"
+            strokeWidth={2.5}
+          />
         </button>
       </div>
 
@@ -48,7 +52,9 @@ export function DashboardSidebar() {
             const hasChildren = Boolean(item.children?.length);
 
             if (hasChildren) {
-              const childActive = item.children!.some((c) => isActive(pathname, c.href));
+              const childActive = item.children!.some((c) =>
+                isActive(pathname, c.href),
+              );
               return (
                 <div key={item.href}>
                   <button
@@ -60,7 +66,11 @@ export function DashboardSidebar() {
                         : "text-neutral-600 hover:bg-neutral-50"
                     }`}
                   >
-                    <item.icon size={18} strokeWidth={2} className="shrink-0 opacity-80" />
+                    <item.icon
+                      size={18}
+                      strokeWidth={2}
+                      className="shrink-0 opacity-80"
+                    />
                     <span className="flex-1 text-left">{item.label}</span>
                     <ChevronDown
                       size={15}
