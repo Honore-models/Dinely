@@ -10,7 +10,7 @@ import {
   Linkedin,
   MessageCircle,
   Twitter,
-  Instagram,
+  Camera,
   Send,
   Edit,
 } from "lucide-react";
@@ -150,7 +150,7 @@ export function RestaurantProfile({
             href="#"
             className="p-2 hover:bg-neutral-100 rounded-full transition"
           >
-            <Instagram size={20} className="text-neutral-600" />
+            <Camera size={20} className="text-neutral-600" />
           </a>
           <a
             href="#"
