@@ -116,7 +116,7 @@ export function KitchenStatus() {
 
           <div className="flex-1 sm:max-w-[320px]">
             <div className="rounded-3xl bg-white px-4 py-4 shadow-sm ring-1 ring-neutral-100">
-              <p className="text-xs font-semibold tracking-[0.24em] text-neutral-400">
+              <p className="text-xs font-sans font-semibold tracking-[0.24em] text-neutral-400">
                 Queue overview
               </p>
               <p className="mt-3 text-sm font-semibold text-neutral-900">
