@@ -2,7 +2,7 @@ import { ChevronDown } from "lucide-react";
 import type { InputHTMLAttributes } from "react";
 import { RwandaFlagIcon } from "./Icons";
 
-interface PhoneInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface PhoneInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label?: string;
   error?: string;
   size?: "default" | "compact";
