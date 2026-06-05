@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   Search,
   Download,
@@ -160,7 +161,10 @@ export function OrdersTable() {
               {filteredOrders.map((order) => (
                 <tr
                   key={order.id}
-                  className="hover:bg-neutral-50 transition-colors"
+                  className="hover:bg-neutral-50 transition-colors cursor-pointer"
+                  onClick={() =>
+                    (window.location.href = `/dashboard/orders/${order.id}`)
+                  }
                 >
                   <td className="py-4 px-4 text-sm font-semibold text-neutral-900">
                     {order.orderID}

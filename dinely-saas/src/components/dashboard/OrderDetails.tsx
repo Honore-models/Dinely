@@ -9,6 +9,12 @@ import {
   Clock,
   XCircle,
   MoreVertical,
+  CreditCard,
+  Truck,
+  Package,
+  UtensilsCrossed,
+  User,
+  ShoppingBag,
 } from "lucide-react";
 import Link from "next/link";
 
