@@ -20,9 +20,6 @@ export default function SettingsPage() {
         <DashboardCard className="space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-semibold text-emerald-600 uppercase tracking-[0.3em]">
-                Settings center
-              </p>
               <h1 className="mt-2 text-2xl font-bold text-neutral-900">
                 Account settings
               </h1>
