@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Search,
   Download,
@@ -114,6 +115,7 @@ const getStatusBgColor = (status: Order["status"]) => {
 };
 
 export function OrdersTable() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -163,7 +165,7 @@ export function OrdersTable() {
                   key={order.id}
                   className="hover:bg-neutral-50 transition-colors cursor-pointer"
                   onClick={() =>
-                    (window.location.href = `/dashboard/orders/${order.id}`)
+                    router.push(`/dashboard/orders/${order.id}`)
                   }
                 >
                   <td className="py-4 px-4 text-sm font-semibold text-neutral-900">
@@ -228,7 +230,7 @@ export function OrdersTable() {
         </div>
 
         <div className="mt-6 flex items-center justify-between">
-          <div className="text-xs text-neutral-600">9 out of 75</div>
+          <div className="text-xs text-neutral-600">9 out of 151</div>
           <div className="flex items-center gap-2">
             <button className="h-7 w-7 rounded border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50">
               ◀

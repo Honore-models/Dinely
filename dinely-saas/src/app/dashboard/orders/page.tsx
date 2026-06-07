@@ -5,7 +5,7 @@ import OrdersTable from "../../../components/dashboard/OrdersTable";
 
 export default function OrdersPage() {
   const orderMetrics = {
-    total: { value: "75", label: "Total Orders", icon: "📋" },
+    total: { value: "151", label: "Total Orders", icon: "📋" },
     active: { value: "102", label: "Active Orders", icon: "🔵" },
     completed: { value: "43", label: "Completed Orders", icon: "✅" },
     cancelled: { value: "6", label: "Cancelled Orders", icon: "❌" },

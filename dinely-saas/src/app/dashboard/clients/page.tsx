@@ -15,7 +15,7 @@ export default function ClientsPage() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
           <MetricCard
             title="Active Clients"
-            value="$75"
+            value="75"
             change={4}
             changeLabel="since last month"
             variant="primary"

@@ -55,7 +55,7 @@ export function RestaurantProfile({
               <h2 className="text-2xl font-bold text-neutral-900">{name}</h2>
               <div className="flex items-center gap-2 mt-1">
                 <div className="flex">
-                  {[...Array(4)].map((_, i) => (
+                  {[...Array(Math.round(rating))].map((_, i) => (
                     <Star
                       key={i}
                       size={16}
@@ -114,7 +114,7 @@ export function RestaurantProfile({
           <div className="flex items-center gap-2 mb-3">
             <div className="text-3xl font-bold text-neutral-900">{rating}</div>
             <div className="flex">
-              {[...Array(4)].map((_, i) => (
+              {[...Array(Math.round(rating))].map((_, i) => (
                 <Star
                   key={i}
                   size={18}

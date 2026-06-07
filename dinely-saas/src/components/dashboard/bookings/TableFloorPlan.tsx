@@ -31,7 +31,7 @@ export function TableFloorPlan() {
           backgroundSize: "24px 24px",
         }}
       >
-        <div className="mx-auto grid max-w-150 grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-0">
+        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-0">
           {floorTables.map((table) => (
             <TableNode key={table.id} table={table} />
           ))}

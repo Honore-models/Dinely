@@ -21,7 +21,7 @@ export function DashboardSidebar() {
   const restaurantName = restaurantProfile.name;
 
   return (
-    <aside className="flex h-full w-65 shrink-0 flex-col border-r border-neutral-200/80 bg-white">
+    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-neutral-200/80 bg-white">
       <div className="px-6 py-6">
         <DinelyLogo width={108} height={38} />
       </div>
