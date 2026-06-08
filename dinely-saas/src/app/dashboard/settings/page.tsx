@@ -1,10 +1,10 @@
 "use client";
 
-import { DashboardCard } from "../../../components/dashboard/DashboardCard";
-import { DashboardPageHeader } from "../../../components/dashboard/DashboardPageHeader";
+import { DashboardCard } from "@/components/dashboard/DashboardCard";
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
 import { ShieldCheck, Bell, CreditCard, Zap, ArrowRight } from "lucide-react";
-import { useAuth } from "../../../hooks/useAuth";
-import { useRestaurant } from "../../../hooks/useRestaurant";
+import { useAuth } from "@/hooks/useAuth";
+import { useRestaurant } from "@/hooks/useRestaurant";
 
 const integrations = [
   { name: "Google Calendar", status: "Connected" },

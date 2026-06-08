@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
-import { useOnboardingStore, type PlanName } from "../../store/onboardingStore";
+import { useOnboardingStore, type PlanName } from "@/store/onboardingStore";
 import { VisaIcon, MastercardIcon, PaypalIcon, AmexIcon } from "../ui/Icons";
-import { restaurantsApi, paymentsApi } from "../../lib/api";
+import { restaurantsApi, paymentsApi } from "@/lib/api";
 
 const planPrices: Record<PlanName, number> = {
   Starter: 9,

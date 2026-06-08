@@ -1,7 +1,7 @@
 "use client";
 
 import { Award, Check } from "lucide-react";
-import type { PlanName } from "../../store/onboardingStore";
+import type { PlanName } from "@/store/onboardingStore";
 
 interface PlanCardProps {
   name: PlanName;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { DinelyLogo } from "../brand/DinelyLogo";
 import { Button } from "../ui/Button";
-import { smoothEase } from "../../lib/motion";
+import { smoothEase } from "@/lib/motion";
 
 export function Header() {
   const reduceMotion = useReducedMotion();

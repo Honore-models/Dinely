@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getDb } from "../../../../lib/db";
-import { getSession } from "../../../../lib/auth";
+import { getDb } from "@/lib/db";
+import { getSession } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { TrendingUp } from "lucide-react";
-import { popularMenuItems } from "../../lib/dashboard/mockData";
+import { popularMenuItems } from "@/lib/dashboard/mockData";
 import { ChartCardHeader } from "./ChartCardHeader";
 import { DashboardCard } from "./DashboardCard";
 

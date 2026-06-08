@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
-import { getDb } from "../../../../lib/db";
+import { getDb } from "@/lib/db";
 import {
   hashPassword,
   comparePassword,
@@ -8,8 +8,8 @@ import {
   getSession,
   COOKIE_NAME,
   COOKIE_OPTIONS,
-} from "../../../../lib/auth";
-import { registerSchema, loginSchema } from "../../../../lib/validators";
+} from "@/lib/auth";
+import { registerSchema, loginSchema } from "@/lib/validators";
 
 // ─── POST /api/auth?action=register|login|logout ──────────────────────────────
 // We handle multiple actions via a query param to keep routing simple with

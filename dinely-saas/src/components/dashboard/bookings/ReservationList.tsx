@@ -2,7 +2,7 @@
 
 import { Check, Phone, Plus, Search } from "lucide-react";
 import { DashboardCard } from "../DashboardCard";
-import { reservations } from "../../../lib/dashboard/mockData";
+import { reservations } from "@/lib/dashboard/mockData";
 
 export function ReservationList() {
   return (

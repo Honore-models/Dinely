@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
-import { AuthFormPanel } from "../../../components/auth/AuthFormPanel";
-import { Button } from "../../../components/ui/Button";
-import { Input } from "../../../components/ui/Input";
+import { AuthFormPanel } from "@/components/auth/AuthFormPanel";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function ForgotPasswordPage() {
   return (

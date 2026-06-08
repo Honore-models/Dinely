@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
-import { getDb } from "../../../../../lib/db";
-import { getSession } from "../../../../../lib/auth";
-import { restaurantSchema } from "../../../../../lib/validators";
+import { getDb } from "@/lib/db";
+import { getSession } from "@/lib/auth";
+import { restaurantSchema } from "@/lib/validators";
 
 type Params = { params: Promise<{ id: string }> };
 

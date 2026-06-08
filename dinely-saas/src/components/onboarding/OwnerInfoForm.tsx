@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useOnboardingStore } from "../../store/onboardingStore";
+import { useOnboardingStore } from "@/store/onboardingStore";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { PhoneInput } from "../ui/PhoneInput";

@@ -1,7 +1,7 @@
-import { DashboardPageHeader } from "../../../components/dashboard/DashboardPageHeader";
-import { DashboardSection } from "../../../components/dashboard/DashboardSection";
-import { MetricCard } from "../../../components/dashboard/MetricCard";
-import ClientsTable from "../../../components/dashboard/ClientsTable";
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
+import { DashboardSection } from "@/components/dashboard/DashboardSection";
+import { MetricCard } from "@/components/dashboard/MetricCard";
+import ClientsTable from "@/components/dashboard/ClientsTable";
 
 export default function ClientsPage() {
   return (

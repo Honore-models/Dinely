@@ -1,7 +1,7 @@
 "use client";
 
 import { DashboardCard } from "../DashboardCard";
-import { menuCategories, mealTimes, priceRanges, promos } from "../../../lib/dashboard/mockData";
+import { menuCategories, mealTimes, priceRanges, promos } from "@/lib/dashboard/mockData";
 
 interface MenuFiltersProps {
   selectedCategories: string[];

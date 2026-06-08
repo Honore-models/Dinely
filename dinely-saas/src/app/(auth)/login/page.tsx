@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Mail, LockKeyhole } from "lucide-react";
-import { AuthDivider } from "../../../components/auth/AuthDivider";
-import { AuthFormPanel } from "../../../components/auth/AuthFormPanel";
-import { AuthGoogleButton } from "../../../components/auth/AuthGoogleButton";
-import { Button } from "../../../components/ui/Button";
-import { Input } from "../../../components/ui/Input";
-import { useAuth } from "../../../hooks/useAuth";
+import { AuthDivider } from "@/components/auth/AuthDivider";
+import { AuthFormPanel } from "@/components/auth/AuthFormPanel";
+import { AuthGoogleButton } from "@/components/auth/AuthGoogleButton";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const { login, loading, error } = useAuth();

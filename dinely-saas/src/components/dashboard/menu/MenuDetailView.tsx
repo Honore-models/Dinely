@@ -9,8 +9,8 @@ import {
   Share2,
   Star,
 } from "lucide-react";
-import type { MenuItem } from "../../../lib/dashboard/mockData";
-import { menuItems } from "../../../lib/dashboard/mockData";
+import type { MenuItem } from "@/lib/dashboard/mockData";
+import { menuItems } from "@/lib/dashboard/mockData";
 import { Button } from "../../ui/Button";
 import { DashboardCard } from "../DashboardCard";
 import { DashboardPageHeader } from "../DashboardPageHeader";

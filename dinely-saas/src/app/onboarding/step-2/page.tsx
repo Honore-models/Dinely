@@ -1,4 +1,4 @@
-import { RestaurantInfoForm } from "../../../components/onboarding/RestaurantInfoForm";
+import { RestaurantInfoForm } from "@/components/onboarding/RestaurantInfoForm";
 
 export default function StepTwoPage() {
   return <RestaurantInfoForm />;

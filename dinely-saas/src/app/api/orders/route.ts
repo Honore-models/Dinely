@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
-import { getDb } from "../../../../lib/db";
-import { getSession } from "../../../../lib/auth";
-import { createOrderSchema } from "../../../../lib/validators";
+import { getDb } from "@/lib/db";
+import { getSession } from "@/lib/auth";
+import { createOrderSchema } from "@/lib/validators";
 
 // ─── GET /api/orders ──────────────────────────────────────────────────────────
 // Owner: all orders for their restaurant (with pagination & status filter).

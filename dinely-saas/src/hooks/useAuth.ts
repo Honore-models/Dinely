@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { authApi } from "../lib/api";
+import { authApi } from "@/lib/api";
 
 interface User {
   _id: string;

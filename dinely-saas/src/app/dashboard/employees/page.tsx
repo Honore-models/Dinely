@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { DashboardPageHeader } from "../../../components/dashboard/DashboardPageHeader";
-import { EmployeeCard } from "../../../components/dashboard/EmployeeCard";
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
+import { EmployeeCard } from "@/components/dashboard/EmployeeCard";
 import { Download, Plus } from "lucide-react";
 
 export default function EmployeesPage() {

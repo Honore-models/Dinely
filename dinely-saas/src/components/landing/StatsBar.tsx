@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { fadeUp, smoothEase, staggerContainer, viewportOnce } from "../../lib/motion";
+import { fadeUp, smoothEase, staggerContainer, viewportOnce } from "@/lib/motion";
 
 const stats = [
   { value: "1.8M+", label: "Monthly diners" },

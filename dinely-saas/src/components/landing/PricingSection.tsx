@@ -3,7 +3,7 @@
 import { Check } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "../ui/Button";
-import { fadeUp, smoothEase, staggerContainer, viewportOnce } from "../../lib/motion";
+import { fadeUp, smoothEase, staggerContainer, viewportOnce } from "@/lib/motion";
 
 const features = ["Live bookings", "Menu control", "Customer insights"];
 

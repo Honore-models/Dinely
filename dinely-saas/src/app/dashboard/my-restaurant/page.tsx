@@ -1,9 +1,9 @@
 "use client";
 
-import { DashboardPageHeader } from "../../../components/dashboard/DashboardPageHeader";
-import { RestaurantProfile } from "../../../components/dashboard/RestaurantProfile";
-import { TopOrdersSection } from "../../../components/dashboard/TopOrdersSection";
-import { useRestaurant } from "../../../hooks/useRestaurant";
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
+import { RestaurantProfile } from "@/components/dashboard/RestaurantProfile";
+import { TopOrdersSection } from "@/components/dashboard/TopOrdersSection";
+import { useRestaurant } from "@/hooks/useRestaurant";
 
 const topOrders = [
   {

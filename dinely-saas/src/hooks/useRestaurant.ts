@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { restaurantsApi } from "../lib/api";
+import { restaurantsApi } from "@/lib/api";
 
 interface Restaurant {
   _id: string;

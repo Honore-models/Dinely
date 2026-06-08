@@ -1,4 +1,4 @@
-import type { FloorTable } from "../../../lib/dashboard/mockData";
+import type { FloorTable } from "@/lib/dashboard/mockData";
 import { TableChair } from "./TableChair";
 
 const tableColors = {

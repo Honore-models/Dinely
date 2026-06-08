@@ -1,7 +1,7 @@
-import { DashboardPageHeader } from "../../../components/dashboard/DashboardPageHeader";
-import { DashboardSection } from "../../../components/dashboard/DashboardSection";
-import MetricsCard from "../../../components/dashboard/OrderMetricsCard";
-import OrdersTable from "../../../components/dashboard/OrdersTable";
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
+import { DashboardSection } from "@/components/dashboard/DashboardSection";
+import MetricsCard from "@/components/dashboard/OrderMetricsCard";
+import OrdersTable from "@/components/dashboard/OrdersTable";
 
 export default function OrdersPage() {
   const orderMetrics = {

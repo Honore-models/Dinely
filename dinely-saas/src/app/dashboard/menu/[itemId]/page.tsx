@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { MenuDetailView } from "../../../../components/dashboard/menu/MenuDetailView";
-import { menuItems } from "../../../../lib/dashboard/mockData";
+import { menuItems } from "@/lib/dashboard/mockData";
 
 interface MenuItemPageProps {
   params: Promise<{ itemId: string }>;

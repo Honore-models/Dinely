@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ordersApi } from "../lib/api";
+import { ordersApi } from "@/lib/api";
 
 interface OrderItem {
   menuItemId: string;

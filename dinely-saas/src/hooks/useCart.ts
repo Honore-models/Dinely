@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ordersApi } from "../lib/api";
+import { ordersApi } from "@/lib/api";
 
 // This hook wires the Zustand cart store to the real orders API.
 // Import useCartStore from "@/store/cartStore" for cart state;

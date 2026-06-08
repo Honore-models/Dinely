@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button } from "../../../components/ui/Button";
-import { ToggleBilling } from "../../../components/ui/ToggleBilling";
-import { PlanCard } from "../../../components/onboarding/PlanCard";
-import { useOnboardingStore, type PlanName } from "../../../store/onboardingStore";
+import { Button } from "@/components/ui/Button";
+import { ToggleBilling } from "@/components/ui/ToggleBilling";
+import { PlanCard } from "@/components/onboarding/PlanCard";
+import { useOnboardingStore, type PlanName } from "@/store/onboardingStore";
 
 const plans = [
   {

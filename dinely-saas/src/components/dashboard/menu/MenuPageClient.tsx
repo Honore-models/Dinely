@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { DashboardPageHeader } from "../DashboardPageHeader";
-import { menuItems } from "../../../lib/dashboard/mockData";
+import { menuItems } from "@/lib/dashboard/mockData";
 import { MenuFilters } from "./MenuFilters";
 import { MenuGrid } from "./MenuGrid";
 

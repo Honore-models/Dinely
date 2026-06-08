@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import { StepperProgress } from "../../components/onboarding/StepperProgress";
+import { StepperProgress } from "@/components/onboarding/StepperProgress";
 
 function getCurrentStep(pathname: string) {
   const match = pathname.match(/step-(\d)/);

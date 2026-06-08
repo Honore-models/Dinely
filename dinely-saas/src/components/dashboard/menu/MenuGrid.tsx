@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { MenuItem } from "../../../lib/dashboard/mockData";
+import type { MenuItem } from "@/lib/dashboard/mockData";
 
 interface MenuGridProps {
   items: MenuItem[];

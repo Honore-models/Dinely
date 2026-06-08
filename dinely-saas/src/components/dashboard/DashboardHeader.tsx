@@ -1,7 +1,7 @@
 "use client";
 
 import { Bell, ChevronDown, Mail, Sun, User } from "lucide-react";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 
 function formatToday() {
   const now = new Date();

@@ -1,12 +1,12 @@
-import { DashboardPageHeader } from "../../components/dashboard/DashboardPageHeader";
-import { DashboardSection } from "../../components/dashboard/DashboardSection";
-import { GeoSummary } from "../../components/dashboard/GeoSummary";
-import { KitchenStatus } from "../../components/dashboard/KitchenStatus";
-import { MetricCard } from "../../components/dashboard/MetricCard";
-import { PopularMenu } from "../../components/dashboard/PopularMenu";
-import { RatingReviews } from "../../components/dashboard/RatingReviews";
-import { SalesChart } from "../../components/dashboard/SalesChart";
-import { dashboardMetrics } from "../../lib/dashboard/mockData";
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
+import { DashboardSection } from "@/components/dashboard/DashboardSection";
+import { GeoSummary } from "@/components/dashboard/GeoSummary";
+import { KitchenStatus } from "@/components/dashboard/KitchenStatus";
+import { MetricCard } from "@/components/dashboard/MetricCard";
+import { PopularMenu } from "@/components/dashboard/PopularMenu";
+import { RatingReviews } from "@/components/dashboard/RatingReviews";
+import { SalesChart } from "@/components/dashboard/SalesChart";
+import { dashboardMetrics } from "@/lib/dashboard/mockData";
 
 export default function DashboardPage() {
   return (

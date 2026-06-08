@@ -1,4 +1,4 @@
-import { floorTables } from "../../../lib/dashboard/mockData";
+import { floorTables } from "@/lib/dashboard/mockData";
 import { DashboardCard } from "../DashboardCard";
 import { TableNode } from "./TableNode";
 

@@ -5,9 +5,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, LogOut, UtensilsCrossed } from "lucide-react";
 import { useState } from "react";
 import { DinelyLogo } from "../brand/DinelyLogo";
-import { dashboardNav } from "../../lib/dashboard/nav";
-import { authApi } from "../../lib/api";
-import { useRestaurant } from "../../hooks/useRestaurant";
+import { dashboardNav } from "@/lib/dashboard/nav";
+import { authApi } from "@/lib/api";
+import { useRestaurant } from "@/hooks/useRestaurant";
 
 function isActive(pathname: string, href: string) {
   if (href === "/dashboard") return pathname === "/dashboard";

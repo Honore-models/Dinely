@@ -1,6 +1,6 @@
 "use client";
 
-import { salesChartData } from "../../lib/dashboard/mockData";
+import { salesChartData } from "@/lib/dashboard/mockData";
 import { ChartCardHeader } from "./ChartCardHeader";
 import { DashboardCard } from "./DashboardCard";
 

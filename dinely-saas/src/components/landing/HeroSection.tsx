@@ -11,7 +11,7 @@ import {
   slideInRight,
   smoothEase,
   staggerContainer,
-} from "../../lib/motion";
+} from "@/lib/motion";
 
 const avatars = ["AM", "SK", "NP"];
 
