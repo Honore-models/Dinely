@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, LogOut, UtensilsCrossed } from "lucide-react";
 import { useState } from "react";
 import { DinelyLogo } from "../brand/DinelyLogo";
 import { dashboardNav } from "../../lib/dashboard/nav";
-import { restaurantProfile } from "../../lib/dashboard/mockData";
+import { authApi } from "../../lib/api";
+import { useRestaurant } from "../../hooks/useRestaurant";
 
 function isActive(pathname: string, href: string) {
   if (href === "/dashboard") return pathname === "/dashboard";
@@ -15,10 +16,17 @@ function isActive(pathname: string, href: string) {
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [bookingsOpen, setBookingsOpen] = useState(
     pathname.startsWith("/dashboard/bookings"),
   );
-  const restaurantName = restaurantProfile.name;
+  const { restaurant } = useRestaurant();
+  const restaurantName = restaurant?.name || "My Restaurant";
+
+  const handleLogout = async () => {
+    await authApi.logout();
+    router.push("/login");
+  };
 
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-neutral-200/80 bg-white">
@@ -37,11 +45,7 @@ export function DashboardSidebar() {
           <span className="min-w-0 flex-1 truncate text-[15px] font-bold text-neutral-950">
             {restaurantName}
           </span>
-          <ChevronDown
-            size={18}
-            className="shrink-0 text-neutral-950"
-            strokeWidth={2.5}
-          />
+          <ChevronDown size={18} className="shrink-0 text-neutral-950" strokeWidth={2.5} />
         </button>
       </div>
 
@@ -52,25 +56,17 @@ export function DashboardSidebar() {
             const hasChildren = Boolean(item.children?.length);
 
             if (hasChildren) {
-              const childActive = item.children!.some((c) =>
-                isActive(pathname, c.href),
-              );
+              const childActive = item.children!.some((c) => isActive(pathname, c.href));
               return (
                 <div key={item.href}>
                   <button
                     type="button"
                     onClick={() => setBookingsOpen((o) => !o)}
                     className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold transition ${
-                      childActive
-                        ? "bg-green-50 text-[#1a9e18]"
-                        : "text-neutral-600 hover:bg-neutral-50"
+                      childActive ? "bg-green-50 text-[#1a9e18]" : "text-neutral-600 hover:bg-neutral-50"
                     }`}
                   >
-                    <item.icon
-                      size={18}
-                      strokeWidth={2}
-                      className="shrink-0 opacity-80"
-                    />
+                    <item.icon size={18} strokeWidth={2} className="shrink-0 opacity-80" />
                     <span className="flex-1 text-left">{item.label}</span>
                     <ChevronDown
                       size={15}
@@ -86,9 +82,7 @@ export function DashboardSidebar() {
                             key={child.href}
                             href={child.href}
                             className={`block rounded-lg px-3 py-2 text-[13px] font-semibold transition ${
-                              childIsActive
-                                ? "bg-[#22c51f] text-white"
-                                : "text-neutral-600 hover:bg-neutral-50"
+                              childIsActive ? "bg-[#22c51f] text-white" : "text-neutral-600 hover:bg-neutral-50"
                             }`}
                           >
                             {child.label}
@@ -124,13 +118,14 @@ export function DashboardSidebar() {
       </nav>
 
       <div className="border-t border-neutral-200/80 p-4">
-        <Link
-          href="/login"
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold text-neutral-500 transition hover:bg-neutral-50 hover:text-neutral-700"
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold text-neutral-500 transition hover:bg-neutral-50 hover:text-neutral-700"
         >
           <LogOut size={18} strokeWidth={2} />
           Logout
-        </Link>
+        </button>
       </div>
     </aside>
   );

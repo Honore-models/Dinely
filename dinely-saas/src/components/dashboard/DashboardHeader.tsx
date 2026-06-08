@@ -1,9 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import { Bell, ChevronDown, Mail, Sun } from "lucide-react";
-import { restaurantProfile } from "../../lib/dashboard/mockData";
-import { useOnboardingStore } from "../../store/onboardingStore";
+import { Bell, ChevronDown, Mail, Sun, User } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 
 function formatToday() {
   const now = new Date();
@@ -16,10 +14,14 @@ function formatToday() {
 }
 
 export function DashboardHeader() {
-  const { ownerInfo } = useOnboardingStore();
-  const ownerName =
-    [ownerInfo.firstName, ownerInfo.lastName].filter(Boolean).join(" ") ||
-    restaurantProfile.ownerName;
+  const { user } = useAuth();
+  const ownerName = user
+    ? [user.firstName, user.lastName].filter(Boolean).join(" ")
+    : "Dashboard";
+
+  const initials = user
+    ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase()
+    : "U";
 
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-neutral-200/80 bg-white/95 px-5 backdrop-blur-sm lg:px-8">
@@ -58,13 +60,9 @@ export function DashboardHeader() {
           type="button"
           className="flex items-center gap-2.5 rounded-lg border border-neutral-200/80 py-1.5 pl-1.5 pr-3 transition hover:bg-neutral-50"
         >
-          <Image
-            src={restaurantProfile.avatar}
-            alt={ownerName}
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full object-cover ring-2 ring-white"
-          />
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-[#22c51f] text-xs font-bold text-white">
+            {initials || <User size={16} />}
+          </span>
           <span className="hidden text-sm font-bold text-neutral-800 md:inline">{ownerName}</span>
           <ChevronDown size={14} className="text-neutral-400" />
         </button>
