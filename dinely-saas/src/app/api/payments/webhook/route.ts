@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db";
 import { ObjectId } from "mongodb";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-04-30.basil",
+  apiVersion: "2024-06-20",
 });
 
 // IMPORTANT: This route must NOT have body parsing.

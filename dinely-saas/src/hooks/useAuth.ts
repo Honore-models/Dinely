@@ -45,7 +45,7 @@ export function useAuth() {
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
       const { user } = await authApi.login({ email, password });
-      setState({ user: user as User, loading: false, error: null });
+      setState({ user: user as unknown as User, loading: false, error: null });
       router.push("/dashboard");
     } catch (err) {
       setState((s) => ({

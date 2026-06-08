@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-04-30.basil",
+  apiVersion: "2024-06-20",
 });
 
 // Price IDs — set these in your .env.local after creating products in Stripe dashboard

@@ -31,7 +31,7 @@ export function useMenu(restaurantId?: string) {
     setError(null);
     try {
       const { data } = await menuApi.list(restaurantId);
-      setItems(data as MenuItem[]);
+      setItems(data as unknown as MenuItem[]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load menu");
     } finally {

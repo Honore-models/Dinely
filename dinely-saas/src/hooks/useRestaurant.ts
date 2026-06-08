@@ -30,11 +30,11 @@ export function useRestaurant(restaurantId?: string) {
       try {
         if (restaurantId) {
           const { data } = await restaurantsApi.get(restaurantId);
-          setRestaurant(data as Restaurant);
+          setRestaurant(data as unknown as Restaurant);
         } else {
           // Owner fetching their own restaurant
           const { data } = await restaurantsApi.mine();
-          setRestaurant(data as Restaurant | null);
+          setRestaurant(data as unknown as Restaurant);
         }
       } catch (err) {
         setError(
@@ -71,7 +71,7 @@ export function useRestaurants() {
   useEffect(() => {
     restaurantsApi
       .list()
-      .then(({ data }) => setRestaurants(data as Restaurant[]))
+      .then(({ data }) => setRestaurants(data as unknown as Restaurant[]))
       .catch((err) =>
         setError(
           err instanceof Error ? err.message : "Failed to load restaurants",

@@ -17,7 +17,7 @@ import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { useOnboardingStore, type PlanName } from "@/store/onboardingStore";
 import { VisaIcon, MastercardIcon, PaypalIcon, AmexIcon } from "../ui/Icons";
-import { restaurantsApi, paymentsApi } from "@/lib/api";
+import { restaurantsApi, paymentsApi, authApi } from "@/lib/api";
 
 const planPrices: Record<PlanName, number> = {
   Starter: 9,
@@ -57,6 +57,9 @@ export function PaymentForm() {
     setLoading(true);
     setError(null);
     try {
+      // 0. Register the user
+      await authApi.register(ownerInfo);
+
       // 1. Create the restaurant record
       await restaurantsApi.create({
         ...restaurantInfo,

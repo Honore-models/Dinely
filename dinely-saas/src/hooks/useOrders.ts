@@ -40,7 +40,7 @@ export function useOrders(params?: {
     setError(null);
     try {
       const res = await ordersApi.list(params);
-      setOrders(res.data as Order[]);
+      setOrders(res.data as unknown as Order[]);
       setTotal(res.total);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load orders");
