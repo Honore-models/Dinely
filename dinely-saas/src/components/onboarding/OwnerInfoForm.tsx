@@ -15,7 +15,7 @@ import { GoogleIcon } from "../ui/Icons";
 const ownerSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
-  email: z.email("Enter a valid email address"),
+  email: z.string().email("Enter a valid email address"),
   phone: z.string().min(7, "Phone number is required"),
   password: z.string().min(8, "Use at least 8 characters"),
 });

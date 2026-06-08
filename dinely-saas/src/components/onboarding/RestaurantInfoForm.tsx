@@ -16,7 +16,7 @@ const restaurantSchema = z.object({
   address: z.string().min(4, "Restaurant address is required"),
   openingHours: z.string().min(4, "Opening hours are required"),
   phone: z.string().min(7, "Phone number is required"),
-  email: z.email("Enter a valid email address"),
+  email: z.string().email("Enter a valid email address"),
 });
 
 type RestaurantFormValues = z.infer<typeof restaurantSchema>;
