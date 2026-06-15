@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "npx tsx scripts/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -36,6 +37,7 @@
     "eslint-config-next": "14.2.5",
     "postcss": "^8.5.15",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }
