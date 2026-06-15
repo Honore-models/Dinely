@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { Button } from "../ui/Button";
@@ -27,6 +26,7 @@ export function OwnerInfoForm() {
   const { ownerInfo, setOwnerInfo } = useOnboardingStore();
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<OwnerFormValues>({
@@ -57,31 +57,75 @@ export function OwnerInfoForm() {
             Terms &amp; Privacy Policy
           </Link>
         </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          <Input label="First Name" placeholder="eg. John" error={errors.firstName?.message} {...register("firstName")} />
-          <Input label="Last Name" placeholder="eg. Park" error={errors.lastName?.message} {...register("lastName")} />
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <Input
+            label="First Name"
+            placeholder="e.g. John"
+            error={errors.firstName?.message}
+            {...register("firstName")}
+          />
+          <Input
+            label="Last Name"
+            placeholder="e.g. Park"
+            error={errors.lastName?.message}
+            {...register("lastName")}
+          />
           <div className="md:col-span-2">
-            <Input label="Email Address" type="email" placeholder="Enter your email address" error={errors.email?.message} {...register("email")} />
+            <Input
+              label="Email Address"
+              type="email"
+              placeholder="Enter your email address"
+              error={errors.email?.message}
+              {...register("email")}
+            />
           </div>
+
+          {/* Phone: use Controller so react-hook-form tracks the value correctly */}
           <div className="md:col-span-2">
-            <PhoneInput placeholder="+250 784 955 081" error={errors.phone?.message} {...register("phone")} />
+            <Controller
+              name="phone"
+              control={control}
+              render={({ field }) => (
+                <PhoneInput
+                  placeholder="+250 784 955 081"
+                  error={errors.phone?.message}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                />
+              )}
+            />
           </div>
-          <div className="relative md:col-span-2">
-            <Input label="Password" type="password" placeholder="Enter your password" error={errors.password?.message} {...register("password")} />
-            <Eye size={20} className="absolute bottom-4 right-4 text-neutral-700" />
+
+          <div className="md:col-span-2">
+            <Input
+              label="Password"
+              type="password"
+              placeholder="Enter your password (min. 8 characters)"
+              error={errors.password?.message}
+              {...register("password")}
+            />
           </div>
+
           <div className="md:col-span-2">
             <div className="my-2 flex items-center gap-8 text-center text-neutral-400">
               <span className="h-px flex-1 bg-neutral-200" />
               <span className="font-bold">or</span>
               <span className="h-px flex-1 bg-neutral-200" />
             </div>
-            <Button type="button" variant="outline" className="h-11 w-full gap-2 border-neutral-200 text-black">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-full gap-2 border-neutral-200 text-black"
+            >
               <GoogleIcon className="h-6 w-6" /> Sign Up with Google
             </Button>
           </div>
         </div>
       </div>
+
       <div className="mt-4 flex justify-end">
         <Button type="submit" className="h-11 px-8">Next</Button>
       </div>

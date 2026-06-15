@@ -19,6 +19,8 @@ export interface RestaurantInfo {
   openingHours: string;
   phone: string;
   email: string;
+  logo?: string;
+  description?: string;
 }
 
 interface OnboardingState {

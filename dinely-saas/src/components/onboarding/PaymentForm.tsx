@@ -57,8 +57,16 @@ export function PaymentForm() {
     setLoading(true);
     setError(null);
     try {
-      // 0. Register the user
-      await authApi.register(ownerInfo);
+      // 0. Register the owner account (step-1 data), skip if already logged in
+      try {
+        await authApi.register(ownerInfo);
+      } catch (regErr) {
+        // If they're already registered (e.g. refreshed mid-flow), continue
+        const msg = regErr instanceof Error ? regErr.message : "";
+        if (!msg.includes("already exists") && !msg.includes("already have")) {
+          throw regErr;
+        }
+      }
 
       // 1. Create the restaurant record
       await restaurantsApi.create({
@@ -68,16 +76,16 @@ export function PaymentForm() {
       });
 
       // 2. Create Stripe Checkout session and redirect
-      const { url } = await paymentsApi.createCheckout(
-        selectedPlan,
-        billingCycle,
-      );
-      if (url) {
-        window.location.href = url;
-      } else {
-        // No Stripe configured – go straight to dashboard
-        router.push("/dashboard");
+      try {
+        const { url } = await paymentsApi.createCheckout(selectedPlan, billingCycle);
+        if (url) {
+          window.location.href = url;
+          return;
+        }
+      } catch {
+        // Stripe not configured – go straight to dashboard
       }
+      router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);

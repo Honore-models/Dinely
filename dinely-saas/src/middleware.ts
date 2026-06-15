@@ -24,14 +24,18 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  // ── Onboarding: must be logged in as owner ───────────────────────────────
+  // ── Onboarding: step-1 is public (owner signs up here)
+  // Steps 2+ require being logged in as owner
   if (pathname.startsWith("/onboarding")) {
+    if (pathname === "/onboarding/step-1") {
+      return NextResponse.next(); // public – owner creates account here
+    }
     if (!token) {
-      return NextResponse.redirect(new URL("/login", req.url));
+      return NextResponse.redirect(new URL("/onboarding/step-1", req.url));
     }
     const session = await verifyToken(token);
     if (!session || session.role !== "owner") {
-      return NextResponse.redirect(new URL("/login", req.url));
+      return NextResponse.redirect(new URL("/onboarding/step-1", req.url));
     }
   }
 
