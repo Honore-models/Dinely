@@ -4,99 +4,139 @@ import Link from "next/link";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { Globe, MapPin, Phone, Timer } from "lucide-react";
+import { useEffect, useState } from "react";
 import { RestaurantDetailHeader } from "@/components/customer/RestaurantDetailHeader";
-import { DishRow } from "@/components/customer/DishRow";
+import { restaurantsApi, menuApi } from "@/lib/api";
 
-// Mock restaurant data
-const mockRestaurant = {
-  id: "1",
-  name: "The Golden Plate",
-  type: "American Burger Restaurant",
-  rating: 4.6,
-  reviewCount: "2.5K",
-  coverImage:
-    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",
-  tagline: "Good food\nGood mood",
-  about:
-    "This upscale dining destination is celebrated for its modern, innovative cuisine that frequently pushes culinary boundaries.",
-  address: "KN 5 Rd, Kigali, Rwanda",
-  hours: "10:45 – 20:30PM",
-  phone: "+250 245 253 342",
-  website: "www.goldenplate.com",
-  isActive: true,
-};
+interface Restaurant {
+  _id: string;
+  name: string;
+  type: string;
+  address: string;
+  phone: string;
+  email: string;
+  logo?: string;
+  description?: string;
+  openingHours?: string;
+  rating?: number;
+  reviewCount?: number;
+}
 
-const popularDishes = [
-  {
-    id: "d1",
-    name: "Herb-Roasted Meat",
-    description:
-      "Roasted chicken breast or turkey, seasoned with aromatic herbs like rosemary and thyme",
-    price: 25.98,
-    image:
-      "https://images.unsplash.com/photo-1598103442097-8b74394b95c7?w=400&q=80",
-  },
-  {
-    id: "d2",
-    name: "Crispy Chicken",
-    description:
-      "Stir-fried noodles—typically spaghetti or Asian-style noodles—topped with sliced, breaded, and fried protein",
-    price: 14.98,
-    image:
-      "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=80",
-  },
-  {
-    id: "d3",
-    name: "Pepperoni Pizza with Extra Cheese",
-    description:
-      "A classic favorite, this pizza features a thin, golden crust topped with zesty tomato sauce and a generous layer of melted mozzarella cheese",
-    price: 11.0,
-    image:
-      "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&q=80",
-  },
-];
+interface MenuItem {
+  _id: string;
+  name: string;
+  description?: string;
+  price: number;
+  image?: string;
+  category: string;
+}
 
 const tabs = [
   { label: "Overview", href: "" },
   { label: "Menu", href: "menu" },
-  { label: "Reviews (2.4K)", href: "reviews" },
+  { label: "Reviews", href: "reviews" },
   { label: "Photos", href: "photos" },
   { label: "Info", href: "info" },
 ];
+
+const COVER_FALLBACK =
+  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80";
 
 export default function RestaurantPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.restaurantId as string;
 
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [rRes, mRes] = await Promise.all([
+          restaurantsApi.get(id),
+          menuApi.list(id),
+        ]);
+        setRestaurant(rRes.data as unknown as Restaurant);
+        setMenuItems(mRes.data as unknown as MenuItem[]);
+      } catch {
+        // restaurant not found – use empty state
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8">
+        <div className="h-72 animate-pulse rounded-2xl bg-neutral-100" />
+        <div className="mt-6 h-8 w-64 animate-pulse rounded bg-neutral-100" />
+      </div>
+    );
+  }
+
+  if (!restaurant) {
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-16 text-center lg:px-8">
+        <p className="text-lg font-semibold text-neutral-500">Restaurant not found</p>
+        <Link href="/home" className="mt-4 inline-block text-sm font-semibold text-[#22c51f] hover:underline">
+          Back to home
+        </Link>
+      </div>
+    );
+  }
+
+  const coverImage =
+    restaurant.logo && restaurant.logo.startsWith("http")
+      ? restaurant.logo
+      : COVER_FALLBACK;
+
+  const popular = menuItems.slice(0, 3);
+
   return (
     <div className="mx-auto max-w-5xl px-4 pb-16 pt-6 lg:px-8">
       {/* Header / cover */}
       <RestaurantDetailHeader
-        name={mockRestaurant.name}
-        type={mockRestaurant.type}
-        rating={mockRestaurant.rating}
-        reviewCount={mockRestaurant.reviewCount}
-        coverImage={mockRestaurant.coverImage}
-        tagline={mockRestaurant.tagline}
+        name={restaurant.name}
+        type={restaurant.type}
+        rating={restaurant.rating ?? 0}
+        reviewCount={
+          restaurant.reviewCount
+            ? restaurant.reviewCount > 999
+              ? `${(restaurant.reviewCount / 1000).toFixed(1)}K`
+              : String(restaurant.reviewCount)
+            : "0"
+        }
+        coverImage={coverImage}
         onOrderNow={() => router.push(`/restaurants/${id}/menu`)}
         onBookTable={() => router.push(`/restaurants/${id}/info`)}
       />
 
       {/* Tab nav */}
-      <nav className="mt-6 flex gap-6 border-b border-neutral-200">
+      <nav className="mt-6 flex gap-6 overflow-x-auto border-b border-neutral-200 pb-0">
         {tabs.map((tab) => {
           const href =
             tab.href === ""
               ? `/restaurants/${id}`
               : `/restaurants/${id}/${tab.href}`;
+          const isActive = tab.href === "";
           return (
             <Link
               key={tab.label}
               href={href}
-              className="relative pb-3 text-sm font-semibold text-neutral-500 transition hover:text-neutral-800 [&.active]:text-[#22c51f]"
+              className={`shrink-0 pb-3 text-sm font-semibold transition ${
+                isActive
+                  ? "border-b-2 border-[#22c51f] text-[#22c51f]"
+                  : "text-neutral-500 hover:text-neutral-800"
+              }`}
             >
               {tab.label}
+              {tab.href === "reviews" && restaurant.reviewCount
+                ? ` (${restaurant.reviewCount > 999 ? `${(restaurant.reviewCount / 1000).toFixed(1)}K` : restaurant.reviewCount})`
+                : ""}
             </Link>
           );
         })}
@@ -108,28 +148,29 @@ export default function RestaurantPage() {
         <div>
           <h2 className="text-lg font-bold text-neutral-900">About</h2>
           <p className="mt-2 text-sm leading-relaxed text-neutral-600">
-            {mockRestaurant.about}
+            {restaurant.description ||
+              "This restaurant offers a unique dining experience with carefully crafted dishes."}
           </p>
 
           <div className="mt-6 space-y-3">
             <div className="flex items-center gap-2.5 text-sm text-neutral-700">
               <MapPin size={16} className="shrink-0 text-[#22c51f]" />
-              <span className="font-semibold">{mockRestaurant.address}</span>
+              <span className="font-semibold">{restaurant.address}</span>
             </div>
             <div className="flex items-center gap-2.5 text-sm">
               <Timer size={16} className="shrink-0 text-[#22c51f]" />
               <span className="font-bold text-[#22c51f]">Active</span>
-              <span className="text-neutral-500">• {mockRestaurant.hours}</span>
+              {restaurant.openingHours && (
+                <span className="text-neutral-500">• {restaurant.openingHours}</span>
+              )}
             </div>
             <div className="flex items-center gap-2.5 text-sm text-neutral-700">
               <Phone size={16} className="shrink-0 text-neutral-400" />
-              <span>{mockRestaurant.phone}</span>
+              <span>{restaurant.phone}</span>
             </div>
             <div className="flex items-center gap-2.5 text-sm text-neutral-700">
               <Globe size={16} className="shrink-0 text-neutral-400" />
-              <span className="text-[#22c51f] underline underline-offset-2">
-                {mockRestaurant.website}
-              </span>
+              <span className="text-[#22c51f]">{restaurant.email}</span>
             </div>
           </div>
         </div>
@@ -137,33 +178,42 @@ export default function RestaurantPage() {
         {/* Popular Dishes */}
         <div>
           <h2 className="text-lg font-bold text-neutral-900">Popular Dishes</h2>
-          <div className="mt-4 space-y-3">
-            {popularDishes.map((dish) => (
-              <div
-                key={dish.id}
-                className="flex items-center gap-4 rounded-xl bg-white"
-              >
-                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
-                  <Image
-                    src={dish.image}
-                    alt={dish.name}
-                    fill
-                    className="object-cover"
-                    sizes="96px"
-                  />
+          {popular.length === 0 ? (
+            <p className="mt-4 text-sm text-neutral-400">No menu items yet.</p>
+          ) : (
+            <div className="mt-4 space-y-4">
+              {popular.map((dish) => (
+                <div key={dish._id} className="flex items-center gap-4">
+                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
+                    {dish.image ? (
+                      <Image
+                        src={dish.image}
+                        alt={dish.name}
+                        fill
+                        className="object-cover"
+                        sizes="96px"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-3xl">
+                        🍽️
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-neutral-900">{dish.name}</p>
+                    {dish.description && (
+                      <p className="mt-0.5 line-clamp-2 text-xs text-neutral-500">
+                        {dish.description}
+                      </p>
+                    )}
+                    <p className="mt-1.5 text-sm font-bold text-[#22c51f]">
+                      ${dish.price.toFixed(2)}
+                    </p>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-neutral-900">{dish.name}</p>
-                  <p className="mt-0.5 line-clamp-2 text-xs text-neutral-500">
-                    {dish.description}
-                  </p>
-                  <p className="mt-1.5 text-sm font-bold text-[#22c51f]">
-                    ${dish.price.toFixed(2)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <Link
             href={`/restaurants/${id}/menu`}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Mail, LockKeyhole } from "lucide-react";
 import { AuthDivider } from "@/components/auth/AuthDivider";
@@ -12,25 +13,35 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const { login, loading, error } = useAuth();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || undefined;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password);
+    await login(email, password, redirect);
   };
 
   return (
     <AuthFormPanel
       title="Welcome back"
-      subtitle="Sign in to your restaurant dashboard."
+      subtitle="Sign in to your Dinely account."
       footer={
-        <p className="text-center text-xs text-neutral-600 sm:text-sm">
-          New to Dinely?{" "}
-          <Link href="/register" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
-            Create account
-          </Link>
-        </p>
+        <div className="space-y-2 text-center">
+          <p className="text-xs text-neutral-600 sm:text-sm">
+            New owner?{" "}
+            <Link href="/register" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
+              Register restaurant
+            </Link>
+          </p>
+          <p className="text-xs text-neutral-600 sm:text-sm">
+            New customer?{" "}
+            <Link href="/register-customer" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
+              Create account
+            </Link>
+          </p>
+        </div>
       }
     >
       <form className="space-y-3.5" onSubmit={handleSubmit}>
@@ -43,7 +54,7 @@ export default function LoginPage() {
           size="compact"
           label="Email address"
           type="email"
-          placeholder="owner@restaurant.com"
+          placeholder="you@example.com"
           icon={<Mail size={16} />}
           value={email}
           onChange={(e) => setEmail(e.target.value)}

@@ -30,13 +30,35 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Public: list all restaurants
+    // Public: list all restaurants (with optional search/filter)
+    const { searchParams: sp } = new URL(req.url);
+    const search = sp.get("search") || "";
+    const category = sp.get("category") || "";
+    const rating = sp.get("rating") ? parseFloat(sp.get("rating")!) : null;
+    const maxDelivery = sp.get("maxDelivery") ? parseInt(sp.get("maxDelivery")!) : null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const query: Record<string, any> = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { type: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+    if (category) {
+      query.type = { $regex: category, $options: "i" };
+    }
+    if (rating !== null) {
+      query.rating = { $gte: rating };
+    }
+
     const restaurants = await db
       .collection("restaurants")
-      .find(
-        {},
-        { projection: { stripeCustomerId: 0, stripeSubscriptionId: 0 } },
-      )
+      .find(query, {
+        projection: { stripeCustomerId: 0, stripeSubscriptionId: 0 },
+      })
+      .sort({ rating: -1, name: 1 })
       .toArray();
 
     return NextResponse.json({

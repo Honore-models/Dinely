@@ -40,11 +40,11 @@ export async function GET(req: NextRequest, { params }: Params) {
   }
 }
 
-// PATCH /api/orders/[id] – owners update order status
+// PATCH /api/orders/[id] – owners update order status; customers can cancel
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params;
   const session = await getSession(req);
-  if (!session || session.role !== "owner") {
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   if (!ObjectId.isValid(id))
@@ -72,8 +72,28 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       .findOne({ _id: new ObjectId(id) });
     if (!order)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
-    if (order.restaurantId !== session.restaurantId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+    if (session.role === "owner") {
+      if (order.restaurantId !== session.restaurantId) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    } else {
+      // Customer can only cancel their own order while still Pending
+      if (order.customerId !== session.userId) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      if (parsed.data.status !== "Cancelled") {
+        return NextResponse.json(
+          { error: "Customers can only cancel orders" },
+          { status: 403 },
+        );
+      }
+      if (order.status !== "Pending") {
+        return NextResponse.json(
+          { error: "Only pending orders can be cancelled" },
+          { status: 409 },
+        );
+      }
     }
 
     await db

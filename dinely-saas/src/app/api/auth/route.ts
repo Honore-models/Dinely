@@ -9,7 +9,7 @@ import {
   COOKIE_NAME,
   COOKIE_OPTIONS,
 } from "@/lib/auth";
-import { registerSchema, loginSchema } from "@/lib/validators";
+import { registerSchema, loginSchema, customerRegisterSchema } from "@/lib/validators";
 
 // ─── POST /api/auth?action=register|login|logout ──────────────────────────────
 // We handle multiple actions via a query param to keep routing simple with
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  // ── Register ────────────────────────────────────────────────────────────────
+  // ── Register (owner) ────────────────────────────────────────────────────────
   if (action === "register") {
     const parsed = registerSchema.safeParse(body);
     if (!parsed.success) {
@@ -161,5 +161,108 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ── Register (customer) ─────────────────────────────────────────────────────
+  if (action === "register-customer") {
+    const parsed = customerRegisterSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0].message },
+        { status: 422 },
+      );
+    }
+
+    const { firstName, lastName, email, phone, password } = parsed.data;
+
+    try {
+      const db = await getDb();
+      const existing = await db.collection("users").findOne({ email });
+      if (existing) {
+        return NextResponse.json(
+          { error: "An account with this email already exists" },
+          { status: 409 },
+        );
+      }
+
+      const passwordHash = await hashPassword(password);
+      const now = new Date();
+      const result = await db.collection("users").insertOne({
+        firstName,
+        lastName,
+        email,
+        phone,
+        passwordHash,
+        role: "customer",
+        favourites: [],
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      const token = await signToken({
+        userId: result.insertedId.toString(),
+        email,
+        role: "customer",
+      });
+
+      const res = NextResponse.json(
+        { message: "Account created", userId: result.insertedId.toString() },
+        { status: 201 },
+      );
+      res.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS);
+      return res;
+    } catch (err) {
+      console.error("[POST /api/auth?action=register-customer]", err);
+      return NextResponse.json({ error: "Server error" }, { status: 500 });
+    }
+  }
+
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+}
+
+// ─── PUT /api/auth – update own profile ──────────────────────────────────────
+export async function PUT(req: NextRequest) {
+  const session = await getSession(req);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const { updateProfileSchema } = await import("@/lib/validators");
+  const parsed = updateProfileSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.errors[0].message },
+      { status: 422 },
+    );
+  }
+
+  try {
+    const db = await getDb();
+    await db
+      .collection("users")
+      .updateOne(
+        { _id: new ObjectId(session.userId) },
+        { $set: { ...parsed.data, updatedAt: new Date() } },
+      );
+
+    const updated = await db
+      .collection("users")
+      .findOne(
+        { _id: new ObjectId(session.userId) },
+        { projection: { passwordHash: 0 } },
+      );
+
+    return NextResponse.json({
+      message: "Profile updated",
+      user: updated ? { ...updated, _id: updated._id.toString() } : null,
+    });
+  } catch (err) {
+    console.error("[PUT /api/auth]", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
 }

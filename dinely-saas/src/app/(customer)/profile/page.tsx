@@ -25,14 +25,25 @@ const menuItems = [
 ];
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, updateProfile, logout, loading, error } = useAuth();
   const [editMode, setEditMode] = useState(false);
-  const [firstName, setFirstName] = useState(user?.firstName ?? "Robert");
-  const [lastName, setLastName] = useState(user?.lastName ?? "Fisher");
-  const [email, setEmail] = useState(user?.email ?? "robert.fisher@example.com");
-  const [phone, setPhone] = useState(user?.phone ?? "+250 245 253 342");
+  const [firstName, setFirstName] = useState(user?.firstName ?? "");
+  const [lastName, setLastName] = useState(user?.lastName ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
+  const initials = `${firstName[0] ?? "U"}${lastName[0] ?? ""}`.toUpperCase();
+
+  const handleSave = async () => {
+    try {
+      await updateProfile({ firstName, lastName, phone });
+      setEditMode(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch {
+      // error handled by useAuth
+    }
+  };
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 lg:px-8">
@@ -45,9 +56,9 @@ export default function ProfilePage() {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-lg font-bold text-neutral-900">
-            {firstName} {lastName}
+            {user?.firstName} {user?.lastName}
           </p>
-          <p className="text-sm text-neutral-500">{email}</p>
+          <p className="text-sm text-neutral-500">{user?.email}</p>
         </div>
         <button
           type="button"
@@ -58,15 +69,23 @@ export default function ProfilePage() {
         </button>
       </div>
 
+      {/* Save success */}
+      {saveSuccess && (
+        <div className="mt-3 rounded-xl border border-green-100 bg-green-50 px-4 py-2.5 text-sm font-semibold text-[#22c51f]">
+          Profile updated successfully ✓
+        </div>
+      )}
+
       {/* Edit form */}
       {editMode && (
         <div className="mt-4 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-sm font-bold text-neutral-700">Edit Profile</h2>
+          {error && (
+            <p className="mb-3 text-sm text-red-500">{error}</p>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1 block text-xs font-semibold text-neutral-500">
-                First Name
-              </span>
+              <span className="mb-1 block text-xs font-semibold text-neutral-500">First Name</span>
               <input
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -74,30 +93,15 @@ export default function ProfilePage() {
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-xs font-semibold text-neutral-500">
-                Last Name
-              </span>
+              <span className="mb-1 block text-xs font-semibold text-neutral-500">Last Name</span>
               <input
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 className="w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm text-neutral-900 outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
               />
             </label>
-            <label className="block">
-              <span className="mb-1 block text-xs font-semibold text-neutral-500">
-                Email
-              </span>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm text-neutral-900 outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-xs font-semibold text-neutral-500">
-                Phone
-              </span>
+            <label className="col-span-full block">
+              <span className="mb-1 block text-xs font-semibold text-neutral-500">Phone</span>
               <input
                 type="tel"
                 value={phone}
@@ -108,10 +112,11 @@ export default function ProfilePage() {
           </div>
           <button
             type="button"
-            onClick={() => setEditMode(false)}
-            className="mt-4 w-full rounded-xl bg-[#22c51f] py-2.5 text-sm font-bold text-white transition hover:bg-[#1bad1a]"
+            onClick={handleSave}
+            disabled={loading}
+            className="mt-4 w-full rounded-xl bg-[#22c51f] py-2.5 text-sm font-bold text-white transition hover:bg-[#1bad1a] disabled:opacity-60"
           >
-            Save Changes
+            {loading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       )}

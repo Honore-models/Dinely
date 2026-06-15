@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ChevronRight, CreditCard } from "lucide-react";
+import { ChevronRight, CreditCard, Loader2 } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
+import { ordersApi } from "@/lib/api";
 
 const DELIVERY_FEE = 1.09;
 const SERVICE_FEE = 0.5;
@@ -12,27 +14,79 @@ type DeliveryTime = "asap" | "schedule" | "later";
 type PaymentMethod = "card" | "apple" | "google" | "cash";
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const items = useCartStore((s) => s.items);
   const subtotal = useCartStore((s) => s.subtotal());
+  const clearCart = useCartStore((s) => s.clearCart);
   const total = subtotal + DELIVERY_FEE + SERVICE_FEE;
 
   const [deliveryTime, setDeliveryTime] = useState<DeliveryTime>("asap");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [address, setAddress] = useState("KN 5 Rd, Kigali, Rwanda");
   const [instructions, setInstructions] = useState("");
+  const [placing, setPlacing] = useState(false);
+  const [placeError, setPlaceError] = useState<string | null>(null);
+
+  const handlePlaceOrder = async () => {
+    if (items.length === 0) return;
+
+    // All items in cart must be from the same restaurant
+    const restaurantId = items[0].restaurantId;
+
+    setPlacing(true);
+    setPlaceError(null);
+    try {
+      const result = await ordersApi.create({
+        restaurantId,
+        items: items.map((i) => ({
+          menuItemId: i.menuItemId,
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+        })),
+        type: "Delivery",
+        deliveryAddress: address,
+        notes: instructions || undefined,
+      });
+
+      clearCart();
+      router.push(`/orders/track?orderId=${result.orderId}`);
+    } catch (err) {
+      setPlaceError(
+        err instanceof Error ? err.message : "Failed to place order",
+      );
+    } finally {
+      setPlacing(false);
+    }
+  };
+
+  if (items.length === 0) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <p className="text-base font-semibold text-neutral-500">
+          Your cart is empty
+        </p>
+        <Link
+          href="/home"
+          className="mt-4 inline-block rounded-full bg-[#22c51f] px-6 py-2.5 text-sm font-bold text-white transition hover:bg-[#1bad1a]"
+        >
+          Browse Restaurants
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8">
       {/* Breadcrumb */}
       <nav className="mb-8 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/home" className="transition hover:text-neutral-800">
-          Home
-        </Link>
+        <Link href="/home" className="transition hover:text-neutral-800">Home</Link>
         <ChevronRight size={14} />
         <span className="font-semibold text-neutral-900">Checkout</span>
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        {/* ── Left: Delivery info ─────────────────────────────── */}
+        {/* ── Left: Delivery info ────────────────────────────────────────── */}
         <div className="space-y-6">
           {/* Delivery address */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
@@ -101,7 +155,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* ── Right: Payment + summary ────────────────────────── */}
+        {/* ── Right: Payment + summary ───────────────────────────────────── */}
         <div className="space-y-6">
           {/* Payment methods */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
@@ -109,34 +163,10 @@ export default function CheckoutPage() {
             <div className="mt-4 space-y-3">
               {(
                 [
-                  {
-                    id: "card",
-                    label: "Debit / Credit Card",
-                    icon: <CreditCard size={20} className="text-neutral-600" />,
-                  },
-                  {
-                    id: "apple",
-                    label: "Apple Pay",
-                    icon: (
-                      <span className="text-sm font-bold text-neutral-800">
-                        🍎 Pay
-                      </span>
-                    ),
-                  },
-                  {
-                    id: "google",
-                    label: "Google Pay",
-                    icon: (
-                      <span className="text-sm font-bold text-neutral-800">
-                        G Pay
-                      </span>
-                    ),
-                  },
-                  {
-                    id: "cash",
-                    label: "Cash on delivery",
-                    icon: <span className="text-lg">💵</span>,
-                  },
+                  { id: "card", label: "Debit / Credit Card", icon: <CreditCard size={20} className="text-neutral-600" /> },
+                  { id: "apple", label: "Apple Pay", icon: <span className="text-sm font-bold text-neutral-800">🍎 Pay</span> },
+                  { id: "google", label: "Google Pay", icon: <span className="text-sm font-bold text-neutral-800">G Pay</span> },
+                  { id: "cash", label: "Cash on delivery", icon: <span className="text-lg">💵</span> },
                 ] as { id: PaymentMethod; label: string; icon: React.ReactNode }[]
               ).map(({ id, label, icon }) => (
                 <button
@@ -167,7 +197,7 @@ export default function CheckoutPage() {
             <div className="mt-4 space-y-3">
               <div className="flex justify-between text-sm text-neutral-500">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(1)}</span>
+                <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm text-neutral-500">
                 <span>Delivery Fee</span>
@@ -183,21 +213,24 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <Link
-              href="/orders/track"
-              className="mt-5 block w-full rounded-xl bg-[#22c51f] py-3 text-center text-base font-bold text-white transition hover:bg-[#1bad1a]"
+            {placeError && (
+              <p className="mt-3 text-sm text-red-500">{placeError}</p>
+            )}
+
+            <button
+              type="button"
+              onClick={handlePlaceOrder}
+              disabled={placing}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#22c51f] py-3 text-base font-bold text-white transition hover:bg-[#1bad1a] disabled:opacity-60"
             >
-              Place order
-            </Link>
+              {placing && <Loader2 size={18} className="animate-spin" />}
+              {placing ? "Placing order..." : "Place order"}
+            </button>
             <p className="mt-3 text-center text-xs text-neutral-400">
               By placing an order, you agree to our{" "}
-              <Link href="#" className="font-semibold text-[#22c51f] hover:underline">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link href="#" className="font-semibold text-[#22c51f] hover:underline">
-                Privacy policy
-              </Link>
+              <Link href="#" className="font-semibold text-[#22c51f] hover:underline">Terms of Service</Link>
+              {" "}and{" "}
+              <Link href="#" className="font-semibold text-[#22c51f] hover:underline">Privacy policy</Link>
             </p>
           </div>
         </div>

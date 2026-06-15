@@ -3,15 +3,13 @@ import { verifyToken } from "@/lib/auth";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const token = req.cookies.get("dinely_token")?.value;
 
   // ── Dashboard: owners only ────────────────────────────────────────────────
   if (pathname.startsWith("/dashboard")) {
-    const token = req.cookies.get("dinely_token")?.value;
-
     if (!token) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
-
     const session = await verifyToken(token);
     if (!session || session.role !== "owner") {
       return NextResponse.redirect(new URL("/login", req.url));
@@ -26,25 +24,52 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  // ── Onboarding: must be logged in ────────────────────────────────────────
+  // ── Onboarding: must be logged in as owner ───────────────────────────────
   if (pathname.startsWith("/onboarding")) {
-    const token = req.cookies.get("dinely_token")?.value;
     if (!token) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
     const session = await verifyToken(token);
-    if (!session) {
+    if (!session || session.role !== "owner") {
       return NextResponse.redirect(new URL("/login", req.url));
     }
   }
 
-  // ── Auth pages: redirect logged-in users away ─────────────────────────────
+  // ── Customer app: must be logged in ──────────────────────────────────────
+  const customerProtected = [
+    "/cart",
+    "/checkout",
+    "/orders",
+    "/profile",
+    "/favourites",
+  ];
+  if (customerProtected.some((p) => pathname.startsWith(p))) {
+    if (!token) {
+      const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    const session = await verifyToken(token);
+    if (!session) {
+      const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    // Owners accidentally hitting customer routes → send to dashboard
+    if (session.role === "owner") {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+  }
+
+  // ── Auth pages: redirect already-logged-in users away ────────────────────
   if (pathname === "/login" || pathname === "/register") {
-    const token = req.cookies.get("dinely_token")?.value;
     if (token) {
       const session = await verifyToken(token);
       if (session?.role === "owner") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+      if (session?.role === "customer") {
+        return NextResponse.redirect(new URL("/home", req.url));
       }
     }
   }
@@ -53,5 +78,15 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/onboarding/:path*", "/login", "/register"],
+  matcher: [
+    "/dashboard/:path*",
+    "/onboarding/:path*",
+    "/cart/:path*",
+    "/checkout/:path*",
+    "/orders/:path*",
+    "/profile/:path*",
+    "/favourites/:path*",
+    "/login",
+    "/register",
+  ],
 };
