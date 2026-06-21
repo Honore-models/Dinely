@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { Mail, Phone, MoreVertical } from "lucide-react";
+import { Mail, Phone, Pencil, Trash2 } from "lucide-react";
 
 interface EmployeeCardProps {
   name: string;
@@ -12,69 +11,72 @@ interface EmployeeCardProps {
   phone: string;
   image?: string;
   isActive?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function EmployeeCard({
-  name,
-  role,
-  department,
-  hireDate,
-  email,
-  phone,
-  image,
-  isActive = true,
+  name, role, department, hireDate, email, phone, image, isActive = true, onEdit, onDelete,
 }: EmployeeCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm ring-1 ring-neutral-100 p-5">
-      <div className="flex items-start justify-between mb-4">
+    <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-neutral-100">
+      <div className="mb-4 flex items-start justify-between">
         <div className="flex items-start gap-3">
-          <div className="h-12 w-12 rounded-full bg-neutral-300 flex-shrink-0 overflow-hidden relative">
+          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-neutral-200">
             {image ? (
-              <img
-                src={image}
-                alt={name}
-                className="w-full h-full object-cover"
-              />
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={image} alt={name} className="h-full w-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-lg font-bold text-neutral-700">
+              <div className="flex h-full w-full items-center justify-center text-lg font-bold text-neutral-600">
                 {name.charAt(0)}
               </div>
             )}
             <div
-              className={`absolute bottom-1 right-1 h-4 w-4 rounded-full ring-2 ring-white ${
-                isActive ? "bg-emerald-500" : "bg-red-500"
+              className={`absolute bottom-0.5 right-0.5 h-3.5 w-3.5 rounded-full ring-2 ring-white ${
+                isActive ? "bg-emerald-500" : "bg-red-400"
               }`}
             />
           </div>
           <div>
             <h4 className="font-semibold text-neutral-900">{name}</h4>
-            <p className="text-sm text-neutral-600">{role}</p>
+            <p className="text-sm text-neutral-500">{role}</p>
           </div>
         </div>
-        <button className="text-neutral-400 hover:text-neutral-600 transition">
-          <MoreVertical size={18} />
-        </button>
+        <div className="flex items-center gap-1">
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              className="grid h-8 w-8 place-items-center rounded-lg text-neutral-400 transition hover:bg-neutral-100 hover:text-[#22c51f]"
+            >
+              <Pencil size={14} />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className="grid h-8 w-8 place-items-center rounded-lg text-neutral-400 transition hover:bg-red-50 hover:text-red-500"
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="space-y-3 text-sm">
+      <div className="space-y-2.5 text-sm">
         <div>
-          <p className="text-xs text-neutral-500 font-semibold mb-1">
-            Department
-          </p>
-          <p className="text-neutral-900">{department}</p>
+          <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">Department</p>
+          <p className="text-neutral-800">{department}</p>
         </div>
         <div>
-          <p className="text-xs text-neutral-500 font-semibold mb-1">
-            Hire date
-          </p>
-          <p className="text-neutral-900">{hireDate}</p>
+          <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">Hire date</p>
+          <p className="text-neutral-800">{hireDate}</p>
         </div>
         <div className="flex items-center gap-2 text-neutral-600">
-          <Mail size={14} />
-          <span className="text-xs">{email}</span>
+          <Mail size={13} className="shrink-0 text-neutral-400" />
+          <span className="truncate text-xs">{email}</span>
         </div>
         <div className="flex items-center gap-2 text-neutral-600">
-          <Phone size={14} />
+          <Phone size={13} className="shrink-0 text-neutral-400" />
           <span className="text-xs">{phone}</span>
         </div>
       </div>

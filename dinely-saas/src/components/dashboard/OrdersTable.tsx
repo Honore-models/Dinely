@@ -1,254 +1,195 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Search,
-  Download,
-  MoreVertical,
-  Truck,
-  Package,
-  UtensilsCrossed,
+  Search, Download, MoreVertical, Truck, Package, UtensilsCrossed, ChevronLeft, ChevronRight,
 } from "lucide-react";
+import { ordersApi } from "@/lib/api";
 
-interface OrderItem {
-  name: string;
-  quantity: number;
-  category: string;
-}
-
+interface OrderItem { name: string; quantity: number; price: number; }
 interface Order {
-  id: string;
-  orderID: string;
-  customer: string;
+  _id: string;
+  customerName: string;
   items: OrderItem[];
   type: "Delivery" | "Takeaway" | "Dine-in";
-  total: string;
-  time: string;
-  status: "Completed" | "Active" | "Cancelled";
+  total: number;
+  status: "Pending" | "Active" | "Completed" | "Cancelled";
+  createdAt: string;
 }
 
-const orders: Order[] = [
-  {
-    id: "1",
-    orderID: "#100",
-    customer: "John Lee",
-    items: [{ name: "Pizza", quantity: 2, category: "Garlic Bread" }],
-    type: "Delivery",
-    total: "$100",
-    time: "10:30 AM\n29 may 2026",
-    status: "Completed",
-  },
-  {
-    id: "2",
-    orderID: "#101",
-    customer: "Ketty S",
-    items: [{ name: "Chicken Burger", quantity: 2, category: "Coke, Sprite" }],
-    type: "Takeaway",
-    total: "$98.2",
-    time: "08:15 AM\n28 may 2026",
-    status: "Active",
-  },
-  {
-    id: "3",
-    orderID: "#102",
-    customer: "Peterson",
-    items: [{ name: "Veg Pasta", quantity: 1, category: "Garlic Bread" }],
-    type: "Dine-in",
-    total: "$70",
-    time: "13:20 PM\n24 mar 2026",
-    status: "Completed",
-  },
-  {
-    id: "4",
-    orderID: "#103",
-    customer: "Ming joe",
-    items: [
-      {
-        name: "Grilled Chicken",
-        quantity: 3,
-        category: "French Fries, Ice Juice",
-      },
-    ],
-    type: "Delivery",
-    total: "$120",
-    time: "10:45 AM\n12 may 2026",
-    status: "Cancelled",
-  },
-  {
-    id: "5",
-    orderID: "#104",
-    customer: "Ashraf.K",
-    items: [{ name: "Veg Burger", quantity: 2, category: "Garlic Bread" }],
-    type: "Takeaway",
-    total: "$45.1",
-    time: "09:50 PM\n24 may 2026",
-    status: "Active",
-  },
-];
-
-const getStatusColor = (status: Order["status"]) => {
-  switch (status) {
-    case "Completed":
-      return "text-emerald-600";
-    case "Active":
-      return "text-blue-600";
-    case "Cancelled":
-      return "text-red-600";
-    default:
-      return "text-neutral-600";
-  }
+const STATUS_COLOR: Record<string, string> = {
+  Completed: "text-emerald-600",
+  Active: "text-blue-600",
+  Pending: "text-amber-600",
+  Cancelled: "text-red-600",
 };
 
-const getStatusBgColor = (status: Order["status"]) => {
-  switch (status) {
-    case "Completed":
-      return "bg-emerald-50";
-    case "Active":
-      return "bg-blue-50";
-    case "Cancelled":
-      return "bg-red-50";
-    default:
-      return "bg-neutral-50";
-  }
-};
+const PAGE_SIZE = 10;
 
 export function OrdersTable() {
   const router = useRouter();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  const filteredOrders = orders.filter(
-    (order) =>
-      order.orderID.toLowerCase().includes(search.toLowerCase()) ||
-      order.customer.toLowerCase().includes(search.toLowerCase()),
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await ordersApi.list({ page, limit: PAGE_SIZE });
+      setOrders(res.data as unknown as Order[]);
+      setTotal(res.total);
+    } catch {/* ignore */} finally {
+      setLoading(false);
+    }
+  }, [page]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const filtered = orders.filter((o) =>
+    o._id.toLowerCase().includes(search.toLowerCase()) ||
+    o.customerName.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
     <section>
       <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-neutral-100">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="relative max-w-sm flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
               type="text"
-              placeholder="Search by Order ID, name ..."
+              placeholder="Search by ID or customer…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+              className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-500 focus:border-[#22c51f] focus:outline-none focus:ring-1 focus:ring-green-100"
             />
           </div>
-          <button className="ml-4 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-semibold text-white flex items-center gap-2 hover:bg-neutral-800">
-            <Download size={16} />
-            Export
+          <button className="flex items-center gap-2 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800">
+            <Download size={15} /> Export
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="border-b border-neutral-200">
-              <tr className="text-xs font-semibold text-neutral-600">
-                <th className="py-4 px-4 text-left">OrderID</th>
-                <th className="py-4 px-4 text-left">Customer</th>
-                <th className="py-4 px-4 text-left">Items</th>
-                <th className="py-4 px-4 text-left">Type</th>
-                <th className="py-4 px-4 text-left">Total</th>
-                <th className="py-4 px-4 text-left">Time</th>
-                <th className="py-4 px-4 text-left">Status</th>
-                <th className="py-4 px-4 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-200">
-              {filteredOrders.map((order) => (
-                <tr
-                  key={order.id}
-                  className="hover:bg-neutral-50 transition-colors cursor-pointer"
-                  onClick={() =>
-                    router.push(`/dashboard/orders/${order.id}`)
-                  }
-                >
-                  <td className="py-4 px-4 text-sm font-semibold text-neutral-900">
-                    {order.orderID}
-                  </td>
-                  <td className="py-4 px-4 text-sm text-neutral-700">
-                    {order.customer}
-                  </td>
-                  <td className="py-4 px-4 text-sm text-neutral-700">
-                    <div className="flex flex-col">
-                      {order.items.map((item, idx) => (
-                        <div key={idx}>
-                          <span className="font-semibold text-neutral-900">
-                            {item.quantity}X {item.name}
-                          </span>
-                          <span className="text-neutral-500 block text-xs">
-                            {item.category}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      {order.type === "Delivery" && (
-                        <Truck size={18} className="text-neutral-600" />
-                      )}
-                      {order.type === "Takeaway" && (
-                        <Package size={18} className="text-neutral-600" />
-                      )}
-                      {order.type === "Dine-in" && (
-                        <UtensilsCrossed
-                          size={18}
-                          className="text-neutral-600"
-                        />
-                      )}
-                      <span className="text-neutral-700">{order.type}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-sm font-semibold text-neutral-900">
-                    {order.total}
-                  </td>
-                  <td className="py-4 px-4 text-sm text-neutral-600 whitespace-pre-line">
-                    {order.time}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span
-                      className={`inline-block text-sm font-semibold ${getStatusColor(order.status)}`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-center">
-                    <button className="text-neutral-400 hover:text-neutral-600">
-                      <MoreVertical size={18} />
-                    </button>
-                  </td>
+        {loading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-14 animate-pulse rounded-lg bg-neutral-100" />
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="border-b border-neutral-200">
+                <tr className="text-xs font-semibold text-neutral-500">
+                  <th className="px-4 py-3 text-left">Order ID</th>
+                  <th className="px-4 py-3 text-left">Customer</th>
+                  <th className="px-4 py-3 text-left">Items</th>
+                  <th className="px-4 py-3 text-left">Type</th>
+                  <th className="px-4 py-3 text-left">Total</th>
+                  <th className="px-4 py-3 text-left">Date</th>
+                  <th className="px-4 py-3 text-left">Status</th>
+                  <th className="px-4 py-3 text-center">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-neutral-100">
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-12 text-center text-sm text-neutral-400">
+                      No orders found
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((order) => {
+                    const date = new Date(order.createdAt).toLocaleDateString("en-US", {
+                      month: "short", day: "numeric", year: "numeric",
+                    });
+                    const time = new Date(order.createdAt).toLocaleTimeString("en-US", {
+                      hour: "2-digit", minute: "2-digit",
+                    });
+                    return (
+                      <tr
+                        key={order._id}
+                        onClick={() => router.push(`/dashboard/orders/${order._id}`)}
+                        className="cursor-pointer transition hover:bg-neutral-50"
+                      >
+                        <td className="px-4 py-4 text-sm font-semibold text-neutral-900">
+                          #{order._id.slice(-6).toUpperCase()}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-neutral-700">{order.customerName}</td>
+                        <td className="px-4 py-4 text-sm text-neutral-700">
+                          {order.items.map((item, i) => (
+                            <div key={i}>
+                              <span className="font-semibold text-neutral-900">{item.quantity}× {item.name}</span>
+                            </div>
+                          ))}
+                        </td>
+                        <td className="px-4 py-4 text-sm">
+                          <div className="flex items-center gap-1.5">
+                            {order.type === "Delivery" && <Truck size={15} className="text-neutral-400" />}
+                            {order.type === "Takeaway" && <Package size={15} className="text-neutral-400" />}
+                            {order.type === "Dine-in" && <UtensilsCrossed size={15} className="text-neutral-400" />}
+                            <span className="text-neutral-700">{order.type}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 text-sm font-semibold text-neutral-900">${order.total.toFixed(2)}</td>
+                        <td className="px-4 py-4 text-xs text-neutral-500">
+                          <span>{time}</span>
+                          <br />
+                          <span>{date}</span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className={`text-sm font-semibold ${STATUS_COLOR[order.status] ?? "text-neutral-600"}`}>
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 text-center">
+                          <button className="text-neutral-400 hover:text-neutral-600" onClick={(e) => e.stopPropagation()}>
+                            <MoreVertical size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-        <div className="mt-6 flex items-center justify-between">
-          <div className="text-xs text-neutral-600">9 out of 151</div>
-          <div className="flex items-center gap-2">
-            <button className="h-7 w-7 rounded border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50">
-              ◀
+        {/* Pagination */}
+        <div className="mt-5 flex items-center justify-between">
+          <p className="text-xs text-neutral-500">
+            {Math.min((page - 1) * PAGE_SIZE + 1, total)}–{Math.min(page * PAGE_SIZE, total)} of {total}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40"
+            >
+              <ChevronLeft size={14} />
             </button>
-            <button className="h-7 w-7 rounded bg-emerald-600 text-sm text-white font-semibold">
-              1
-            </button>
-            <button className="h-7 w-7 rounded border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50">
-              2
-            </button>
-            <button className="h-7 w-7 rounded border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50">
-              3
-            </button>
-            <button className="h-7 w-7 rounded border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50">
-              ...
-            </button>
-            <button className="h-7 w-7 rounded border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50">
-              ▶
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                className={`h-7 w-7 rounded text-xs font-semibold ${
+                  p === page ? "bg-[#22c51f] text-white" : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40"
+            >
+              <ChevronRight size={14} />
             </button>
           </div>
         </div>
