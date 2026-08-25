@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { updateOrderStatusSchema } from "@/lib/validators";
 
@@ -11,44 +10,38 @@ export async function GET(req: NextRequest, { params }: Params) {
   const session = await getSession(req);
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!ObjectId.isValid(id))
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
   try {
-    const db = await getDb();
-    const order = await db
-      .collection("orders")
-      .findOne({ _id: new ObjectId(id) });
-    if (!order)
+    const { data: order, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !order) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
-    // Owners can only see their restaurant's orders; customers their own
-    if (
-      session.role === "owner" &&
-      order.restaurantId !== session.restaurantId
-    ) {
+    if (session.role === "owner" && order.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    if (session.role === "customer" && order.customerId !== session.userId) {
+    if (session.role === "customer" && order.customer_id !== session.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    return NextResponse.json({ data: { ...order, _id: order._id.toString() } });
+    return NextResponse.json({ data: order });
   } catch (err) {
     console.error("[GET /api/orders/[id]]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 
-// PATCH /api/orders/[id] – owners update order status; customers can cancel
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params;
   const session = await getSession(req);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!ObjectId.isValid(id))
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
   let body: unknown;
   try {
@@ -66,20 +59,22 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   try {
-    const db = await getDb();
-    const order = await db
-      .collection("orders")
-      .findOne({ _id: new ObjectId(id) });
-    if (!order)
+    const { data: order, error: fetchError } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !order) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
     if (session.role === "owner") {
-      if (order.restaurantId !== session.restaurantId) {
+      if (order.restaurant_id !== session.restaurantId) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
     } else {
-      // Customer can only cancel their own order while still Pending
-      if (order.customerId !== session.userId) {
+      if (order.customer_id !== session.userId) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
       if (parsed.data.status !== "Cancelled") {
@@ -96,12 +91,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       }
     }
 
-    await db
-      .collection("orders")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { status: parsed.data.status, updatedAt: new Date() } },
-      );
+    const { error } = await supabase
+      .from("orders")
+      .update({ status: parsed.data.status, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) throw error;
 
     return NextResponse.json({ message: "Order updated" });
   } catch (err) {

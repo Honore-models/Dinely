@@ -1,20 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { updateReviewSchema } from "@/lib/validators";
 
 type Params = { params: Promise<{ id: string }> };
 
-// PATCH /api/reviews/[id] – customer edits their own review
+// PATCH /api/reviews/[id]
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params;
   const session = await getSession(req);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
   }
 
   let body: unknown;
@@ -26,51 +22,51 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   const parsed = updateReviewSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.errors[0].message },
-      { status: 422 },
-    );
+    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 422 });
   }
 
   try {
-    const db = await getDb();
-    const review = await db
-      .collection("reviews")
-      .findOne({ _id: new ObjectId(id) });
-    if (!review) {
+    const { data: review, error: fetchError } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !review) {
       return NextResponse.json({ error: "Review not found" }, { status: 404 });
     }
-    if (review.customerId !== session.userId && session.role !== "owner") {
+    if (review.customer_id !== session.userId && session.role !== "owner") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await db
-      .collection("reviews")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { ...parsed.data, updatedAt: new Date() } },
-      );
+    const updateData: Record<string, unknown> = {};
+    if (parsed.data.rating !== undefined) updateData.rating = parsed.data.rating;
+    if (parsed.data.comment !== undefined) updateData.comment = parsed.data.comment;
+
+    const { error } = await supabase
+      .from("reviews")
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) throw error;
 
     // Re-compute restaurant rating
-    const ratingAgg = await db
-      .collection("reviews")
-      .aggregate([
-        { $match: { restaurantId: review.restaurantId } },
-        { $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } },
-      ])
-      .toArray();
+    const { data: allReviews } = await supabase
+      .from("reviews")
+      .select("rating")
+      .eq("restaurant_id", review.restaurant_id);
 
-    if (ratingAgg[0] && ObjectId.isValid(review.restaurantId)) {
-      await db.collection("restaurants").updateOne(
-        { _id: new ObjectId(review.restaurantId) },
-        {
-          $set: {
-            rating: Math.round(ratingAgg[0].avg * 10) / 10,
-            reviewCount: ratingAgg[0].count,
-            updatedAt: new Date(),
-          },
-        },
-      );
+    const ratings = (allReviews || []).map((r) => r.rating);
+    if (ratings.length > 0) {
+      const avgRating = Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10;
+      await supabase
+        .from("restaurants")
+        .update({
+          rating: avgRating,
+          review_count: ratings.length,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", review.restaurant_id);
     }
 
     return NextResponse.json({ message: "Review updated" });
@@ -80,58 +76,50 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 }
 
-// DELETE /api/reviews/[id] – customer deletes own review or owner deletes from their restaurant
+// DELETE /api/reviews/[id]
 export async function DELETE(req: NextRequest, { params }: Params) {
   const { id } = await params;
   const session = await getSession(req);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   try {
-    const db = await getDb();
-    const review = await db
-      .collection("reviews")
-      .findOne({ _id: new ObjectId(id) });
-    if (!review) {
+    const { data: review, error: fetchError } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !review) {
       return NextResponse.json({ error: "Review not found" }, { status: 404 });
     }
 
     const isOwnerOfRestaurant =
-      session.role === "owner" &&
-      review.restaurantId === session.restaurantId;
-    const isAuthor = review.customerId === session.userId;
+      session.role === "owner" && review.restaurant_id === session.restaurantId;
+    const isAuthor = review.customer_id === session.userId;
 
     if (!isOwnerOfRestaurant && !isAuthor) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await db.collection("reviews").deleteOne({ _id: new ObjectId(id) });
+    await supabase.from("reviews").delete().eq("id", id);
 
     // Re-compute restaurant rating
-    const ratingAgg = await db
-      .collection("reviews")
-      .aggregate([
-        { $match: { restaurantId: review.restaurantId } },
-        { $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } },
-      ])
-      .toArray();
+    const { data: allReviews } = await supabase
+      .from("reviews")
+      .select("rating")
+      .eq("restaurant_id", review.restaurant_id);
 
-    if (ObjectId.isValid(review.restaurantId)) {
-      await db.collection("restaurants").updateOne(
-        { _id: new ObjectId(review.restaurantId) },
-        {
-          $set: {
-            rating: ratingAgg[0] ? Math.round(ratingAgg[0].avg * 10) / 10 : 0,
-            reviewCount: ratingAgg[0]?.count ?? 0,
-            updatedAt: new Date(),
-          },
-        },
-      );
-    }
+    const ratings = (allReviews || []).map((r) => r.rating);
+    await supabase
+      .from("restaurants")
+      .update({
+        rating: ratings.length > 0 ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10 : 0,
+        review_count: ratings.length,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", review.restaurant_id);
 
     return NextResponse.json({ message: "Review deleted" });
   } catch (err) {
@@ -140,18 +128,26 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   }
 }
 
-// POST /api/reviews/[id]?action=helpful – mark a review as helpful
+// POST /api/reviews/[id]?action=helpful
 export async function POST(req: NextRequest, { params }: Params) {
   const { id } = await params;
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   try {
-    const db = await getDb();
-    await db
-      .collection("reviews")
-      .updateOne({ _id: new ObjectId(id) }, { $inc: { helpful: 1 } });
+    const { data: review } = await supabase
+      .from("reviews")
+      .select("helpful")
+      .eq("id", id)
+      .single();
+
+    if (!review) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    await supabase
+      .from("reviews")
+      .update({ helpful: (review.helpful || 0) + 1 })
+      .eq("id", id);
+
     return NextResponse.json({ message: "Marked as helpful" });
   } catch (err) {
     console.error("[POST /api/reviews/[id]]", err);

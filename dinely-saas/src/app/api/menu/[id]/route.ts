@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { menuItemSchema } from "@/lib/validators";
 
@@ -8,18 +7,18 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params;
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   try {
-    const db = await getDb();
-    const item = await db
-      .collection("menu_items")
-      .findOne({ _id: new ObjectId(id) });
-    if (!item)
+    const { data: item, error } = await supabase
+      .from("menu_items")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !item) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json({ data: { ...item, _id: item._id.toString() } });
+    }
+    return NextResponse.json({ data: item });
   } catch (err) {
     console.error("[GET /api/menu/[id]]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -31,9 +30,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await getSession(req);
   if (!session || session.role !== "owner") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
   }
 
   let body: unknown;
@@ -52,23 +48,36 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   try {
-    const db = await getDb();
-    // Ensure the item belongs to this owner's restaurant
-    const item = await db
-      .collection("menu_items")
-      .findOne({ _id: new ObjectId(id) });
-    if (!item)
+    // Verify ownership
+    const { data: item } = await supabase
+      .from("menu_items")
+      .select("restaurant_id")
+      .eq("id", id)
+      .single();
+
+    if (!item) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
-    if (item.restaurantId !== session.restaurantId) {
+    }
+    if (item.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await db
-      .collection("menu_items")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { ...parsed.data, updatedAt: new Date() } },
-      );
+    const updateData: Record<string, unknown> = {};
+    if (parsed.data.name) updateData.name = parsed.data.name;
+    if (parsed.data.category) updateData.category = parsed.data.category;
+    if (parsed.data.price !== undefined) updateData.price = parsed.data.price;
+    if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
+    if (parsed.data.image !== undefined) updateData.image = parsed.data.image;
+    if (parsed.data.mealTimes) updateData.meal_times = parsed.data.mealTimes;
+    if (parsed.data.priceRange) updateData.price_range = parsed.data.priceRange;
+    if (parsed.data.available !== undefined) updateData.available = parsed.data.available;
+
+    const { error } = await supabase
+      .from("menu_items")
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) throw error;
 
     return NextResponse.json({ message: "Menu item updated" });
   } catch (err) {
@@ -83,22 +92,22 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   if (!session || session.role !== "owner") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   try {
-    const db = await getDb();
-    const item = await db
-      .collection("menu_items")
-      .findOne({ _id: new ObjectId(id) });
-    if (!item)
+    const { data: item } = await supabase
+      .from("menu_items")
+      .select("restaurant_id")
+      .eq("id", id)
+      .single();
+
+    if (!item) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
-    if (item.restaurantId !== session.restaurantId) {
+    }
+    if (item.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await db.collection("menu_items").deleteOne({ _id: new ObjectId(id) });
+    await supabase.from("menu_items").delete().eq("id", id);
     return NextResponse.json({ message: "Menu item deleted" });
   } catch (err) {
     console.error("[DELETE /api/menu/[id]]", err);

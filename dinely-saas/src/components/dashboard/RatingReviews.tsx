@@ -20,8 +20,8 @@ export function RatingReviews() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!restaurant?._id) return;
-    reviewsApi.list(restaurant._id, { limit: 50 }).then((res) => {
+    if (!restaurant?.id) return;
+    reviewsApi.list(restaurant.id, { limit: 50 }).then((res) => {
       const reviews = res.data as unknown as { rating: number }[];
       const total = res.total;
       const avg = res.avgRating;
@@ -31,7 +31,7 @@ export function RatingReviews() {
       });
       setData({ total, avgRating: avg, starBreakdown: breakdown });
     }).catch(() => {}).finally(() => setLoading(false));
-  }, [restaurant?._id]);
+  }, [restaurant?.id]);
 
   const avg = data?.avgRating ?? 0;
   const positiveReviews = data?.starBreakdown.filter((s) => s.stars >= 4).reduce((sum, s) => sum + s.count, 0) ?? 0;

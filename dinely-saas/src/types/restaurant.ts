@@ -2,21 +2,23 @@ export type PlanName = "Starter" | "Professional" | "Enterprise";
 export type BillingCycle = "monthly" | "yearly";
 
 export interface Restaurant {
-  _id?: string;
-  ownerId: string;
+  id: string;
+  owner_id: string;
   name: string;
   type: string;
   address: string;
-  openingHours: string;
+  opening_hours: string;
   phone: string;
   email: string;
   logo?: string;
   description?: string;
   plan: PlanName;
-  billingCycle: BillingCycle;
-  stripeCustomerId?: string;
-  stripeSubscriptionId?: string;
-  subscriptionStatus: "active" | "trialing" | "past_due" | "canceled";
-  createdAt: Date;
-  updatedAt: Date;
+  billing_cycle: BillingCycle;
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
+  subscription_status: "active" | "trialing" | "past_due" | "canceled";
+  rating?: number;
+  review_count?: number;
+  created_at: string;
+  updated_at: string;
 }

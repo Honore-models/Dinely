@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { createBookingSchema } from "@/lib/validators";
 
@@ -15,30 +14,26 @@ export async function GET(req: NextRequest) {
   const date = searchParams.get("date");
   const status = searchParams.get("status");
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const filter: Record<string, any> = {};
-
-  if (session.role === "owner") {
-    if (!session.restaurantId) return NextResponse.json({ data: [] });
-    filter.restaurantId = session.restaurantId;
-  } else {
-    filter.customerId = session.userId;
-  }
-
-  if (date) filter.date = date;
-  if (status) filter.status = status;
-
   try {
-    const db = await getDb();
-    const bookings = await db
-      .collection("bookings")
-      .find(filter)
-      .sort({ date: 1, time: 1 })
-      .toArray();
+    let query = supabase.from("bookings").select("*");
 
-    return NextResponse.json({
-      data: bookings.map((b) => ({ ...b, _id: b._id.toString() })),
-    });
+    if (session.role === "owner") {
+      if (!session.restaurantId) return NextResponse.json({ data: [] });
+      query = query.eq("restaurant_id", session.restaurantId);
+    } else {
+      query = query.eq("customer_id", session.userId);
+    }
+
+    if (date) query = query.eq("date", date);
+    if (status) query = query.eq("status", status);
+
+    const { data: bookings, error } = await query
+      .order("date", { ascending: true })
+      .order("time", { ascending: true });
+
+    if (error) throw error;
+
+    return NextResponse.json({ data: bookings || [] });
   } catch (err) {
     console.error("[GET /api/bookings]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -68,35 +63,43 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const db = await getDb();
+    const { data: restaurant } = await supabase
+      .from("restaurants")
+      .select("id")
+      .eq("id", parsed.data.restaurantId)
+      .single();
 
-    const restaurant = await db
-      .collection("restaurants")
-      .findOne({ _id: new ObjectId(parsed.data.restaurantId) });
     if (!restaurant) {
-      return NextResponse.json(
-        { error: "Restaurant not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Restaurant not found" }, { status: 404 });
     }
 
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(session.userId) });
+    const { data: user } = await supabase
+      .from("users")
+      .select("first_name, last_name, email")
+      .eq("id", session.userId)
+      .single();
 
-    const now = new Date();
-    const result = await db.collection("bookings").insertOne({
-      ...parsed.data,
-      customerId: session.userId,
-      customerName: user ? `${user.firstName} ${user.lastName}` : "Guest",
-      customerEmail: user?.email || "",
-      status: "Pending",
-      createdAt: now,
-      updatedAt: now,
-    });
+    const { data: newBooking, error } = await supabase
+      .from("bookings")
+      .insert({
+        restaurant_id: parsed.data.restaurantId,
+        customer_id: session.userId,
+        customer_name: user ? `${user.first_name} ${user.last_name}` : "Guest",
+        customer_email: user?.email || "",
+        table_id: parsed.data.tableId || null,
+        date: parsed.data.date,
+        time: parsed.data.time,
+        party_size: parsed.data.partySize,
+        notes: parsed.data.notes || null,
+        status: "Pending",
+      })
+      .select("id")
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json(
-      { message: "Booking created", bookingId: result.insertedId.toString() },
+      { message: "Booking created", bookingId: newBooking.id },
       { status: 201 },
     );
   } catch (err) {

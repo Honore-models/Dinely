@@ -10,7 +10,7 @@ import { useRestaurants } from "@/hooks/useRestaurants";
 import { useFavourites } from "@/hooks/useFavourites";
 
 interface Restaurant {
-  _id: string;
+  id: string;
   name: string;
   type: string;
   logo?: string;
@@ -270,15 +270,15 @@ export default function HomePage() {
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                   {popular.map((r, i) => (
                   <RestaurantCard
-                    key={r._id}
-                    id={r._id}
+                    key={r.id}
+                    id={r.id}
                     name={r.name}
                     cuisine={r.type}
                     rating={r.rating ?? 0}
                     deliveryTime="30 – 40 Min"
                     deliveryFee="Free delivery Over $25"
                     image={getRestaurantImage(r, i)}
-                    isFavourite={favouriteIds.has(r._id)}
+                    isFavourite={favouriteIds.has(r.id)}
                     onToggleFavourite={toggleFav}
                   />
                 ))}
@@ -293,15 +293,15 @@ export default function HomePage() {
                   <div className="mt-4 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                     {more.map((r, i) => (
                     <RestaurantCard
-                      key={r._id}
-                      id={r._id}
+                      key={r.id}
+                      id={r.id}
                       name={r.name}
                       cuisine={r.type}
                       rating={r.rating ?? 0}
                       deliveryTime="30 – 40 Min"
                       deliveryFee="Free delivery"
                       image={getRestaurantImage(r, i + 3)}
-                      isFavourite={favouriteIds.has(r._id)}
+                      isFavourite={favouriteIds.has(r.id)}
                       onToggleFavourite={toggleFav}
                     />
                   ))}

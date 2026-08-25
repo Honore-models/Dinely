@@ -1,17 +1,17 @@
 export type BookingStatus = "Pending" | "Confirmed" | "Cancelled" | "Completed";
 
 export interface Booking {
-  _id?: string;
-  restaurantId: string;
-  customerId: string;
-  customerName: string;
-  customerEmail: string;
-  tableId?: string;
-  date: string; // "YYYY-MM-DD"
-  time: string; // "HH:MM"
-  partySize: number;
+  id: string;
+  restaurant_id: string;
+  customer_id: string;
+  customer_name: string;
+  customer_email: string;
+  table_id?: string;
+  date: string;
+  time: string;
+  party_size: number;
   status: BookingStatus;
   notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: string;
+  updated_at: string;
 }

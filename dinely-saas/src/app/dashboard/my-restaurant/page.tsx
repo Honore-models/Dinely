@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 import { uploadApi } from "@/lib/api";
 
-interface MenuItem { _id: string; name: string; price: number; orders: number; image?: string; }
+interface MenuItem { id: string; name: string; price: number; orders: number; image?: string; }
 
 const FALLBACK = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80";
 
@@ -36,7 +36,7 @@ export default function MyRestaurantPage() {
         address: restaurant.address ?? "",
         phone: restaurant.phone ?? "",
         email: restaurant.email ?? "",
-        openingHours: restaurant.openingHours ?? "",
+        openingHours: restaurant.opening_hours ?? "",
         description: restaurant.description ?? "",
         logo: restaurant.logo ?? "",
       });
@@ -182,7 +182,7 @@ export default function MyRestaurantPage() {
                         {(restaurant as unknown as Record<string, unknown>).rating as number ?? "—"}
                       </span>
                       <span className="text-sm text-neutral-400">
-                        ({(restaurant as unknown as Record<string, unknown>).reviewCount as number ?? 0} reviews)
+                        ({(restaurant as unknown as Record<string, unknown>).review_count as number ?? 0} reviews)
                       </span>
                     </div>
                   </div>
@@ -209,7 +209,7 @@ export default function MyRestaurantPage() {
                   </div>
                   <div className="flex items-center gap-2.5 text-sm text-neutral-700">
                     <Clock size={15} className="shrink-0 text-neutral-400" />
-                    {restaurant.openingHours}
+                    {restaurant.opening_hours}
                   </div>
                   <div className="flex items-center gap-2.5 text-sm text-neutral-700">
                     <Phone size={15} className="shrink-0 text-neutral-400" />
@@ -251,11 +251,11 @@ export default function MyRestaurantPage() {
             <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold text-neutral-700">{restaurant.plan}</p>
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${restaurant.subscriptionStatus === "active" ? "bg-green-100 text-[#22c51f]" : "bg-amber-100 text-amber-600"}`}>
-                  {restaurant.subscriptionStatus}
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${restaurant.subscription_status === "active" ? "bg-green-100 text-[#22c51f]" : "bg-amber-100 text-amber-600"}`}>
+                  {restaurant.subscription_status}
                 </span>
               </div>
-              <p className="mt-0.5 text-xs capitalize text-neutral-500">{restaurant.billingCycle} billing</p>
+              <p className="mt-0.5 text-xs capitalize text-neutral-500">{restaurant.billing_cycle} billing</p>
             </div>
           </div>
         </div>

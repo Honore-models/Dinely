@@ -34,7 +34,28 @@ export function useAuth() {
   const fetchMe = useCallback(async () => {
     try {
       const { user } = await authApi.me();
-      setState({ user: user as unknown as User | null, loading: false, error: null });
+      // The API returns snake_case from Supabase, but we normalize to camelCase for the frontend
+      const raw = user as unknown as Record<string, unknown>;
+      if (raw) {
+        setState({
+          user: {
+            _id: (raw.id as string) || "",
+            firstName: (raw.first_name as string) || "",
+            lastName: (raw.last_name as string) || "",
+            email: (raw.email as string) || "",
+            phone: (raw.phone as string) || "",
+            role: (raw.role as "owner" | "customer") || "customer",
+            restaurantId: (raw.restaurant_id as string) || undefined,
+            favourites: (raw.favourites as string[]) || [],
+            address: (raw.address as string) || undefined,
+            avatar: (raw.avatar as string) || undefined,
+          },
+          loading: false,
+          error: null,
+        });
+      } else {
+        setState({ user: null, loading: false, error: null });
+      }
     } catch {
       setState({ user: null, loading: false, error: null });
     }
@@ -122,8 +143,22 @@ export function useAuth() {
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
       const { user } = await authApi.updateProfile(data);
+      const raw = user as unknown as Record<string, unknown>;
       setState({
-        user: user as unknown as User,
+        user: raw
+          ? {
+              _id: (raw.id as string) || "",
+              firstName: (raw.first_name as string) || "",
+              lastName: (raw.last_name as string) || "",
+              email: (raw.email as string) || "",
+              phone: (raw.phone as string) || "",
+              role: (raw.role as "owner" | "customer") || "customer",
+              restaurantId: (raw.restaurant_id as string) || undefined,
+              favourites: (raw.favourites as string[]) || [],
+              address: (raw.address as string) || undefined,
+              avatar: (raw.avatar as string) || undefined,
+            }
+          : null,
         loading: false,
         error: null,
       });

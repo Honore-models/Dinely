@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { z } from "zod";
 
@@ -17,30 +16,26 @@ export async function GET(req: NextRequest, { params }: Params) {
   const session = await getSession(req);
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!ObjectId.isValid(id))
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
   try {
-    const db = await getDb();
-    const booking = await db
-      .collection("bookings")
-      .findOne({ _id: new ObjectId(id) });
-    if (!booking)
+    const { data: booking, error } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !booking) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
-    if (
-      session.role === "owner" &&
-      booking.restaurantId !== session.restaurantId
-    ) {
+    if (session.role === "owner" && booking.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    if (session.role === "customer" && booking.customerId !== session.userId) {
+    if (session.role === "customer" && booking.customer_id !== session.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    return NextResponse.json({
-      data: { ...booking, _id: booking._id.toString() },
-    });
+    return NextResponse.json({ data: booking });
   } catch (err) {
     console.error("[GET /api/bookings/[id]]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -52,8 +47,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await getSession(req);
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!ObjectId.isValid(id))
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
   let body: unknown;
   try {
@@ -71,22 +64,21 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   try {
-    const db = await getDb();
-    const booking = await db
-      .collection("bookings")
-      .findOne({ _id: new ObjectId(id) });
-    if (!booking)
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const { data: booking, error: fetchError } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-    // Owners update status; customers can only cancel their own
-    if (
-      session.role === "owner" &&
-      booking.restaurantId !== session.restaurantId
-    ) {
+    if (fetchError || !booking) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    if (session.role === "owner" && booking.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     if (session.role === "customer") {
-      if (booking.customerId !== session.userId) {
+      if (booking.customer_id !== session.userId) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
       if (parsed.data.status && parsed.data.status !== "Cancelled") {
@@ -97,12 +89,17 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       }
     }
 
-    await db
-      .collection("bookings")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { ...parsed.data, updatedAt: new Date() } },
-      );
+    const updateData: Record<string, unknown> = {};
+    if (parsed.data.status) updateData.status = parsed.data.status;
+    if (parsed.data.tableId !== undefined) updateData.table_id = parsed.data.tableId;
+    if (parsed.data.notes !== undefined) updateData.notes = parsed.data.notes;
+
+    const { error } = await supabase
+      .from("bookings")
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) throw error;
 
     return NextResponse.json({ message: "Booking updated" });
   } catch (err) {

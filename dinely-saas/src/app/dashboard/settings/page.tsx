@@ -85,7 +85,7 @@ export default function SettingsPage() {
       setRestAddress(restaurant.address ?? "");
       setRestPhone(restaurant.phone ?? "");
       setRestEmail(restaurant.email ?? "");
-      setRestHours(restaurant.openingHours ?? "");
+      setRestHours(restaurant.opening_hours ?? "");
       setRestDescription(restaurant.description ?? "");
     }
   }, [restaurant]);
@@ -103,7 +103,7 @@ export default function SettingsPage() {
           address: restAddress,
           phone: restPhone,
           email: restEmail,
-          openingHours: restHours,
+          opening_hours: restHours,
           description: restDescription,
         }),
       ]);
@@ -230,19 +230,19 @@ export default function SettingsPage() {
               <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
                 <p className="text-xs font-semibold text-neutral-500">Billing cycle</p>
                 <p className="mt-1 text-sm font-bold capitalize text-neutral-900">
-                  {restaurant?.billingCycle ?? "—"}
+                  {restaurant?.billing_cycle ?? "—"}
                 </p>
               </div>
               <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
                 <p className="text-xs font-semibold text-neutral-500">Status</p>
                 <p
                   className={`mt-1 text-sm font-bold capitalize ${
-                    restaurant?.subscriptionStatus === "active"
+                    restaurant?.subscription_status === "active"
                       ? "text-[#22c51f]"
                       : "text-amber-600"
                   }`}
                 >
-                  {restaurant?.subscriptionStatus ?? "—"}
+                  {restaurant?.subscription_status ?? "—"}
                 </p>
               </div>
             </div>
@@ -339,7 +339,7 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-3">
               {[
-                { name: "Stripe", status: restaurant?.subscriptionStatus === "active" ? "Connected" : "Pending setup" },
+                { name: "Stripe", status: restaurant?.subscription_status === "active" ? "Connected" : "Pending setup" },
                 { name: "Cloudinary", status: "Connected" },
                 { name: "Google Calendar", status: "Not connected" },
               ].map((intg) => (

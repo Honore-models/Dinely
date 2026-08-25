@@ -11,18 +11,18 @@ interface OrderItem {
 }
 
 interface Order {
-  _id: string;
-  restaurantId: string;
-  customerId: string;
-  customerName: string;
+  id: string;
+  restaurant_id: string;
+  customer_id: string;
+  customer_name: string;
   items: OrderItem[];
   type: "Delivery" | "Takeaway" | "Dine-in";
   status: "Pending" | "Active" | "Completed" | "Cancelled";
   total: number;
-  deliveryAddress?: string;
+  delivery_address?: string;
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export function useOrders(params?: {
@@ -58,7 +58,7 @@ export function useOrders(params?: {
     try {
       await ordersApi.updateStatus(id, status);
       setOrders((prev) =>
-        prev.map((o) => (o._id === id ? { ...o, status } : o)),
+        prev.map((o) => (o.id === id ? { ...o, status } : o)),
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update order");

@@ -9,13 +9,13 @@ import { ordersApi } from "@/lib/api";
 
 interface OrderItem { name: string; quantity: number; price: number; }
 interface Order {
-  _id: string;
-  customerName: string;
+  id: string;
+  customer_name: string;
   items: OrderItem[];
   type: "Delivery" | "Takeaway" | "Dine-in";
   total: number;
   status: "Pending" | "Active" | "Completed" | "Cancelled";
-  createdAt: string;
+  created_at: string;
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -49,8 +49,8 @@ export function OrdersTable() {
   useEffect(() => { load(); }, [load]);
 
   const filtered = orders.filter((o) =>
-    o._id.toLowerCase().includes(search.toLowerCase()) ||
-    o.customerName.toLowerCase().includes(search.toLowerCase()),
+    o.id.toLowerCase().includes(search.toLowerCase()) ||
+    o.customer_name.toLowerCase().includes(search.toLowerCase()),
   );
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -104,22 +104,22 @@ export function OrdersTable() {
                   </tr>
                 ) : (
                   filtered.map((order) => {
-                    const date = new Date(order.createdAt).toLocaleDateString("en-US", {
+                    const date = new Date(order.created_at).toLocaleDateString("en-US", {
                       month: "short", day: "numeric", year: "numeric",
                     });
-                    const time = new Date(order.createdAt).toLocaleTimeString("en-US", {
+                    const time = new Date(order.created_at).toLocaleTimeString("en-US", {
                       hour: "2-digit", minute: "2-digit",
                     });
                     return (
                       <tr
-                        key={order._id}
-                        onClick={() => router.push(`/dashboard/orders/${order._id}`)}
+                        key={order.id}
+                        onClick={() => router.push(`/dashboard/orders/${order.id}`)}
                         className="cursor-pointer transition hover:bg-neutral-50"
                       >
                         <td className="px-4 py-4 text-sm font-semibold text-neutral-900">
-                          #{order._id.slice(-6).toUpperCase()}
+                          #{order.id.slice(-6).toUpperCase()}
                         </td>
-                        <td className="px-4 py-4 text-sm text-neutral-700">{order.customerName}</td>
+                        <td className="px-4 py-4 text-sm text-neutral-700">{order.customer_name}</td>
                         <td className="px-4 py-4 text-sm text-neutral-700">
                           {order.items.map((item, i) => (
                             <div key={i}>
@@ -160,7 +160,6 @@ export function OrdersTable() {
           </div>
         )}
 
-        {/* Pagination */}
         <div className="mt-5 flex items-center justify-between">
           <p className="text-xs text-neutral-500">
             {Math.min((page - 1) * PAGE_SIZE + 1, total)}–{Math.min(page * PAGE_SIZE, total)} of {total}

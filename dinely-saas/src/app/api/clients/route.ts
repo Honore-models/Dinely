@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 
 // ─── GET /api/clients ─────────────────────────────────────────────────────────
-// Returns unique customers who have placed orders at the owner's restaurant.
-// Each client includes their last visit date and order count.
 
 export async function GET(req: NextRequest) {
   const session = await getSession(req);
@@ -20,63 +17,56 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get("search") || "";
 
   try {
-    const db = await getDb();
+    // Get all orders for this restaurant to find unique customers
+    const { data: orders } = await supabase
+      .from("orders")
+      .select("customer_id, customer_name, total, created_at")
+      .eq("restaurant_id", session.restaurantId);
 
-    // Aggregate unique customers from orders
-    const pipeline = [
-      { $match: { restaurantId: session.restaurantId } },
-      {
-        $group: {
-          _id: "$customerId",
-          customerName: { $first: "$customerName" },
-          orderCount: { $sum: 1 },
-          totalSpent: { $sum: "$total" },
-          lastVisit: { $max: "$createdAt" },
-        },
-      },
-      { $sort: { lastVisit: -1 } },
-    ];
+    if (!orders || orders.length === 0) {
+      return NextResponse.json({ data: [] });
+    }
 
-    const clientSummaries = await db
-      .collection("orders")
-      .aggregate(pipeline)
-      .toArray();
+    // Aggregate by customer
+    const clientMap = new Map<
+      string,
+      { name: string; orderCount: number; totalSpent: number; lastVisit: string }
+    >();
 
-    // Fetch user details for each client
-    const clientIds = clientSummaries
-      .map((c) => {
-        try {
-          return new ObjectId(c._id as string);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean) as ObjectId[];
+    for (const o of orders) {
+      const existing = clientMap.get(o.customer_id) || {
+        name: o.customer_name,
+        orderCount: 0,
+        totalSpent: 0,
+        lastVisit: o.created_at,
+      };
+      existing.orderCount += 1;
+      existing.totalSpent += o.total || 0;
+      if (o.created_at > existing.lastVisit) existing.lastVisit = o.created_at;
+      clientMap.set(o.customer_id, existing);
+    }
 
-    const users = await db
-      .collection("users")
-      .find({ _id: { $in: clientIds } }, { projection: { passwordHash: 0 } })
-      .toArray();
+    // Get user details for emails/phones
+    const clientIds = Array.from(clientMap.keys());
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, email, phone")
+      .in("id", clientIds);
 
-    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
+    const userMap = new Map((users || []).map((u) => [u.id, u]));
 
-    const clients = clientSummaries
-      .map((c) => {
-        const user = userMap.get(c._id as string);
+    const clients = Array.from(clientMap.entries())
+      .map(([id, info]) => {
+        const user = userMap.get(id);
         return {
-          id: c._id as string,
-          name: c.customerName as string,
+          id,
+          name: info.name,
           email: user?.email || "",
           phone: user?.phone || "",
-          orderCount: c.orderCount as number,
-          totalSpent: Math.round((c.totalSpent as number) * 100) / 100,
-          lastVisit: c.lastVisit as Date,
-          status:
-            (c.orderCount as number) >= 5
-              ? "active"
-              : (c.orderCount as number) <= 1
-                ? "new"
-                : "active",
+          orderCount: info.orderCount,
+          totalSpent: Math.round(info.totalSpent * 100) / 100,
+          lastVisit: info.lastVisit,
+          status: info.orderCount >= 5 ? "active" : info.orderCount <= 1 ? "new" : "active",
         };
       })
       .filter(

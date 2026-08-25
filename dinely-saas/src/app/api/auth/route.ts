@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import {
   hashPassword,
   comparePassword,
@@ -9,33 +8,34 @@ import {
   COOKIE_NAME,
   COOKIE_OPTIONS,
 } from "@/lib/auth";
-import { registerSchema, loginSchema, customerRegisterSchema } from "@/lib/validators";
+import {
+  registerSchema,
+  loginSchema,
+  customerRegisterSchema,
+} from "@/lib/validators";
 
 // ─── POST /api/auth?action=register|login|logout ──────────────────────────────
-// We handle multiple actions via a query param to keep routing simple with
-// the [...nextauth] catch-all pattern while not requiring NextAuth.
 
 export async function GET(req: NextRequest) {
-  // GET /api/auth → return current session user
   const session = await getSession(req);
   if (!session) {
     return NextResponse.json({ user: null }, { status: 200 });
   }
 
   try {
-    const db = await getDb();
-    const user = await db
-      .collection("users")
-      .findOne(
-        { _id: new ObjectId(session.userId) },
-        { projection: { passwordHash: 0 } },
-      );
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session.userId)
+      .single();
 
-    if (!user) {
+    if (error || !user) {
       return NextResponse.json({ user: null }, { status: 200 });
     }
 
-    return NextResponse.json({ user: { ...user, _id: user._id.toString() } });
+    // Remove password_hash from response
+    const { password_hash: _, ...safeUser } = user;
+    return NextResponse.json({ user: safeUser });
   } catch (err) {
     console.error("[GET /api/auth]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -72,8 +72,13 @@ export async function POST(req: NextRequest) {
     const { firstName, lastName, email, phone, password } = parsed.data;
 
     try {
-      const db = await getDb();
-      const existing = await db.collection("users").findOne({ email });
+      // Check existing
+      const { data: existing } = await supabase
+        .from("users")
+        .select("id")
+        .eq("email", email)
+        .single();
+
       if (existing) {
         return NextResponse.json(
           { error: "An account with this email already exists" },
@@ -82,26 +87,29 @@ export async function POST(req: NextRequest) {
       }
 
       const passwordHash = await hashPassword(password);
-      const now = new Date();
-      const result = await db.collection("users").insertOne({
-        firstName,
-        lastName,
-        email,
-        phone,
-        passwordHash,
-        role: "owner",
-        createdAt: now,
-        updatedAt: now,
-      });
+      const { data: newUser, error: insertError } = await supabase
+        .from("users")
+        .insert({
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          phone,
+          password_hash: passwordHash,
+          role: "owner",
+        })
+        .select("id")
+        .single();
+
+      if (insertError) throw insertError;
 
       const token = await signToken({
-        userId: result.insertedId.toString(),
+        userId: newUser.id,
         email,
         role: "owner",
       });
 
       const res = NextResponse.json(
-        { message: "Account created", userId: result.insertedId.toString() },
+        { message: "Account created", userId: newUser.id },
         { status: 201 },
       );
       res.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS);
@@ -125,10 +133,13 @@ export async function POST(req: NextRequest) {
     const { email, password } = parsed.data;
 
     try {
-      const db = await getDb();
-      const user = await db.collection("users").findOne({ email });
+      const { data: user } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", email)
+        .single();
 
-      if (!user || !(await comparePassword(password, user.passwordHash))) {
+      if (!user || !(await comparePassword(password, user.password_hash))) {
         return NextResponse.json(
           { error: "Invalid email or password" },
           { status: 401 },
@@ -136,21 +147,21 @@ export async function POST(req: NextRequest) {
       }
 
       const token = await signToken({
-        userId: user._id.toString(),
+        userId: user.id,
         email: user.email,
         role: user.role,
-        restaurantId: user.restaurantId,
+        restaurantId: user.restaurant_id,
       });
 
       const res = NextResponse.json({
         message: "Login successful",
         user: {
-          _id: user._id.toString(),
-          firstName: user.firstName,
-          lastName: user.lastName,
+          _id: user.id,
+          firstName: user.first_name,
+          lastName: user.last_name,
           email: user.email,
           role: user.role,
-          restaurantId: user.restaurantId,
+          restaurantId: user.restaurant_id,
         },
       });
       res.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS);
@@ -174,8 +185,12 @@ export async function POST(req: NextRequest) {
     const { firstName, lastName, email, phone, password } = parsed.data;
 
     try {
-      const db = await getDb();
-      const existing = await db.collection("users").findOne({ email });
+      const { data: existing } = await supabase
+        .from("users")
+        .select("id")
+        .eq("email", email)
+        .single();
+
       if (existing) {
         return NextResponse.json(
           { error: "An account with this email already exists" },
@@ -184,27 +199,30 @@ export async function POST(req: NextRequest) {
       }
 
       const passwordHash = await hashPassword(password);
-      const now = new Date();
-      const result = await db.collection("users").insertOne({
-        firstName,
-        lastName,
-        email,
-        phone,
-        passwordHash,
-        role: "customer",
-        favourites: [],
-        createdAt: now,
-        updatedAt: now,
-      });
+      const { data: newUser, error: insertError } = await supabase
+        .from("users")
+        .insert({
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          phone,
+          password_hash: passwordHash,
+          role: "customer",
+          favourites: [],
+        })
+        .select("id")
+        .single();
+
+      if (insertError) throw insertError;
 
       const token = await signToken({
-        userId: result.insertedId.toString(),
+        userId: newUser.id,
         email,
         role: "customer",
       });
 
       const res = NextResponse.json(
-        { message: "Account created", userId: result.insertedId.toString() },
+        { message: "Account created", userId: newUser.id },
         { status: 201 },
       );
       res.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS);
@@ -242,25 +260,31 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    const db = await getDb();
-    await db
-      .collection("users")
-      .updateOne(
-        { _id: new ObjectId(session.userId) },
-        { $set: { ...parsed.data, updatedAt: new Date() } },
-      );
+    // Map camelCase fields to snake_case for Supabase
+    const updateData: Record<string, unknown> = {};
+    if (parsed.data.firstName) updateData.first_name = parsed.data.firstName;
+    if (parsed.data.lastName) updateData.last_name = parsed.data.lastName;
+    if (parsed.data.phone) updateData.phone = parsed.data.phone;
+    if (parsed.data.address !== undefined) updateData.address = parsed.data.address;
+    if (parsed.data.avatar !== undefined) updateData.avatar = parsed.data.avatar;
 
-    const updated = await db
-      .collection("users")
-      .findOne(
-        { _id: new ObjectId(session.userId) },
-        { projection: { passwordHash: 0 } },
-      );
+    await supabase
+      .from("users")
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq("id", session.userId);
 
-    return NextResponse.json({
-      message: "Profile updated",
-      user: updated ? { ...updated, _id: updated._id.toString() } : null,
-    });
+    const { data: updated } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session.userId)
+      .single();
+
+    if (!updated) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const { password_hash: _, ...safeUser } = updated;
+    return NextResponse.json({ message: "Profile updated", user: safeUser });
   } catch (err) {
     console.error("[PUT /api/auth]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

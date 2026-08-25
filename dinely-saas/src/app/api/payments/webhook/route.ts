@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getDb } from "@/lib/db";
-import { ObjectId } from "mongodb";
+import { supabase } from "@/lib/supabase";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
 });
 
-// IMPORTANT: This route must NOT have body parsing.
-// Add this to your Next.js config or use the raw body trick below.
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
@@ -22,74 +19,60 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
   try {
     const rawBody = await req.arrayBuffer();
-    event = stripe.webhooks.constructEvent(
-      Buffer.from(rawBody),
-      sig,
-      webhookSecret
-    );
+    event = stripe.webhooks.constructEvent(Buffer.from(rawBody), sig, webhookSecret);
   } catch (err) {
     console.error("[Stripe Webhook] Signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   try {
-    const db = await getDb();
-
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        const { userId, restaurantId, plan, billingCycle } = session.metadata || {};
+        const { restaurantId, plan, billingCycle } = session.metadata || {};
 
         if (restaurantId) {
-          await db.collection("restaurants").updateOne(
-            { _id: new ObjectId(restaurantId) },
-            {
-              $set: {
-                plan,
-                billingCycle,
-                stripeCustomerId: session.customer as string,
-                stripeSubscriptionId: session.subscription as string,
-                subscriptionStatus: "active",
-                updatedAt: new Date(),
-              },
-            }
-          );
+          await supabase
+            .from("restaurants")
+            .update({
+              plan,
+              billing_cycle: billingCycle,
+              stripe_customer_id: session.customer as string,
+              stripe_subscription_id: session.subscription as string,
+              subscription_status: "active",
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", restaurantId);
         }
 
-        if (userId) {
-          await db.collection("users").updateOne(
-            { _id: new ObjectId(userId) },
-            { $set: { stripeCustomerId: session.customer, updatedAt: new Date() } }
-          );
-        }
         break;
       }
 
       case "customer.subscription.updated": {
         const sub = event.data.object as Stripe.Subscription;
-        await db.collection("restaurants").updateOne(
-          { stripeSubscriptionId: sub.id },
-          {
-            $set: {
-              subscriptionStatus: sub.status as string,
-              updatedAt: new Date(),
-            },
-          }
-        );
+        await supabase
+          .from("restaurants")
+          .update({
+            subscription_status: sub.status,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("stripe_subscription_id", sub.id);
         break;
       }
 
       case "customer.subscription.deleted": {
         const sub = event.data.object as Stripe.Subscription;
-        await db.collection("restaurants").updateOne(
-          { stripeSubscriptionId: sub.id },
-          { $set: { subscriptionStatus: "canceled", updatedAt: new Date() } }
-        );
+        await supabase
+          .from("restaurants")
+          .update({
+            subscription_status: "canceled",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("stripe_subscription_id", sub.id);
         break;
       }
 
       default:
-        // Unhandled event types – safe to ignore
         break;
     }
 

@@ -4,18 +4,20 @@ import { useState, useEffect } from "react";
 import { restaurantsApi } from "@/lib/api";
 
 interface Restaurant {
-  _id: string;
+  id: string;
   name: string;
   type: string;
   address: string;
-  openingHours: string;
+  opening_hours: string;
   phone: string;
   email: string;
   logo?: string;
   description?: string;
   plan: string;
-  billingCycle: string;
-  subscriptionStatus: string;
+  billing_cycle: string;
+  subscription_status: string;
+  rating?: number;
+  review_count?: number;
 }
 
 export function useRestaurant(restaurantId?: string) {
@@ -32,7 +34,6 @@ export function useRestaurant(restaurantId?: string) {
           const { data } = await restaurantsApi.get(restaurantId);
           setRestaurant(data as unknown as Restaurant);
         } else {
-          // Owner fetching their own restaurant
           const { data } = await restaurantsApi.mine();
           setRestaurant(data as unknown as Restaurant);
         }
@@ -48,10 +49,10 @@ export function useRestaurant(restaurantId?: string) {
   }, [restaurantId]);
 
   const update = async (data: Partial<Restaurant>) => {
-    if (!restaurant?._id) return;
+    if (!restaurant?.id) return;
     try {
       await restaurantsApi.update(
-        restaurant._id,
+        restaurant.id,
         data as Record<string, unknown>,
       );
       setRestaurant((prev) => (prev ? { ...prev, ...data } : prev));

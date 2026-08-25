@@ -54,7 +54,7 @@ export default function OrdersPage() {
         <div className="mt-6 space-y-4">
           {orders.map((order) => {
             const itemNames = order.items.map((i) => i.name).join(", ");
-            const date = new Date(order.createdAt).toLocaleDateString("en-US", {
+            const date = new Date(order.created_at).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
               year: "numeric",
@@ -62,14 +62,14 @@ export default function OrdersPage() {
 
             return (
               <Link
-                key={order._id}
+                key={order.id}
                 href={order.status === "Active" || order.status === "Pending" ? `/orders/track` : "#"}
                 className="block overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm transition hover:shadow-md"
               >
                 <div className="flex items-center justify-between p-5">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-neutral-900">Order #{order._id.slice(-6).toUpperCase()}</p>
+                      <p className="font-bold text-neutral-900">Order #{order.id.slice(-6).toUpperCase()}</p>
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${statusStyles[order.status] ?? "bg-neutral-50 text-neutral-500"}`}
                       >

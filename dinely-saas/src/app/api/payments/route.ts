@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
-import { ObjectId } from "mongodb";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
@@ -44,34 +43,32 @@ export async function POST(req: NextRequest) {
   if (!priceId) {
     return NextResponse.json(
       {
-        error:
-          "Invalid plan or billing cycle. Check your Stripe price IDs in .env.local",
+        error: "Invalid plan or billing cycle. Check your Stripe price IDs in .env.local",
       },
       { status: 400 },
     );
   }
 
   try {
-    const db = await getDb();
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(session.userId) });
+    const { data: user } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session.userId)
+      .single();
 
     // Create or reuse Stripe customer
-    let stripeCustomerId = user?.stripeCustomerId as string | undefined;
+    let stripeCustomerId = user?.stripe_customer_id as string | undefined;
     if (!stripeCustomerId) {
       const customer = await stripe.customers.create({
         email: user?.email,
-        name: user ? `${user.firstName} ${user.lastName}` : undefined,
+        name: user ? `${user.first_name} ${user.last_name}` : undefined,
         metadata: { userId: session.userId },
       });
       stripeCustomerId = customer.id;
-      await db
-        .collection("users")
-        .updateOne(
-          { _id: new ObjectId(session.userId) },
-          { $set: { stripeCustomerId, updatedAt: new Date() } },
-        );
+      await supabase
+        .from("users")
+        .update({ stripe_customer_id: stripeCustomerId, updated_at: new Date().toISOString() })
+        .eq("id", session.userId);
     }
 
     const origin = req.headers.get("origin") || "http://localhost:3000";
@@ -94,9 +91,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: checkoutSession.url });
   } catch (err) {
     console.error("[POST /api/payments]", err);
-    return NextResponse.json(
-      { error: "Payment setup failed" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Payment setup failed" }, { status: 500 });
   }
 }

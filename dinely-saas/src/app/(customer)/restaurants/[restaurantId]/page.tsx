@@ -9,7 +9,7 @@ import { RestaurantDetailHeader } from "@/components/customer/RestaurantDetailHe
 import { restaurantsApi, menuApi } from "@/lib/api";
 
 interface Restaurant {
-  _id: string;
+  id: string;
   name: string;
   type: string;
   address: string;
@@ -17,13 +17,13 @@ interface Restaurant {
   email: string;
   logo?: string;
   description?: string;
-  openingHours?: string;
+  opening_hours?: string;
   rating?: number;
-  reviewCount?: number;
+  review_count?: number;
 }
 
 interface MenuItem {
-  _id: string;
+  id: string;
   name: string;
   description?: string;
   price: number;
@@ -104,10 +104,10 @@ export default function RestaurantPage() {
         type={restaurant.type}
         rating={restaurant.rating ?? 0}
         reviewCount={
-          restaurant.reviewCount
-            ? restaurant.reviewCount > 999
-              ? `${(restaurant.reviewCount / 1000).toFixed(1)}K`
-              : String(restaurant.reviewCount)
+          restaurant.review_count
+            ? restaurant.review_count > 999
+              ? `${(restaurant.review_count / 1000).toFixed(1)}K`
+              : String(restaurant.review_count)
             : "0"
         }
         coverImage={coverImage}
@@ -134,8 +134,8 @@ export default function RestaurantPage() {
               }`}
             >
               {tab.label}
-              {tab.href === "reviews" && restaurant.reviewCount
-                ? ` (${restaurant.reviewCount > 999 ? `${(restaurant.reviewCount / 1000).toFixed(1)}K` : restaurant.reviewCount})`
+              {tab.href === "reviews" && restaurant.review_count
+                ? ` (${restaurant.review_count > 999 ? `${(restaurant.review_count / 1000).toFixed(1)}K` : restaurant.review_count})`
                 : ""}
             </Link>
           );
@@ -160,8 +160,8 @@ export default function RestaurantPage() {
             <div className="flex items-center gap-2.5 text-sm">
               <Timer size={16} className="shrink-0 text-[#22c51f]" />
               <span className="font-bold text-[#22c51f]">Active</span>
-              {restaurant.openingHours && (
-                <span className="text-neutral-500">• {restaurant.openingHours}</span>
+              {restaurant.opening_hours && (
+                <span className="text-neutral-500">• {restaurant.opening_hours}</span>
               )}
             </div>
             <div className="flex items-center gap-2.5 text-sm text-neutral-700">
@@ -183,7 +183,7 @@ export default function RestaurantPage() {
           ) : (
             <div className="mt-4 space-y-4">
               {popular.map((dish) => (
-                <div key={dish._id} className="flex items-center gap-4">
+                <div key={dish.id} className="flex items-center gap-4">
                   <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
                     {dish.image ? (
                       <Image

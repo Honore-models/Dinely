@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { tableSchema } from "@/lib/validators";
 
@@ -8,19 +7,18 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params;
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   try {
-    const db = await getDb();
-    const table = await db
-      .collection("tables")
-      .findOne({ _id: new ObjectId(id) });
-    if (!table) {
+    const { data: table, error } = await supabase
+      .from("restaurant_tables")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !table) {
       return NextResponse.json({ error: "Table not found" }, { status: 404 });
     }
-    return NextResponse.json({ data: { ...table, _id: table._id.toString() } });
+    return NextResponse.json({ data: table });
   } catch (err) {
     console.error("[GET /api/tables/[id]]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -33,9 +31,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (!session || session.role !== "owner") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   let body: unknown;
   try {
@@ -46,30 +41,35 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   const parsed = tableSchema.partial().safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.errors[0].message },
-      { status: 422 },
-    );
+    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 422 });
   }
 
   try {
-    const db = await getDb();
-    const table = await db
-      .collection("tables")
-      .findOne({ _id: new ObjectId(id) });
+    const { data: table } = await supabase
+      .from("restaurant_tables")
+      .select("restaurant_id")
+      .eq("id", id)
+      .single();
+
     if (!table) {
       return NextResponse.json({ error: "Table not found" }, { status: 404 });
     }
-    if (table.restaurantId !== session.restaurantId) {
+    if (table.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await db
-      .collection("tables")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { ...parsed.data, updatedAt: new Date() } },
-      );
+    const updateData: Record<string, unknown> = {};
+    if (parsed.data.number !== undefined) updateData.number = parsed.data.number;
+    if (parsed.data.capacity !== undefined) updateData.capacity = parsed.data.capacity;
+    if (parsed.data.location !== undefined) updateData.location = parsed.data.location;
+    if (parsed.data.status !== undefined) updateData.status = parsed.data.status;
+
+    const { error } = await supabase
+      .from("restaurant_tables")
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) throw error;
 
     return NextResponse.json({ message: "Table updated" });
   } catch (err) {
@@ -84,23 +84,22 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   if (!session || session.role !== "owner") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   try {
-    const db = await getDb();
-    const table = await db
-      .collection("tables")
-      .findOne({ _id: new ObjectId(id) });
+    const { data: table } = await supabase
+      .from("restaurant_tables")
+      .select("restaurant_id")
+      .eq("id", id)
+      .single();
+
     if (!table) {
       return NextResponse.json({ error: "Table not found" }, { status: 404 });
     }
-    if (table.restaurantId !== session.restaurantId) {
+    if (table.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await db.collection("tables").deleteOne({ _id: new ObjectId(id) });
+    await supabase.from("restaurant_tables").delete().eq("id", id);
     return NextResponse.json({ message: "Table deleted" });
   } catch (err) {
     console.error("[DELETE /api/tables/[id]]", err);

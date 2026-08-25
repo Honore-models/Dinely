@@ -27,6 +27,18 @@ const menuItems = [
 export default function ProfilePage() {
   const { user, updateProfile, logout, loading, error } = useAuth();
   const [editMode, setEditMode] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setLoggingOut(false);
+      setShowLogoutConfirm(false);
+    }
+  };
   const [firstName, setFirstName] = useState(user?.firstName ?? "");
   const [lastName, setLastName] = useState(user?.lastName ?? "");
   const [phone, setPhone] = useState(user?.phone ?? "");
@@ -141,12 +153,48 @@ export default function ProfilePage() {
       {/* Logout */}
       <button
         type="button"
-        onClick={logout}
+        onClick={() => setShowLogoutConfirm(true)}
         className="mt-4 flex w-full items-center gap-3 rounded-2xl border border-neutral-100 bg-white px-5 py-4 text-sm font-semibold text-red-500 shadow-sm transition hover:bg-red-50"
       >
         <LogOut size={18} className="shrink-0" />
         Log out
       </button>
+
+      {/* Logout confirmation dialog */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <div className="text-center">
+              <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-red-100">
+                <LogOut size={22} className="text-red-600" />
+              </div>
+              <h3 className="text-lg font-bold text-neutral-900">
+                Log out of your account?
+              </h3>
+              <p className="mt-2 text-sm text-neutral-500">
+                You&apos;ll need to sign in again to access your orders, favourites, and profile.
+              </p>
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 rounded-xl border border-neutral-200 py-2.5 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-60"
+              >
+                {loggingOut ? "Logging out…" : "Log out"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

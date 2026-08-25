@@ -6,7 +6,7 @@ import { Loader2, Plus, Pencil, Trash2, X } from "lucide-react";
 import { tablesApi } from "@/lib/api";
 
 interface Table {
-  _id: string;
+  id: string;
   number: number;
   capacity: number;
   location?: string;
@@ -71,7 +71,7 @@ export default function TablesPage() {
     };
     try {
       if (editing) {
-        await tablesApi.update(editing._id, payload as Record<string, unknown>);
+        await tablesApi.update(editing.id, payload as Record<string, unknown>);
       } else {
         await tablesApi.create(payload);
       }
@@ -86,15 +86,15 @@ export default function TablesPage() {
     if (!confirm("Delete this table?")) return;
     try {
       await tablesApi.delete(id);
-      setTables((prev) => prev.filter((t) => t._id !== id));
+      setTables((prev) => prev.filter((t) => t.id !== id));
     } catch { /* ignore */ }
   };
 
   const toggleStatus = async (table: Table) => {
     const next: Table["status"] = table.status === "available" ? "occupied" : "available";
     try {
-      await tablesApi.update(table._id, { status: next });
-      setTables((prev) => prev.map((t) => t._id === table._id ? { ...t, status: next } : t));
+      await tablesApi.update(table.id, { status: next });
+      setTables((prev) => prev.map((t) => t.id === table.id ? { ...t, status: next } : t));
     } catch { /* ignore */ }
   };
 
@@ -148,7 +148,7 @@ export default function TablesPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {tables.map((table) => (
-            <div key={table._id} className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm transition hover:shadow-md">
+            <div key={table.id} className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm transition hover:shadow-md">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-lg font-bold text-neutral-900">Table #{table.number}</p>
@@ -158,7 +158,7 @@ export default function TablesPage() {
                   <button onClick={() => openEdit(table)} className="grid h-7 w-7 place-items-center rounded-lg text-neutral-400 hover:bg-neutral-100 hover:text-[#22c51f]">
                     <Pencil size={13} />
                   </button>
-                  <button onClick={() => handleDelete(table._id)} className="grid h-7 w-7 place-items-center rounded-lg text-neutral-400 hover:bg-red-50 hover:text-red-500">
+                  <button onClick={() => handleDelete(table.id)} className="grid h-7 w-7 place-items-center rounded-lg text-neutral-400 hover:bg-red-50 hover:text-red-500">
                     <Trash2 size={13} />
                   </button>
                 </div>

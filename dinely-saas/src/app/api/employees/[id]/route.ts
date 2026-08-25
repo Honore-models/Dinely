@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { employeeSchema } from "@/lib/validators";
 
@@ -12,24 +11,21 @@ export async function GET(req: NextRequest, { params }: Params) {
   if (!session || session.role !== "owner") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   try {
-    const db = await getDb();
-    const employee = await db
-      .collection("employees")
-      .findOne({ _id: new ObjectId(id) });
-    if (!employee) {
+    const { data: employee, error } = await supabase
+      .from("employees")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !employee) {
       return NextResponse.json({ error: "Employee not found" }, { status: 404 });
     }
-    if (employee.restaurantId !== session.restaurantId) {
+    if (employee.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    return NextResponse.json({
-      data: { ...employee, _id: employee._id.toString() },
-    });
+    return NextResponse.json({ data: employee });
   } catch (err) {
     console.error("[GET /api/employees/[id]]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -42,9 +38,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (!session || session.role !== "owner") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   let body: unknown;
   try {
@@ -55,30 +48,39 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   const parsed = employeeSchema.partial().safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.errors[0].message },
-      { status: 422 },
-    );
+    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 422 });
   }
 
   try {
-    const db = await getDb();
-    const employee = await db
-      .collection("employees")
-      .findOne({ _id: new ObjectId(id) });
+    const { data: employee } = await supabase
+      .from("employees")
+      .select("restaurant_id")
+      .eq("id", id)
+      .single();
+
     if (!employee) {
       return NextResponse.json({ error: "Employee not found" }, { status: 404 });
     }
-    if (employee.restaurantId !== session.restaurantId) {
+    if (employee.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await db
-      .collection("employees")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { ...parsed.data, updatedAt: new Date() } },
-      );
+    const updateData: Record<string, unknown> = {};
+    if (parsed.data.firstName) updateData.first_name = parsed.data.firstName;
+    if (parsed.data.lastName) updateData.last_name = parsed.data.lastName;
+    if (parsed.data.email) updateData.email = parsed.data.email;
+    if (parsed.data.phone) updateData.phone = parsed.data.phone;
+    if (parsed.data.role) updateData.role = parsed.data.role;
+    if (parsed.data.salary !== undefined) updateData.salary = parsed.data.salary;
+    if (parsed.data.startDate !== undefined) updateData.start_date = parsed.data.startDate;
+    if (parsed.data.notes !== undefined) updateData.notes = parsed.data.notes;
+
+    const { error } = await supabase
+      .from("employees")
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) throw error;
 
     return NextResponse.json({ message: "Employee updated" });
   } catch (err) {
@@ -93,23 +95,22 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   if (!session || session.role !== "owner") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   try {
-    const db = await getDb();
-    const employee = await db
-      .collection("employees")
-      .findOne({ _id: new ObjectId(id) });
+    const { data: employee } = await supabase
+      .from("employees")
+      .select("restaurant_id")
+      .eq("id", id)
+      .single();
+
     if (!employee) {
       return NextResponse.json({ error: "Employee not found" }, { status: 404 });
     }
-    if (employee.restaurantId !== session.restaurantId) {
+    if (employee.restaurant_id !== session.restaurantId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await db.collection("employees").deleteOne({ _id: new ObjectId(id) });
+    await supabase.from("employees").delete().eq("id", id);
     return NextResponse.json({ message: "Employee removed" });
   } catch (err) {
     console.error("[DELETE /api/employees/[id]]", err);

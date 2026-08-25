@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { employeeSchema } from "@/lib/validators";
 
@@ -17,27 +17,23 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get("search") || "";
 
   try {
-    const db = await getDb();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const filter: Record<string, any> = { restaurantId: session.restaurantId };
+    let query = supabase
+      .from("employees")
+      .select("*")
+      .eq("restaurant_id", session.restaurantId)
+      .order("last_name", { ascending: true })
+      .order("first_name", { ascending: true });
+
     if (search) {
-      filter.$or = [
-        { firstName: { $regex: search, $options: "i" } },
-        { lastName: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-        { role: { $regex: search, $options: "i" } },
-      ];
+      query = query.or(
+        `first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%,role.ilike.%${search}%`,
+      );
     }
 
-    const employees = await db
-      .collection("employees")
-      .find(filter)
-      .sort({ lastName: 1, firstName: 1 })
-      .toArray();
+    const { data: employees, error } = await query;
+    if (error) throw error;
 
-    return NextResponse.json({
-      data: employees.map((e) => ({ ...e, _id: e._id.toString() })),
-    });
+    return NextResponse.json({ data: employees || [] });
   } catch (err) {
     console.error("[GET /api/employees]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -51,10 +47,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   if (!session.restaurantId) {
-    return NextResponse.json(
-      { error: "Complete restaurant setup first" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Complete restaurant setup first" }, { status: 400 });
   }
 
   let body: unknown;
@@ -66,20 +59,18 @@ export async function POST(req: NextRequest) {
 
   const parsed = employeeSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.errors[0].message },
-      { status: 422 },
-    );
+    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 422 });
   }
 
   try {
-    const db = await getDb();
-
     // Prevent duplicate employee emails within this restaurant
-    const existing = await db.collection("employees").findOne({
-      restaurantId: session.restaurantId,
-      email: parsed.data.email,
-    });
+    const { data: existing } = await supabase
+      .from("employees")
+      .select("id")
+      .eq("restaurant_id", session.restaurantId)
+      .eq("email", parsed.data.email)
+      .single();
+
     if (existing) {
       return NextResponse.json(
         { error: "An employee with this email already exists" },
@@ -87,18 +78,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const now = new Date();
-    const result = await db.collection("employees").insertOne({
-      ...parsed.data,
-      restaurantId: session.restaurantId,
-      createdAt: now,
-      updatedAt: now,
-    });
+    const { data: newEmployee, error } = await supabase
+      .from("employees")
+      .insert({
+        restaurant_id: session.restaurantId,
+        first_name: parsed.data.firstName,
+        last_name: parsed.data.lastName,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        role: parsed.data.role,
+        salary: parsed.data.salary || null,
+        start_date: parsed.data.startDate || null,
+        notes: parsed.data.notes || null,
+      })
+      .select("id")
+      .single();
 
-    return NextResponse.json(
-      { message: "Employee added", id: result.insertedId.toString() },
-      { status: 201 },
-    );
+    if (error) throw error;
+
+    return NextResponse.json({ message: "Employee added", id: newEmployee.id }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/employees]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

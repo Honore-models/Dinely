@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { favouritesApi } from "@/lib/api";
 
 interface FavRestaurant {
-  _id: string;
+  id: string;
   name: string;
   type: string;
   address: string;
@@ -26,7 +26,7 @@ export function useFavourites() {
       const res = await favouritesApi.list();
       const list = res.data as unknown as FavRestaurant[];
       setFavourites(list);
-      setFavouriteIds(new Set(list.map((r) => r._id)));
+      setFavouriteIds(new Set(list.map((r) => r.id)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load favourites");
     } finally {
@@ -47,11 +47,10 @@ export function useFavourites() {
           next.delete(restaurantId);
           return next;
         });
-        setFavourites((prev) => prev.filter((r) => r._id !== restaurantId));
+        setFavourites((prev) => prev.filter((r) => r.id !== restaurantId));
       } else {
         await favouritesApi.add(restaurantId);
         setFavouriteIds((prev) => new Set([...prev, restaurantId]));
-        // Refresh to get full restaurant data
         load();
       }
     } catch (err) {

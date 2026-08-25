@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { restaurantSchema } from "@/lib/validators";
 
@@ -10,29 +9,19 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params;
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   try {
-    const db = await getDb();
-    const restaurant = await db
-      .collection("restaurants")
-      .findOne(
-        { _id: new ObjectId(id) },
-        { projection: { stripeCustomerId: 0, stripeSubscriptionId: 0 } },
-      );
+    const { data: restaurant, error } = await supabase
+      .from("restaurants")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-    if (!restaurant) {
-      return NextResponse.json(
-        { error: "Restaurant not found" },
-        { status: 404 },
-      );
+    if (error || !restaurant) {
+      return NextResponse.json({ error: "Restaurant not found" }, { status: 404 });
     }
 
-    return NextResponse.json({
-      data: { ...restaurant, _id: restaurant._id.toString() },
-    });
+    return NextResponse.json({ data: restaurant });
   } catch (err) {
     console.error("[GET /api/restaurants/[id]]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -51,9 +40,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (session.restaurantId !== id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-  }
 
   let body: unknown;
   try {
@@ -71,13 +57,22 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   try {
-    const db = await getDb();
-    await db
-      .collection("restaurants")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { ...parsed.data, updatedAt: new Date() } },
-      );
+    const updateData: Record<string, unknown> = {};
+    if (parsed.data.name) updateData.name = parsed.data.name;
+    if (parsed.data.type) updateData.type = parsed.data.type;
+    if (parsed.data.address) updateData.address = parsed.data.address;
+    if (parsed.data.openingHours) updateData.opening_hours = parsed.data.openingHours;
+    if (parsed.data.phone) updateData.phone = parsed.data.phone;
+    if (parsed.data.email) updateData.email = parsed.data.email;
+    if (parsed.data.logo !== undefined) updateData.logo = parsed.data.logo;
+    if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
+
+    const { error } = await supabase
+      .from("restaurants")
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) throw error;
 
     return NextResponse.json({ message: "Restaurant updated" });
   } catch (err) {
@@ -100,14 +95,13 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   }
 
   try {
-    const db = await getDb();
-    await db.collection("restaurants").deleteOne({ _id: new ObjectId(id) });
-    await db
-      .collection("users")
-      .updateOne(
-        { _id: new ObjectId(session.userId) },
-        { $unset: { restaurantId: "" }, $set: { updatedAt: new Date() } },
-      );
+    await supabase.from("restaurants").delete().eq("id", id);
+
+    // Unlink restaurant from owner
+    await supabase
+      .from("users")
+      .update({ restaurant_id: null, updated_at: new Date().toISOString() })
+      .eq("id", session.userId);
 
     return NextResponse.json({ message: "Restaurant deleted" });
   } catch (err) {

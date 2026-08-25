@@ -190,20 +190,20 @@ export default function ReviewsPage() {
           ) : (
             <div className="space-y-4">
               {reviews.map((review) => {
-                const initials = review.customerName
+                const initials = review.customer_name
                   .split(" ")
                   .map((n) => n[0])
                   .join("")
                   .toUpperCase()
                   .slice(0, 2);
-                const date = new Date(review.createdAt).toLocaleDateString(
+                const date = new Date(review.created_at).toLocaleDateString(
                   "en-US",
                   { month: "long", day: "numeric", year: "numeric" },
                 );
 
                 return (
                   <article
-                    key={review._id}
+                    key={review.id}
                     className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm"
                   >
                     <div className="flex items-start gap-3">
@@ -213,7 +213,7 @@ export default function ReviewsPage() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <p className="font-bold text-neutral-900">
-                            {review.customerName}
+                            {review.customer_name}
                           </p>
                           <p className="text-xs text-neutral-400">{date}</p>
                         </div>
@@ -235,7 +235,7 @@ export default function ReviewsPage() {
                         </p>
                         <button
                           type="button"
-                          onClick={() => markHelpful(review._id)}
+                          onClick={() => markHelpful(review.id)}
                           className="mt-2 flex items-center gap-1.5 text-xs text-neutral-400 transition hover:text-neutral-600"
                         >
                           <ThumbsUp size={12} />

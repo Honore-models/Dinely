@@ -1,26 +1,28 @@
 export type UserRole = "owner" | "customer";
 
 export interface User {
-  _id?: string;
-  firstName: string;
-  lastName: string;
+  id: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
-  passwordHash: string;
+  password_hash: string;
   role: UserRole;
-  restaurantId?: string; // set after onboarding for owners
+  restaurant_id?: string;
   avatar?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  address?: string;
+  favourites?: string[];
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UserPublic {
-  _id: string;
-  firstName: string;
-  lastName: string;
+  id: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   role: UserRole;
-  restaurantId?: string;
+  restaurant_id?: string;
   avatar?: string;
 }

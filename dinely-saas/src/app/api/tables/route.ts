@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { tableSchema } from "@/lib/validators";
 
 // ─── GET /api/tables?restaurantId=xxx ────────────────────────────────────────
-// Public: view tables for a restaurant (for booking UI).
-// Owner: get their own tables (no query param needed).
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -15,25 +12,21 @@ export async function GET(req: NextRequest) {
   if (!restaurantId) {
     const session = await getSession(req);
     if (!session?.restaurantId) {
-      return NextResponse.json(
-        { error: "restaurantId required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "restaurantId required" }, { status: 400 });
     }
     restaurantId = session.restaurantId;
   }
 
   try {
-    const db = await getDb();
-    const tables = await db
-      .collection("tables")
-      .find({ restaurantId })
-      .sort({ number: 1 })
-      .toArray();
+    const { data: tables, error } = await supabase
+      .from("restaurant_tables")
+      .select("*")
+      .eq("restaurant_id", restaurantId)
+      .order("number", { ascending: true });
 
-    return NextResponse.json({
-      data: tables.map((t) => ({ ...t, _id: t._id.toString() })),
-    });
+    if (error) throw error;
+
+    return NextResponse.json({ data: tables || [] });
   } catch (err) {
     console.error("[GET /api/tables]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -41,16 +34,14 @@ export async function GET(req: NextRequest) {
 }
 
 // ─── POST /api/tables ─────────────────────────────────────────────────────────
+
 export async function POST(req: NextRequest) {
   const session = await getSession(req);
   if (!session || session.role !== "owner") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   if (!session.restaurantId) {
-    return NextResponse.json(
-      { error: "Complete restaurant setup first" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Complete restaurant setup first" }, { status: 400 });
   }
 
   let body: unknown;
@@ -62,20 +53,18 @@ export async function POST(req: NextRequest) {
 
   const parsed = tableSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.errors[0].message },
-      { status: 422 },
-    );
+    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 422 });
   }
 
   try {
-    const db = await getDb();
-
     // Prevent duplicate table numbers
-    const exists = await db.collection("tables").findOne({
-      restaurantId: session.restaurantId,
-      number: parsed.data.number,
-    });
+    const { data: exists } = await supabase
+      .from("restaurant_tables")
+      .select("id")
+      .eq("restaurant_id", session.restaurantId)
+      .eq("number", parsed.data.number)
+      .single();
+
     if (exists) {
       return NextResponse.json(
         { error: `Table #${parsed.data.number} already exists` },
@@ -83,19 +72,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const now = new Date();
-    const result = await db.collection("tables").insertOne({
-      ...parsed.data,
-      restaurantId: session.restaurantId,
-      status: parsed.data.status ?? "available",
-      createdAt: now,
-      updatedAt: now,
-    });
+    const { data: newTable, error } = await supabase
+      .from("restaurant_tables")
+      .insert({
+        restaurant_id: session.restaurantId,
+        number: parsed.data.number,
+        capacity: parsed.data.capacity,
+        location: parsed.data.location || null,
+        status: parsed.data.status || "available",
+      })
+      .select("id")
+      .single();
 
-    return NextResponse.json(
-      { message: "Table created", id: result.insertedId.toString() },
-      { status: 201 },
-    );
+    if (error) throw error;
+
+    return NextResponse.json({ message: "Table created", id: newTable.id }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/tables]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

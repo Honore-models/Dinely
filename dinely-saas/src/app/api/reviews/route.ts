@@ -1,56 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { createReviewSchema } from "@/lib/validators";
 
 // ─── GET /api/reviews?restaurantId=xxx ────────────────────────────────────────
-// Public: list reviews for a restaurant (paginated).
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const restaurantId = searchParams.get("restaurantId");
   const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
   const limit = Math.min(50, parseInt(searchParams.get("limit") || "10"));
-  const skip = (page - 1) * limit;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
   if (!restaurantId) {
-    return NextResponse.json(
-      { error: "restaurantId query param required" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "restaurantId query param required" }, { status: 400 });
   }
 
   try {
-    const db = await getDb();
-    const [reviews, total] = await Promise.all([
-      db
-        .collection("reviews")
-        .find({ restaurantId })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .toArray(),
-      db.collection("reviews").countDocuments({ restaurantId }),
-    ]);
+    const { data: reviews, count, error } = await supabase
+      .from("reviews")
+      .select("*", { count: "exact" })
+      .eq("restaurant_id", restaurantId)
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (error) throw error;
 
     // Compute aggregate rating
-    const agg = await db
-      .collection("reviews")
-      .aggregate([
-        { $match: { restaurantId } },
-        { $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } },
-      ])
-      .toArray();
+    const { data: aggData } = await supabase
+      .from("reviews")
+      .select("rating")
+      .eq("restaurant_id", restaurantId);
 
-    const avgRating = agg[0]?.avg ?? 0;
+    const ratings = (aggData || []).map((r) => r.rating);
+    const avgRating = ratings.length > 0
+      ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10
+      : 0;
 
     return NextResponse.json({
-      data: reviews.map((r) => ({ ...r, _id: r._id.toString() })),
-      total,
+      data: reviews || [],
+      total: count || 0,
       page,
       limit,
-      avgRating: Math.round(avgRating * 10) / 10,
+      avgRating,
     });
   } catch (err) {
     console.error("[GET /api/reviews]", err);
@@ -59,7 +52,6 @@ export async function GET(req: NextRequest) {
 }
 
 // ─── POST /api/reviews ────────────────────────────────────────────────────────
-// Authenticated customers can post a review after ordering.
 
 export async function POST(req: NextRequest) {
   const session = await getSession(req);
@@ -76,32 +68,31 @@ export async function POST(req: NextRequest) {
 
   const parsed = createReviewSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.errors[0].message },
-      { status: 422 },
-    );
+    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 422 });
   }
 
   const { restaurantId, rating, comment } = parsed.data;
 
   try {
-    const db = await getDb();
-
     // Verify restaurant exists
-    if (!ObjectId.isValid(restaurantId)) {
-      return NextResponse.json({ error: "Invalid restaurant ID" }, { status: 400 });
-    }
-    const restaurant = await db
-      .collection("restaurants")
-      .findOne({ _id: new ObjectId(restaurantId) });
+    const { data: restaurant } = await supabase
+      .from("restaurants")
+      .select("id")
+      .eq("id", restaurantId)
+      .single();
+
     if (!restaurant) {
       return NextResponse.json({ error: "Restaurant not found" }, { status: 404 });
     }
 
     // One review per customer per restaurant
-    const existing = await db
-      .collection("reviews")
-      .findOne({ restaurantId, customerId: session.userId });
+    const { data: existing } = await supabase
+      .from("reviews")
+      .select("id")
+      .eq("restaurant_id", restaurantId)
+      .eq("customer_id", session.userId)
+      .single();
+
     if (existing) {
       return NextResponse.json(
         { error: "You have already reviewed this restaurant. Use PATCH to update." },
@@ -109,49 +100,49 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(session.userId) });
-    const customerName = user
-      ? `${user.firstName} ${user.lastName}`
-      : "Anonymous";
+    const { data: user } = await supabase
+      .from("users")
+      .select("first_name, last_name")
+      .eq("id", session.userId)
+      .single();
 
-    const now = new Date();
-    const result = await db.collection("reviews").insertOne({
-      restaurantId,
-      customerId: session.userId,
-      customerName,
-      rating,
-      comment,
-      helpful: 0,
-      createdAt: now,
-      updatedAt: now,
-    });
+    const customerName = user ? `${user.first_name} ${user.last_name}` : "Anonymous";
+
+    const { data: newReview, error } = await supabase
+      .from("reviews")
+      .insert({
+        restaurant_id: restaurantId,
+        customer_id: session.userId,
+        customer_name: customerName,
+        rating,
+        comment,
+      })
+      .select("id")
+      .single();
+
+    if (error) throw error;
 
     // Update restaurant's cached rating
-    const ratingAgg = await db
-      .collection("reviews")
-      .aggregate([
-        { $match: { restaurantId } },
-        { $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } },
-      ])
-      .toArray();
+    const { data: allReviews } = await supabase
+      .from("reviews")
+      .select("rating")
+      .eq("restaurant_id", restaurantId);
 
-    if (ratingAgg[0]) {
-      await db.collection("restaurants").updateOne(
-        { _id: new ObjectId(restaurantId) },
-        {
-          $set: {
-            rating: Math.round(ratingAgg[0].avg * 10) / 10,
-            reviewCount: ratingAgg[0].count,
-            updatedAt: now,
-          },
-        },
-      );
+    const ratings = (allReviews || []).map((r) => r.rating);
+    if (ratings.length > 0) {
+      const avgRating = Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10;
+      await supabase
+        .from("restaurants")
+        .update({
+          rating: avgRating,
+          review_count: ratings.length,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", restaurantId);
     }
 
     return NextResponse.json(
-      { message: "Review submitted", reviewId: result.insertedId.toString() },
+      { message: "Review submitted", reviewId: newReview.id },
       { status: 201 },
     );
   } catch (err) {

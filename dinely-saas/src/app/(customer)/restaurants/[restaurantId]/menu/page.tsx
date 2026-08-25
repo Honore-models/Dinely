@@ -7,7 +7,7 @@ import { DishRow } from "@/components/customer/DishRow";
 import { menuApi, restaurantsApi } from "@/lib/api";
 
 interface MenuItem {
-  _id: string;
+  id: string;
   name: string;
   description?: string;
   price: number;
@@ -103,8 +103,8 @@ export default function MenuPage() {
                   .filter((item) => item.category === category)
                   .map((item) => (
                     <DishRow
-                      key={item._id}
-                      id={item._id}
+                      key={item.id}
+                      id={item.id}
                       name={item.name}
                       description={item.description}
                       price={item.price}

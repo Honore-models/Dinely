@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { menuItemSchema } from "@/lib/validators";
 
 // ─── GET /api/menu?restaurantId=xxx ──────────────────────────────────────────
-// Public: fetch menu for a given restaurant.
-// Owner (no query param): fetch their own restaurant's menu.
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -24,16 +21,16 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const db = await getDb();
-    const items = await db
-      .collection("menu_items")
-      .find({ restaurantId })
-      .sort({ category: 1, name: 1 })
-      .toArray();
+    const { data: items, error } = await supabase
+      .from("menu_items")
+      .select("*")
+      .eq("restaurant_id", restaurantId)
+      .order("category", { ascending: true })
+      .order("name", { ascending: true });
 
-    return NextResponse.json({
-      data: items.map((i) => ({ ...i, _id: i._id.toString() })),
-    });
+    if (error) throw error;
+
+    return NextResponse.json({ data: items || [] });
   } catch (err) {
     console.error("[GET /api/menu]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -70,24 +67,26 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const db = await getDb();
-    const now = new Date();
-    const result = await db.collection("menu_items").insertOne({
-      ...parsed.data,
-      restaurantId: session.restaurantId,
-      mealTimes: parsed.data.mealTimes || [],
-      priceRange: parsed.data.priceRange || "$",
-      rating: 0,
-      reviews: 0,
-      orders: 0,
-      favourites: 0,
-      available: parsed.data.available ?? true,
-      createdAt: now,
-      updatedAt: now,
-    });
+    const { data: newItem, error } = await supabase
+      .from("menu_items")
+      .insert({
+        restaurant_id: session.restaurantId,
+        name: parsed.data.name,
+        category: parsed.data.category,
+        price: parsed.data.price,
+        description: parsed.data.description || null,
+        image: parsed.data.image || null,
+        meal_times: parsed.data.mealTimes || [],
+        price_range: parsed.data.priceRange || "$",
+        available: parsed.data.available ?? true,
+      })
+      .select("id")
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json(
-      { message: "Menu item created", id: result.insertedId.toString() },
+      { message: "Menu item created", id: newItem.id },
       { status: 201 },
     );
   } catch (err) {

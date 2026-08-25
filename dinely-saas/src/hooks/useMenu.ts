@@ -4,15 +4,15 @@ import { useState, useEffect, useCallback } from "react";
 import { menuApi } from "@/lib/api";
 
 interface MenuItem {
-  _id: string;
-  restaurantId: string;
+  id: string;
+  restaurant_id: string;
   name: string;
   category: string;
   price: number;
   description?: string;
   image?: string;
-  mealTimes: string[];
-  priceRange: string;
+  meal_times: string[];
+  price_range: string;
   promo?: string;
   rating: number;
   reviews: number;
@@ -46,12 +46,12 @@ export function useMenu(restaurantId?: string) {
   const createItem = async (
     data: Omit<
       MenuItem,
-      "_id" | "restaurantId" | "rating" | "reviews" | "orders" | "favourites"
+      "id" | "restaurant_id" | "rating" | "reviews" | "orders" | "favourites"
     >,
   ) => {
     try {
       const result = await menuApi.create(data as Record<string, unknown>);
-      await load(); // refresh list
+      await load();
       return result;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create item");
@@ -63,7 +63,7 @@ export function useMenu(restaurantId?: string) {
     try {
       await menuApi.update(id, data as Record<string, unknown>);
       setItems((prev) =>
-        prev.map((item) => (item._id === id ? { ...item, ...data } : item)),
+        prev.map((item) => (item.id === id ? { ...item, ...data } : item)),
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update item");
@@ -74,7 +74,7 @@ export function useMenu(restaurantId?: string) {
   const deleteItem = async (id: string) => {
     try {
       await menuApi.delete(id);
-      setItems((prev) => prev.filter((item) => item._id !== id));
+      setItems((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete item");
       throw err;

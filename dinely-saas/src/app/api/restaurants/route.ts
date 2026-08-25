@@ -1,69 +1,61 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { restaurantSchema } from "@/lib/validators";
 
 // ─── GET /api/restaurants ─────────────────────────────────────────────────────
-// Owner: returns their own restaurant.
-// Customer / public: returns all restaurants (for explore page).
 
 export async function GET(req: NextRequest) {
   try {
-    const db = await getDb();
     const session = await getSession(req);
-
-    // If an owner is logged in and asks for "mine", return just their restaurant
     const { searchParams } = new URL(req.url);
     const mine = searchParams.get("mine");
 
+    // Owner: return their own restaurant
     if (session?.role === "owner" && mine === "true") {
       if (!session.restaurantId) {
         return NextResponse.json({ data: null }, { status: 200 });
       }
-      const restaurant = await db
-        .collection("restaurants")
-        .findOne({ _id: new ObjectId(session.restaurantId) });
-      if (!restaurant) return NextResponse.json({ data: null });
-      return NextResponse.json({
-        data: { ...restaurant, _id: restaurant._id.toString() },
-      });
+      const { data: restaurant } = await supabase
+        .from("restaurants")
+        .select("*")
+        .eq("id", session.restaurantId)
+        .single();
+
+      return NextResponse.json({ data: restaurant || null });
     }
 
-    // Public: list all restaurants (with optional search/filter)
-    const { searchParams: sp } = new URL(req.url);
-    const search = sp.get("search") || "";
-    const category = sp.get("category") || "";
-    const rating = sp.get("rating") ? parseFloat(sp.get("rating")!) : null;
-    const maxDelivery = sp.get("maxDelivery") ? parseInt(sp.get("maxDelivery")!) : null;
+    // Public: list all restaurants with optional search/filter
+    const search = searchParams.get("search") || "";
+    const category = searchParams.get("category") || "";
+    const rating = searchParams.get("rating")
+      ? parseFloat(searchParams.get("rating")!)
+      : null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const query: Record<string, any> = {};
+    let query = supabase
+      .from("restaurants")
+      .select("*")
+      .order("rating", { ascending: false })
+      .order("name", { ascending: true });
+
     if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { type: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-      ];
+      // Supabase ilike with OR
+      query = query.or(
+        `name.ilike.%${search}%,type.ilike.%${search}%,description.ilike.%${search}%`,
+      );
     }
     if (category) {
-      query.type = { $regex: category, $options: "i" };
+      query = query.ilike("type", `%${category}%`);
     }
     if (rating !== null) {
-      query.rating = { $gte: rating };
+      query = query.gte("rating", rating);
     }
 
-    const restaurants = await db
-      .collection("restaurants")
-      .find(query, {
-        projection: { stripeCustomerId: 0, stripeSubscriptionId: 0 },
-      })
-      .sort({ rating: -1, name: 1 })
-      .toArray();
+    const { data: restaurants, error } = await query;
 
-    return NextResponse.json({
-      data: restaurants.map((r) => ({ ...r, _id: r._id.toString() })),
-    });
+    if (error) throw error;
+
+    return NextResponse.json({ data: restaurants || [] });
   } catch (err) {
     console.error("[GET /api/restaurants]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -71,7 +63,6 @@ export async function GET(req: NextRequest) {
 }
 
 // ─── POST /api/restaurants ────────────────────────────────────────────────────
-// Create a restaurant for the logged-in owner (called at end of onboarding).
 
 export async function POST(req: NextRequest) {
   const session = await getSession(req);
@@ -95,12 +86,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const db = await getDb();
-
     // Check if owner already has a restaurant
-    const existing = await db
-      .collection("restaurants")
-      .findOne({ ownerId: session.userId });
+    const { data: existing } = await supabase
+      .from("restaurants")
+      .select("id")
+      .eq("owner_id", session.userId)
+      .single();
+
     if (existing) {
       return NextResponse.json(
         { error: "You already have a restaurant. Use PATCH to update it." },
@@ -108,32 +100,39 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const now = new Date();
-    const result = await db.collection("restaurants").insertOne({
-      ...parsed.data,
-      ownerId: session.userId,
-      plan: (body as Record<string, unknown>).plan || "Professional",
-      billingCycle: (body as Record<string, unknown>).billingCycle || "monthly",
-      subscriptionStatus: "trialing",
-      createdAt: now,
-      updatedAt: now,
-    });
+    const b = body as Record<string, unknown>;
+    const { data: newRestaurant, error: insertError } = await supabase
+      .from("restaurants")
+      .insert({
+        owner_id: session.userId,
+        name: parsed.data.name,
+        type: parsed.data.type,
+        address: parsed.data.address,
+        opening_hours: parsed.data.openingHours,
+        phone: parsed.data.phone,
+        email: parsed.data.email,
+        logo: parsed.data.logo || null,
+        description: parsed.data.description || null,
+        plan: (b.plan as string) || "Professional",
+        billing_cycle: (b.billingCycle as string) || "monthly",
+        subscription_status: "trialing",
+      })
+      .select("id")
+      .single();
 
-    // Link restaurantId onto the user document
-    await db
-      .collection("users")
-      .updateOne(
-        { _id: new ObjectId(session.userId) },
-        {
-          $set: { restaurantId: result.insertedId.toString(), updatedAt: now },
-        },
-      );
+    if (insertError) throw insertError;
+
+    // Link restaurant to owner user
+    await supabase
+      .from("users")
+      .update({
+        restaurant_id: newRestaurant.id,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", session.userId);
 
     return NextResponse.json(
-      {
-        message: "Restaurant created",
-        restaurantId: result.insertedId.toString(),
-      },
+      { message: "Restaurant created", restaurantId: newRestaurant.id },
       { status: 201 },
     );
   } catch (err) {

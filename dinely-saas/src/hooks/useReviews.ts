@@ -4,14 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { reviewsApi } from "@/lib/api";
 
 interface Review {
-  _id: string;
-  restaurantId: string;
-  customerId: string;
-  customerName: string;
+  id: string;
+  restaurant_id: string;
+  customer_id: string;
+  customer_name: string;
   rating: number;
   comment: string;
   helpful: number;
-  createdAt: string;
+  created_at: string;
 }
 
 export function useReviews(
@@ -57,7 +57,7 @@ export function useReviews(
   const markHelpful = async (id: string) => {
     await reviewsApi.markHelpful(id);
     setReviews((prev) =>
-      prev.map((r) => (r._id === id ? { ...r, helpful: r.helpful + 1 } : r)),
+      prev.map((r) => (r.id === id ? { ...r, helpful: r.helpful + 1 } : r)),
     );
   };
 

@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { createOrderSchema } from "@/lib/validators";
 
 // ─── GET /api/orders ──────────────────────────────────────────────────────────
-// Owner: all orders for their restaurant (with pagination & status filter).
-// Customer: their own orders.
 
 export async function GET(req: NextRequest) {
   const session = await getSession(req);
@@ -18,38 +15,34 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get("status");
   const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
   const limit = Math.min(50, parseInt(searchParams.get("limit") || "20"));
-  const skip = (page - 1) * limit;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const filter: Record<string, any> = {};
-
-  if (session.role === "owner") {
-    if (!session.restaurantId) {
-      return NextResponse.json({ data: [], total: 0 });
-    }
-    filter.restaurantId = session.restaurantId;
-  } else {
-    filter.customerId = session.userId;
-  }
-
-  if (status) filter.status = status;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
   try {
-    const db = await getDb();
-    const [orders, total] = await Promise.all([
-      db
-        .collection("orders")
-        .find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .toArray(),
-      db.collection("orders").countDocuments(filter),
-    ]);
+    let query = supabase.from("orders").select("*", { count: "exact" });
+
+    if (session.role === "owner") {
+      if (!session.restaurantId) {
+        return NextResponse.json({ data: [], total: 0 });
+      }
+      query = query.eq("restaurant_id", session.restaurantId);
+    } else {
+      query = query.eq("customer_id", session.userId);
+    }
+
+    if (status) {
+      query = query.eq("status", status);
+    }
+
+    const { data: orders, count, error } = await query
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (error) throw error;
 
     return NextResponse.json({
-      data: orders.map((o) => ({ ...o, _id: o._id.toString() })),
-      total,
+      data: orders || [],
+      total: count || 0,
       page,
       limit,
     });
@@ -60,7 +53,6 @@ export async function GET(req: NextRequest) {
 }
 
 // ─── POST /api/orders ─────────────────────────────────────────────────────────
-// Customers place orders; owners can also create manual orders.
 
 export async function POST(req: NextRequest) {
   const session = await getSession(req);
@@ -87,42 +79,48 @@ export async function POST(req: NextRequest) {
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   try {
-    const db = await getDb();
-
     // Verify restaurant exists
-    const restaurant = await db
-      .collection("restaurants")
-      .findOne({ _id: new ObjectId(restaurantId) });
+    const { data: restaurant } = await supabase
+      .from("restaurants")
+      .select("id")
+      .eq("id", restaurantId)
+      .single();
+
     if (!restaurant) {
-      return NextResponse.json(
-        { error: "Restaurant not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Restaurant not found" }, { status: 404 });
     }
 
     // Get customer name
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(session.userId) });
-    const customerName = user ? `${user.firstName} ${user.lastName}` : "Guest";
+    const { data: user } = await supabase
+      .from("users")
+      .select("first_name, last_name")
+      .eq("id", session.userId)
+      .single();
 
-    const now = new Date();
-    const result = await db.collection("orders").insertOne({
-      restaurantId,
-      customerId: session.userId,
-      customerName,
-      items,
-      type,
-      status: "Pending",
-      total: Math.round(total * 100) / 100,
-      deliveryAddress,
-      notes,
-      createdAt: now,
-      updatedAt: now,
-    });
+    const customerName = user
+      ? `${user.first_name} ${user.last_name}`
+      : "Guest";
+
+    const { data: newOrder, error } = await supabase
+      .from("orders")
+      .insert({
+        restaurant_id: restaurantId,
+        customer_id: session.userId,
+        customer_name: customerName,
+        items: items,
+        type,
+        status: "Pending",
+        total: Math.round(total * 100) / 100,
+        delivery_address: deliveryAddress || null,
+        notes: notes || null,
+      })
+      .select("id")
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json(
-      { message: "Order placed", orderId: result.insertedId.toString() },
+      { message: "Order placed", orderId: newOrder.id },
       { status: 201 },
     );
   } catch (err) {

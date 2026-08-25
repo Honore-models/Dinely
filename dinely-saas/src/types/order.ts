@@ -9,16 +9,16 @@ export interface OrderItem {
 }
 
 export interface Order {
-  _id?: string;
-  restaurantId: string;
-  customerId: string;
-  customerName: string;
+  id: string;
+  restaurant_id: string;
+  customer_id: string;
+  customer_name: string;
   items: OrderItem[];
   type: OrderType;
   status: OrderStatus;
   total: number;
-  deliveryAddress?: string;
+  delivery_address?: string;
   notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: string;
+  updated_at: string;
 }

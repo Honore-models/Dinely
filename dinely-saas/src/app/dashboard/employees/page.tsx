@@ -7,7 +7,7 @@ import { Download, Loader2, Plus, X } from "lucide-react";
 import { employeesApi } from "@/lib/api";
 
 interface Employee {
-  _id: string;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -67,7 +67,7 @@ export default function EmployeesPage() {
     };
     try {
       if (editing) {
-        await employeesApi.update(editing._id, payload as Record<string, unknown>);
+        await employeesApi.update(editing.id, payload as Record<string, unknown>);
       } else {
         await employeesApi.create(payload);
       }
@@ -84,7 +84,7 @@ export default function EmployeesPage() {
     if (!confirm("Remove this employee?")) return;
     try {
       await employeesApi.delete(id);
-      setEmployees((prev) => prev.filter((e) => e._id !== id));
+      setEmployees((prev) => prev.filter((e) => e.id !== id));
     } catch { /* ignore */ }
   };
 
@@ -125,7 +125,7 @@ export default function EmployeesPage() {
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {employees.map((emp) => (
             <EmployeeCard
-              key={emp._id}
+              key={emp.id}
               name={`${emp.firstName} ${emp.lastName}`}
               role={emp.role}
               department={emp.role}
@@ -134,7 +134,7 @@ export default function EmployeesPage() {
               phone={emp.phone}
               isActive
               onEdit={() => openEdit(emp)}
-              onDelete={() => handleDelete(emp._id)}
+              onDelete={() => handleDelete(emp.id)}
             />
           ))}
         </div>

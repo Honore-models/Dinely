@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { restaurantsApi } from "@/lib/api";
 
 interface Restaurant {
-  _id: string;
+  id: string;
   name: string;
   type: string;
   address: string;
@@ -13,9 +13,9 @@ interface Restaurant {
   logo?: string;
   description?: string;
   rating?: number;
-  reviewCount?: number;
-  openingHours?: string;
-  subscriptionStatus: string;
+  review_count?: number;
+  opening_hours?: string;
+  subscription_status: string;
 }
 
 export function useRestaurants(params?: {

@@ -59,8 +59,8 @@ export default function FavouritesPage() {
                 : FALLBACK_IMAGES[i % FALLBACK_IMAGES.length];
             return (
               <RestaurantCard
-                key={r._id}
-                id={r._id}
+                key={r.id}
+                id={r.id}
                 name={r.name}
                 cuisine={r.type}
                 rating={r.rating ?? 0}
