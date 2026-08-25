@@ -1,201 +1,103 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Star } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, Search, ShoppingCart, Star } from "lucide-react";
 import { Button } from "../ui/Button";
-import {
-  fadeUp,
-  scaleIn,
-  slideInRight,
-  smoothEase,
-  staggerContainer,
-} from "@/lib/motion";
-
-const avatars = ["AM", "SK", "NP"];
 
 export function HeroSection() {
-  const reduceMotion = useReducedMotion();
-
   return (
-    <section className="relative flex min-h-screen w-full items-center overflow-hidden bg-white pt-24 pb-16">
-      <motion.div
-        className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.05)_1px,transparent_1px)] bg-size-[88px_88px]"
-        initial={reduceMotion ? false : { opacity: 0 }}
-        animate={reduceMotion ? undefined : { opacity: 1 }}
-        transition={{ duration: 1.2, ease: smoothEase }}
-      />
+    <section className="relative flex min-h-[92vh] w-full items-center overflow-hidden bg-white pt-20 pb-16">
+      {/* Curved background shapes */}
+      <div className="absolute right-0 top-0 h-[700px] w-[700px] rounded-full bg-[#e8f5e9] opacity-60 blur-3xl -translate-y-1/4 translate-x-1/4" />
+      <div className="absolute right-40 top-20 h-[400px] w-[400px] rounded-full bg-[#f0fdf4] opacity-80 blur-2xl" />
 
       <div className="relative mx-auto w-full max-w-7xl px-6">
-        <div className="grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-8">
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.h1
-              variants={fadeUp}
-              className="max-w-xl text-4xl font-bold leading-tight text-neutral-700 md:text-[44px]"
-            >
-              Discover <span className="text-[#78d96d]">Restaurants.</span>
-              <br />
-              Manage Them Smarter.
-            </motion.h1>
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-4">
+          {/* Left content */}
+          <div>
+            <p className="mb-3 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#22c51f]">
+              <span className="h-px w-8 bg-[#22c51f]" />
+              Welcome to Dinely
+            </p>
 
-            <motion.p
-              variants={fadeUp}
-              className="mt-6 max-w-3xl text-lg font-semibold leading-relaxed text-neutral-600"
-            >
-              A unified platform where customers explore restaurants and restaurant owners manage
-              bookings, menus, and performance in real time.
-            </motion.p>
+            <h1 className="text-4xl font-extrabold leading-[1.1] text-neutral-900 md:text-5xl lg:text-[56px]">
+              Discover Restaurants
+              <br />& <span className="text-[#22c51f]">Taste the Best</span>
+              <br />Food Near You.
+            </h1>
 
-            <motion.div
-              variants={fadeUp}
-              className="mt-8 flex flex-col gap-6 md:flex-row md:items-center"
-            >
-              <div className="flex items-center">
-                {avatars.map((avatar, index) => (
-                  <motion.div
-                    key={avatar}
-                    initial={reduceMotion ? false : { opacity: 0, scale: 0.6, x: -12 }}
-                    animate={reduceMotion ? undefined : { opacity: 1, scale: 1, x: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: 0.45 + index * 0.08,
-                      ease: smoothEase,
-                    }}
-                    className={`-ml-3 grid h-12 w-12 place-items-center rounded-full border-2 border-white bg-linear-to-br from-green-100 to-orange-100 text-xs font-bold first:ml-0 ${
-                      index === 0 ? "z-30" : index === 1 ? "z-20" : "z-10"
-                    }`}
-                  >
-                    {avatar}
-                  </motion.div>
-                ))}
-                <motion.div
-                  initial={reduceMotion ? false : { opacity: 0, x: 8 }}
-                  animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
-                  transition={{ duration: 0.55, delay: 0.7, ease: smoothEase }}
-                  className="ml-4"
-                >
-                  <p className="text-xl font-bold text-[#22c51f]">45K+</p>
-                  <p className="text-lg font-semibold text-neutral-600">Trusted Customers</p>
-                </motion.div>
-              </div>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-neutral-500">
+              Find the finest and freshest restaurants, order food to satisfy your
+              cravings, and manage your restaurant business — all in one powerful
+              platform.
+            </p>
 
-              <div className="hidden h-12 w-px bg-neutral-300 md:block" />
-
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-                animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.55, ease: smoothEase }}
-              >
-                <p className="text-xl font-bold text-neutral-800">4.8/5</p>
-                <div className="mt-2 flex items-center gap-2">
-                  {Array.from({ length: 5 }, (_, index) => (
-                    <motion.div
-                      key={index}
-                      initial={reduceMotion ? false : { opacity: 0, scale: 0 }}
-                      animate={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
-                      transition={{
-                        duration: 0.35,
-                        delay: 0.6 + index * 0.06,
-                        ease: smoothEase,
-                      }}
-                    >
-                      <Star
-                        size={22}
-                        className={
-                          index < 4 ? "fill-green-100 text-[#22c51f]" : "text-neutral-900"
-                        }
-                      />
-                    </motion.div>
-                  ))}
-                  <span className="ml-2 text-lg font-bold text-neutral-800">Rating</span>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              variants={fadeUp}
-              className="relative mt-10 flex flex-col items-start gap-5"
-            >
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Button href="/explore" variant="animated">
+                Order Now
+              </Button>
               <Link
-                href="/home"
-                className="group inline-flex items-center gap-3 text-xl font-bold text-[#63c900] transition-colors duration-300 hover:text-[#4fa800]"
+                href="/explore"
+                className="inline-flex h-12 items-center gap-2 rounded-xl border-2 border-[#22c51f] bg-transparent px-7 text-sm font-bold text-[#22c51f] transition hover:bg-green-50"
               >
-                <span>Explore Restaurants</span>
-                <ArrowRight
-                  size={24}
-                  className={reduceMotion ? "" : "animate-[floatArrow_2.8s_ease-in-out_infinite]"}
-                />
+                Explore More
               </Link>
-              <motion.div
-                whileHover={reduceMotion ? undefined : { scale: 1.02 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              >
-                <Button href="/onboarding/step-1" className="text-black">
-                  Get Started as a Restaurant
-                </Button>
-              </motion.div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          <motion.div
-            variants={slideInRight}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.15 }}
-            className="relative mx-auto w-full max-w-[800px] lg:max-w-none"
-          >
-            <motion.div
-              className="absolute -inset-4 rounded-[32px] bg-gradient-to-tr from-[#78d96d]/25 via-transparent to-orange-400/20 opacity-80 blur-2xl lg:-inset-8"
-              animate={
-                reduceMotion
-                  ? undefined
-                  : {
-                      opacity: [0.5, 0.85, 0.5],
-                      scale: [1, 1.03, 1],
-                    }
-              }
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
+          {/* Right image */}
+          <div className="relative">
+            {/* Main food image */}
+            <div className="relative mx-auto h-[420px] w-[420px] md:h-[520px] md:w-[520px]">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#e8f5e9] to-[#dcfce7]" />
+              <Image
+                src="/Order_food.png"
+                alt="Delicious food"
+                fill
+                className="object-contain p-8"
+                priority
+              />
+            </div>
 
-            <motion.div
-              variants={scaleIn}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.25 }}
-              className="relative"
-            >
-              <motion.div
-                animate={reduceMotion ? undefined : { y: [0, -6, 0] }}
-                transition={
-                  reduceMotion
-                    ? undefined
-                    : { duration: 4.5, repeat: Infinity, ease: "easeInOut" }
-                }
-                className="rounded-[24px] border border-neutral-200/50 bg-white/40 p-2 shadow-2xl shadow-[#78d96d]/10 backdrop-blur-md sm:p-3 lg:p-4"
-              >
-                <div className="overflow-hidden rounded-[16px] border border-neutral-100/80 bg-white shadow-inner">
-                  <Image
-                    src="/image.png"
-                    alt="Dashboard Preview"
-                    width={1200}
-                    height={800}
-                    className="h-auto w-full object-cover"
-                    priority
-                  />
+            {/* Floating card — Courier */}
+            <div className="absolute -bottom-2 left-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white px-4 py-3 shadow-lg md:bottom-8 md:-left-6">
+              <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#e8f5e9]">
+                <Image
+                  src="/man1.webp"
+                  alt="Robert Fisher"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-neutral-900">Robert Fisher</p>
+                <p className="text-xs text-neutral-500">Restaurant Owner</p>
+              </div>
+              <div className="ml-1 grid h-8 w-8 place-items-center rounded-full bg-[#22c51f] text-white">
+                <Star size={14} className="fill-white" />
+              </div>
+            </div>
+
+            {/* Floating card — Dish */}
+            <div className="absolute -bottom-2 right-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white px-4 py-3 shadow-lg md:bottom-20 md:-right-6">
+              <div className="relative h-10 w-10 overflow-hidden rounded-full bg-neutral-100">
+                <Image
+                  src="/food5.jpg"
+                  alt="Classic Beef Burger"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-neutral-900">Classic Beef Burger</p>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Star key={i} size={10} className="fill-amber-400 text-amber-400" />
+                  ))}
                 </div>
-              </motion.div>
-            </motion.div>
-          </motion.div>
+              </div>
+              <p className="text-sm font-extrabold text-[#22c51f]">$13.50</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -17,11 +17,15 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
+body, html {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-outfit), system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+  font-family: inherit;
 }
 
 button,
@@ -60,6 +64,15 @@ main:focus-visible {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Hide scrollbar for carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

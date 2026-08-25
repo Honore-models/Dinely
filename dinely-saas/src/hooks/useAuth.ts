@@ -176,7 +176,7 @@ export function useAuth() {
   const logout = async () => {
     await authApi.logout();
     setState({ user: null, loading: false, error: null });
-    router.push("/login");
+    router.push("/");
   };
 
   return {

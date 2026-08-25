@@ -8,11 +8,11 @@ export async function middleware(req: NextRequest) {
   // ── Dashboard: owners only ────────────────────────────────────────────────
   if (pathname.startsWith("/dashboard")) {
     if (!token) {
-      return NextResponse.redirect(new URL("/login", req.url));
+      return NextResponse.redirect(new URL("/", req.url));
     }
     const session = await verifyToken(token);
     if (!session || session.role !== "owner") {
-      return NextResponse.redirect(new URL("/login", req.url));
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
     // Inject user info as request headers so server components can read them
@@ -49,15 +49,15 @@ export async function middleware(req: NextRequest) {
   ];
   if (customerProtected.some((p) => pathname.startsWith(p))) {
     if (!token) {
-      const loginUrl = new URL("/login", req.url);
-      loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
+      const homeUrl = new URL("/", req.url);
+      homeUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(homeUrl);
     }
     const session = await verifyToken(token);
     if (!session) {
-      const loginUrl = new URL("/login", req.url);
-      loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
+      const homeUrl = new URL("/", req.url);
+      homeUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(homeUrl);
     }
     // Owners accidentally hitting customer routes → send to dashboard
     if (session.role === "owner") {
