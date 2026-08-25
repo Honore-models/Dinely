@@ -102,10 +102,11 @@ export function OurStorySection() {
                   </div>
                 ))}
               </div>
-              <button
-                type="button"
-                className="flex items-center gap-2 text-sm font-bold text-neutral-900 transition hover:text-[#22c51f]"
-              >
+            <button
+              type="button"
+              onClick={() => window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank")}
+              className="flex items-center gap-2 text-sm font-bold text-neutral-900 transition hover:text-[#22c51f]"
+            >
                 <span className="grid h-10 w-10 place-items-center rounded-full border-2 border-neutral-200 text-[#22c51f]">
                   <Play size={16} className="ml-0.5" />
                 </span>

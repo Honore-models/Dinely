@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Search, ShoppingCart, Star } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
 import { Button } from "../ui/Button";
 
 export function HeroSection() {
@@ -46,20 +46,19 @@ export function HeroSection() {
 
           {/* Right image */}
           <div className="relative">
-            {/* Main food image */}
+            {/* Main food image — no background */}
             <div className="relative mx-auto h-[420px] w-[420px] md:h-[520px] md:w-[520px]">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#e8f5e9] to-[#dcfce7]" />
               <Image
                 src="/Order_food.png"
                 alt="Delicious food"
                 fill
-                className="object-contain p-8"
+                className="object-contain"
                 priority
               />
             </div>
 
-            {/* Floating card — Courier */}
-            <div className="absolute -bottom-2 left-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white px-4 py-3 shadow-lg md:bottom-8 md:-left-6">
+            {/* Floating card — Owner */}
+            <div className="animate-float-card-1 absolute -bottom-2 left-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white/90 backdrop-blur-sm px-4 py-3 shadow-lg md:bottom-8 md:-left-6">
               <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#e8f5e9]">
                 <Image
                   src="/man1.webp"
@@ -78,7 +77,7 @@ export function HeroSection() {
             </div>
 
             {/* Floating card — Dish */}
-            <div className="absolute -bottom-2 right-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white px-4 py-3 shadow-lg md:bottom-20 md:-right-6">
+            <div className="animate-float-card-2 absolute -bottom-2 right-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white/90 backdrop-blur-sm px-4 py-3 shadow-lg md:bottom-20 md:-right-6">
               <div className="relative h-10 w-10 overflow-hidden rounded-full bg-neutral-100">
                 <Image
                   src="/food5.jpg"

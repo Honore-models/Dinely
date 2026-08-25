@@ -34,14 +34,6 @@ function XIcon() {
   );
 }
 
-function FacebookIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-    </svg>
-  );
-}
-
 function LinkedInIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
@@ -59,15 +51,14 @@ function InstagramIcon() {
 }
 
 const socialLinks = [
-  { icon: XIcon, href: "#", label: "X" },
-  { icon: FacebookIcon, href: "#", label: "Facebook" },
-  { icon: LinkedInIcon, href: "#", label: "LinkedIn" },
-  { icon: InstagramIcon, href: "#", label: "Instagram" },
+  { icon: XIcon, href: "https://x.com/NIYOGUSHIMWAHo1", label: "X" },
+  { icon: LinkedInIcon, href: "https://www.linkedin.com/in/niyogushimwa-honore-8427b339a/", label: "LinkedIn" },
+  { icon: InstagramIcon, href: "https://www.instagram.com/honor_e25/", label: "Instagram" },
 ];
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-white px-6 pt-16 pb-0">
+    <footer className="relative overflow-hidden bg-white px-6 pt-12 pb-0">
       <div className="relative mx-auto max-w-7xl">
         <div className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr_1.3fr]">
           {/* Brand + social */}
@@ -82,6 +73,8 @@ export function Footer() {
                 <Link
                   key={social.label}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={social.label}
                   className="grid h-9 w-9 place-items-center rounded-lg bg-[#22c51f] text-white transition hover:bg-[#1bad1a]"
                 >
@@ -126,6 +119,7 @@ export function Footer() {
               />
               <button
                 type="button"
+                onClick={() => alert("Thank you for subscribing!")}
                 className="h-11 rounded-lg bg-[#22c51f] text-xs font-bold text-white transition hover:bg-[#1bad1a]"
               >
                 Subscribe Now
@@ -134,20 +128,7 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Large Dinely background text */}
-        <div className="pointer-events-none mt-16 flex justify-center overflow-hidden">
-          <p
-            className="leading-none text-[#dcfce7]"
-            style={{
-              fontSize: "clamp(100px, 15vw, 240px)",
-              fontFamily: "var(--font-outfit)",
-              fontWeight: 900,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Dinely
-          </p>
-        </div>
+
       </div>
     </footer>
   );

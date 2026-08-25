@@ -31,15 +31,15 @@ const services = [
 
 export function WhyChooseUsSection() {
   return (
-    <section className="bg-white px-6 py-20">
+    <section className="bg-white px-6 py-12">
       <div className="mx-auto max-w-7xl">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className="grid items-center gap-8 lg:grid-cols-2">
           {/* Left side */}
           <div>
-            <h2 className="text-3xl font-extrabold text-neutral-900 md:text-4xl">
+            <h2 className="text-2xl font-extrabold text-neutral-900 md:text-3xl">
               Why choose us
             </h2>
-            <p className="mt-5 max-w-md text-sm leading-relaxed text-neutral-500">
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-neutral-500">
               We focus on great taste, fresh ingredients, and fast service you can
               rely on. Quality, affordability, and a friendly atmosphere make every
               visit special. Choose us for delicious food, quick convenience, and a
@@ -47,30 +47,30 @@ export function WhyChooseUsSection() {
             </p>
             <a
               href="/explore"
-              className="mt-8 inline-flex h-12 items-center rounded-xl bg-[#22c51f] px-8 text-sm font-bold text-white transition hover:bg-[#1bad1a]"
+              className="mt-5 inline-flex h-11 items-center rounded-xl bg-[#22c51f] px-7 text-sm font-bold text-white transition hover:bg-[#1bad1a]"
             >
               Explore More
             </a>
           </div>
 
           {/* Right side — 2x2 grid */}
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-2 gap-4">
             {services.map((service, index) => (
               <div
                 key={service.title}
-                className={`rounded-2xl p-6 transition ${
+                className={`rounded-2xl p-5 transition ${
                   index === 0
                     ? "bg-[#f8fdf8] shadow-sm"
                     : "bg-neutral-50"
                 }`}
               >
-                <div className="grid h-12 w-12 place-items-center rounded-xl bg-white text-[#22c51f] shadow-sm">
-                  <service.icon size={22} />
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-white text-[#22c51f] shadow-sm">
+                  <service.icon size={20} />
                 </div>
-                <h3 className="mt-4 text-base font-bold text-neutral-900">
+                <h3 className="mt-3 text-sm font-bold text-neutral-900">
                   {service.title}
                 </h3>
-                <p className="mt-2 text-xs leading-relaxed text-neutral-500">
+                <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">
                   {service.description}
                 </p>
               </div>

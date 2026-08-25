@@ -23,39 +23,24 @@ export function Button({
   className = "",
   ...props
 }: ButtonProps) {
-  // Animated button with corner triangles
+  // Uiverse skew-fill animated button
   if (variant === "animated") {
-    const animClasses = `relative inline-flex items-center overflow-hidden rounded-md px-7 py-3 text-base font-bold transition-all duration-300 group ${className}`;
+    const baseClasses = `relative z-[1] inline-flex h-12 items-center justify-center overflow-hidden rounded-[10px] bg-[#22c51f] px-8 text-sm font-bold text-white cursor-pointer transition-colors duration-300 hover:text-[#22c51f] ${className}`;
 
-    const inner = (
-      <>
-        {/* Top-right corner triangle */}
-        <span className="absolute right-0 top-0 inline-block h-4 w-4 rounded bg-[#1bad1a] transition-all duration-500 ease-in-out group-hover:-mr-4 group-hover:-mt-4">
-          <span className="absolute right-0 top-0 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-white" />
-        </span>
-        {/* Bottom-left corner triangle */}
-        <span className="absolute bottom-0 left-0 inline-block h-4 w-4 rotate-180 rounded bg-[#1bad1a] transition-all duration-500 ease-in-out group-hover:-ml-4 group-hover:-mb-4">
-          <span className="absolute right-0 top-0 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-white" />
-        </span>
-        {/* Slide-in background */}
-        <span className="absolute bottom-0 left-0 h-full w-full -translate-x-full rounded-md bg-[#1bad1a] transition-all duration-500 delay-200 ease-in-out group-hover:translate-x-0" />
-        {/* Label */}
-        <span className="relative z-10 text-left text-white transition-colors duration-200 ease-in-out">
-          {children}
-        </span>
-      </>
-    );
+    const afterClasses = `after:absolute after:z-[-1] after:left-[-20%] after:right-[-20%] after:top-0 after:bottom-0 after:-skew-x-[45deg] after:scale-x-0 after:scale-y-[1] after:bg-white after:transition-all after:duration-500 hover:after:scale-x-[1] hover:after:scale-y-[1]`;
+
+    const inner = <span className="relative z-[2]">{children}</span>;
 
     if (href) {
       return (
-        <Link href={href} className={animClasses}>
+        <Link href={href} className={`${baseClasses} ${afterClasses}`}>
           {inner}
         </Link>
       );
     }
 
     return (
-      <button className={animClasses} {...props}>
+      <button className={`${baseClasses} ${afterClasses}`} {...props}>
         {inner}
       </button>
     );
