@@ -22,7 +22,7 @@ const items = [
 
 export function WhatWeServeSection() {
   return (
-    <section className="bg-white px-6 py-20">
+    <section className="bg-white px-6 py-12">
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-wider text-[#22c51f]">

@@ -129,31 +129,31 @@ export function RestaurantProfile({
         {/* Social Links */}
         <div className="flex items-center gap-2">
           <a
-            href="#"
+            href="/dashboard/settings"
             className="p-2 hover:bg-neutral-100 rounded-full transition"
           >
             <Link size={20} className="text-neutral-600" />
           </a>
           <a
-            href="#"
+            href="/dashboard/clients"
             className="p-2 hover:bg-neutral-100 rounded-full transition"
           >
             <MessageCircle size={20} className="text-neutral-600" />
           </a>
           <a
-            href="#"
+            href="/dashboard/settings"
             className="p-2 hover:bg-neutral-100 rounded-full transition"
           >
             <Share2 size={20} className="text-neutral-600" />
           </a>
           <a
-            href="#"
+            href="/dashboard/menu"
             className="p-2 hover:bg-neutral-100 rounded-full transition"
           >
             <Camera size={20} className="text-neutral-600" />
           </a>
           <a
-            href="#"
+            href="/dashboard/orders"
             className="p-2 hover:bg-neutral-100 rounded-full transition"
           >
             <Send size={20} className="text-neutral-600" />

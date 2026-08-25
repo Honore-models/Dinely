@@ -76,7 +76,7 @@ export function TestimonialsSection() {
         </div>
 
         {/* Slider */}
-        <div className="relative mt-8">
+        <div className="relative mt-8 pb-4">
           {/* Cards container */}
           <div
             ref={dragRef}
@@ -146,7 +146,7 @@ export function TestimonialsSection() {
           </div>
 
           {/* Navigation arrows */}
-          <div className="mt-6 flex items-center justify-center gap-4">
+          <div className="mt-10 flex items-center justify-center gap-4">
             <button
               type="button"
               onClick={prev}

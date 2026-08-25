@@ -5,17 +5,17 @@ import { DinelyLogo } from "../brand/DinelyLogo";
 
 const footerLinks = {
   "Customer Service": [
-    { label: "FAQ", href: "#" },
-    { label: "Contact", href: "#" },
-    { label: "Our Journals", href: "#" },
-    { label: "Returns & Refunds", href: "#" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Contact", href: "/contact" },
     { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/privacy" },
+    { label: "Refund Policy", href: "/privacy" },
   ],
   Company: [
     { label: "About Us", href: "/about" },
-    { label: "Careers", href: "#" },
-    { label: "Our Story", href: "#" },
-    { label: "Affiliate Programme", href: "#" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Our Story", href: "/about" },
+    { label: "Partner With Us", href: "/contact" },
   ],
   "Quick Links": [
     { label: "Offers", href: "/offers" },
@@ -58,7 +58,7 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-white px-6 pt-12 pb-0">
+    <footer className="relative overflow-hidden bg-white px-6 pt-10 pb-0">
       <div className="relative mx-auto max-w-7xl">
         <div className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr_1.3fr]">
           {/* Brand + social */}

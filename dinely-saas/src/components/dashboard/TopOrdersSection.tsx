@@ -21,7 +21,7 @@ export function TopOrdersSection({ orders }: TopOrdersSectionProps) {
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-neutral-900">Top Orders</h3>
         <a
-          href="#"
+          href="/dashboard/orders"
           className="flex items-center gap-1 text-emerald-600 font-semibold hover:text-emerald-700 transition"
         >
           View all

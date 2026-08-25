@@ -228,9 +228,9 @@ export default function CheckoutPage() {
             </button>
             <p className="mt-3 text-center text-xs text-neutral-400">
               By placing an order, you agree to our{" "}
-              <Link href="#" className="font-semibold text-[#22c51f] hover:underline">Terms of Service</Link>
+              <Link href="/privacy" className="font-semibold text-[#22c51f] hover:underline">Terms of Service</Link>
               {" "}and{" "}
-              <Link href="#" className="font-semibold text-[#22c51f] hover:underline">Privacy policy</Link>
+              <Link href="/privacy" className="font-semibold text-[#22c51f] hover:underline">Privacy policy</Link>
             </p>
           </div>
         </div>
