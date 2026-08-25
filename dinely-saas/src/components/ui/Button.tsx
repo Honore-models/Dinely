@@ -12,13 +12,21 @@ const variants = {
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   variant?: keyof typeof variants;
+  size?: "sm" | "md" | "lg";
   href?: string;
   className?: string;
 }
 
+const sizeClasses = {
+  sm: "h-9 px-4 text-xs",
+  md: "h-11 px-6 text-sm",
+  lg: "h-12 px-8 text-base",
+};
+
 export function Button({
   children,
   variant = "primary",
+  size = "md",
   href,
   className = "",
   ...props
@@ -46,7 +54,7 @@ export function Button({
     );
   }
 
-  const classes = `inline-flex h-11 items-center justify-center gap-2 rounded-md border px-6 text-base font-semibold transition ${variants[variant]} ${className}`;
+  const classes = `inline-flex items-center justify-center gap-2 rounded-md border font-semibold transition ${sizeClasses[size]} ${variants[variant]} ${className}`;
 
   if (href) {
     return (

@@ -1,68 +1,191 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Award, Check, Zap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ToggleBilling } from "@/components/ui/ToggleBilling";
-import { PlanCard } from "@/components/onboarding/PlanCard";
 import { useOnboardingStore, type PlanName } from "@/store/onboardingStore";
 
-const plans = [
+const plans: {
+  name: PlanName;
+  monthly: number;
+  yearly: number;
+  description: string;
+  features: string[];
+  recommended?: boolean;
+}[] = [
   {
-    name: "Starter" as const,
-    price: 9,
-    description: "Small restaurants starting out",
-    features: ["Basic restaurant profile", "Menu management", "Limited orders"],
+    name: "Starter",
+    monthly: 9,
+    yearly: 9,
+    description: "For small restaurants just getting started",
+    features: [
+      "Restaurant profile page",
+      "Menu management (up to 30 items)",
+      "Up to 100 orders/month",
+      "Basic analytics",
+      "Email support",
+    ],
   },
   {
-    name: "Professional" as const,
-    price: 14,
-    description: "Growing restaurants",
-    features: ["Everything in Starter", "Unlimited orders", "Analytics dashboard", "Priority support"],
-    isRecommended: true,
+    name: "Professional",
+    monthly: 14,
+    yearly: 14,
+    description: "For growing restaurants that need more power",
+    features: [
+      "Everything in Starter",
+      "Unlimited menu items & orders",
+      "Advanced analytics dashboard",
+      "Table bookings & management",
+      "Priority support",
+      "Customer insights",
+    ],
+    recommended: true,
   },
   {
-    name: "Enterprise" as const,
-    price: 20,
-    description: "Multi-branch restaurants",
-    features: ["Multi-restaurant management", "Advanced analytics", "Custom integrations", "Dedicated support"],
+    name: "Enterprise",
+    monthly: 20,
+    yearly: 20,
+    description: "For multi-branch restaurants and chains",
+    features: [
+      "Everything in Professional",
+      "Multi-restaurant management",
+      "Custom integrations (POS, delivery)",
+      "Dedicated account manager",
+      "API access & custom branding",
+    ],
   },
 ];
 
 export default function StepThreePage() {
   const router = useRouter();
-  const { selectedPlan, setSelectedPlan, billingCycle, setBillingCycle } = useOnboardingStore();
+  const { selectedPlan, setSelectedPlan, billingCycle, setBillingCycle } =
+    useOnboardingStore();
+
+  const getPrice = (plan: (typeof plans)[number]) =>
+    billingCycle === "yearly" ? plan.yearly : plan.monthly;
 
   return (
     <div className="mt-2">
-      <p className="font-bold text-neutral-500">Step 3/4</p>
-      <div className="text-center">
-        <h1 className="mt-1 text-2xl font-bold text-[#22c51f]">Choose your plan</h1>
-        <p className="mt-1 text-base font-semibold text-neutral-600">
-          Select a subscription plan that fits your restaurant&apos;s needs. You can upgrade or cancel anytime.
-        </p>
-        <div className="mt-3">
-          <ToggleBilling value={billingCycle} onChange={setBillingCycle} />
-        </div>
+      <p className="text-sm font-bold text-neutral-400">Step 3 of 4</p>
+      <h1 className="mt-2 text-2xl font-extrabold text-neutral-900">
+        Choose Your Plan
+      </h1>
+      <p className="mt-1 text-sm text-neutral-500">
+        Select a subscription plan that fits your restaurant&apos;s needs. You
+        can upgrade or cancel anytime.
+      </p>
+      <div className="mt-4 h-px bg-neutral-100" />
+
+      <div className="mt-5 flex justify-center">
+        <ToggleBilling value={billingCycle} onChange={setBillingCycle} />
       </div>
-      <div className="mt-4 grid items-center gap-4 lg:grid-cols-3">
-        {plans.map((plan) => (
-          <PlanCard
-            key={plan.name}
-            {...plan}
-            isSelected={selectedPlan === plan.name}
-            onClick={(name: PlanName) => setSelectedPlan(name)}
-          />
-        ))}
+
+      <div className="mt-6 grid items-stretch gap-5 lg:grid-cols-3">
+        {plans.map((plan) => {
+          const isSelected = selectedPlan === plan.name;
+          const price = getPrice(plan);
+
+          return (
+            <button
+              key={plan.name}
+              type="button"
+              onClick={() => setSelectedPlan(plan.name)}
+              className={`group relative flex flex-col rounded-2xl border-2 p-5 text-left transition-all duration-200 ${
+                isSelected
+                  ? "border-[#22c51f] bg-green-50/40 shadow-lg shadow-green-100/50"
+                  : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-md"
+              }`}
+            >
+              {plan.recommended && (
+                <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-[#22c51f] px-3 py-1 text-[10px] font-bold text-white shadow-sm">
+                  <Zap size={10} className="fill-white" />
+                  Most Popular
+                </span>
+              )}
+
+              {/* Header */}
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-neutral-900">
+                    {plan.name}
+                  </h3>
+                  <p className="mt-0.5 text-xs text-neutral-500">
+                    {plan.description}
+                  </p>
+                </div>
+                {plan.recommended && (
+                  <span className="shrink-0 rounded-lg bg-yellow-100 p-1.5">
+                    <Award size={18} className="text-yellow-500" />
+                  </span>
+                )}
+              </div>
+
+              {/* Price */}
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-3xl font-extrabold text-neutral-900">
+                  ${price}
+                </span>
+                <span className="text-sm text-neutral-500">/month</span>
+              </div>
+              {billingCycle === "yearly" && (
+                <p className="mt-0.5 text-xs font-semibold text-[#22c51f]">
+                  Billed annually
+                </p>
+              )}
+
+              {/* Features */}
+              <ul className="mt-5 flex-1 space-y-2.5">
+                {plan.features.map((feature) => (
+                  <li
+                    key={feature}
+                    className="flex items-start gap-2.5 text-sm text-neutral-600"
+                  >
+                    <Check
+                      size={15}
+                      className="mt-0.5 shrink-0 text-[#22c51f]"
+                    />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              {/* Select indicator */}
+              <div
+                className={`mt-5 flex items-center justify-center gap-2 rounded-xl border-2 py-2.5 text-sm font-bold transition-all ${
+                  isSelected
+                    ? "border-[#22c51f] bg-[#22c51f] text-white"
+                    : "border-neutral-200 text-neutral-500 group-hover:border-neutral-300"
+                }`}
+              >
+                {isSelected ? (
+                  <>
+                    <Check size={16} />
+                    Selected
+                  </>
+                ) : (
+                  "Select Plan"
+                )}
+              </div>
+            </button>
+          );
+        })}
       </div>
-      <div className="mt-4 flex items-end justify-between gap-6">
+
+      <div className="mt-6 flex items-end justify-between gap-6">
         <div>
-          <h2 className="text-base font-bold">Any Question?</h2>
-          <p className="mt-1 text-sm font-semibold text-neutral-500">
-            <span className="text-[#22c51f]">Not sure?</span> You can start with a free trial or change your plan anytime.
+          <h2 className="text-sm font-bold text-neutral-900">Any Questions?</h2>
+          <p className="mt-1 text-xs text-neutral-500">
+            <span className="font-semibold text-[#22c51f]">Not sure?</span> You
+            can start with a free trial or change your plan anytime.
           </p>
         </div>
-        <Button type="button" className="h-11 px-8" onClick={() => router.push("/onboarding/step-4")}>
-          Next
+        <Button
+          type="button"
+          size="lg"
+          onClick={() => router.push("/onboarding/step-4")}
+        >
+          Next Step
         </Button>
       </div>
     </div>

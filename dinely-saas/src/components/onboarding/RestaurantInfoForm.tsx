@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, Upload } from "lucide-react";
+import { ChevronDown, Upload, Store } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
 import { z } from "zod";
@@ -13,100 +13,158 @@ import { PhoneInput } from "../ui/PhoneInput";
 import { uploadApi } from "@/lib/api";
 
 const restaurantSchema = z.object({
-  name: z.string().min(2, "Restaurant name is required"),
-  type: z.string().min(2, "Restaurant type is required"),
-  address: z.string().min(4, "Restaurant address is required"),
-  openingHours: z.string().min(4, "Opening hours are required"),
-  phone: z.string().min(7, "Phone number is required"),
-  email: z.string().email("Enter a valid email address"),
+  name: z
+    .string()
+    .min(2, "Restaurant name must be at least 2 characters")
+    .max(100, "Restaurant name is too long"),
+  type: z.string().min(1, "Please select a cuisine type"),
+  address: z
+    .string()
+    .min(4, "Address must be at least 4 characters")
+    .max(200, "Address is too long"),
+  openingHours: z
+    .string()
+    .min(3, "Opening hours are required (e.g. 08:00 - 22:00)"),
+  phone: z
+    .string()
+    .min(7, "Phone number must be at least 7 digits")
+    .max(20, "Phone number is too long"),
+  email: z.string().email("Please enter a valid email address"),
   logo: z.string().optional(),
-  description: z.string().optional(),
+  description: z.string().max(500, "Description must be under 500 characters").optional(),
 });
 
 type RestaurantFormValues = z.infer<typeof restaurantSchema>;
+
+const cuisineTypes = [
+  "Fine Dining",
+  "Casual Dining",
+  "Fast Casual",
+  "Cafe",
+  "Quick Service",
+  "Burgers & American",
+  "Pizza & Italian",
+  "Japanese & Sushi",
+  "African Cuisine",
+  "Indian Cuisine",
+  "Mexican Cuisine",
+  "Chinese Cuisine",
+  "Bakery & Pastry",
+  "Bar & Grill",
+  "Other",
+];
 
 export function RestaurantInfoForm() {
   const router = useRouter();
   const { restaurantInfo, setRestaurantInfo } = useOnboardingStore();
   const [uploading, setUploading] = useState(false);
-  const [logoPreview, setLogoPreview] = useState<string>(restaurantInfo.logo || "");
+  const [logoPreview, setLogoPreview] = useState<string>(
+    restaurantInfo.logo || ""
+  );
 
   const {
     register,
     control,
     handleSubmit,
     setValue,
-    formState: { errors },
+    watch,
+    formState: { errors, isSubmitting },
   } = useForm<RestaurantFormValues>({
     resolver: zodResolver(restaurantSchema),
-    defaultValues: restaurantInfo,
+    defaultValues: {
+      ...restaurantInfo,
+      description: restaurantInfo.description || "",
+    },
+    mode: "onTouched",
   });
+
+  const description = watch("description") || "";
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size must be under 5MB");
+      return;
+    }
     setUploading(true);
     try {
       const { url } = await uploadApi.upload(file);
       setValue("logo", url, { shouldValidate: true });
       setLogoPreview(url);
     } catch {
-      // Upload failed silently – logo is optional
+      // Upload failed silently — logo is optional
     } finally {
       setUploading(false);
     }
   };
 
   const onSubmit = (values: RestaurantFormValues) => {
-    setRestaurantInfo({ ...values, logo: values.logo || "" } as typeof restaurantInfo);
+    setRestaurantInfo({
+      ...values,
+      logo: values.logo || "",
+      description: values.description || "",
+    });
     router.push("/onboarding/step-3");
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
-      <p className="font-bold text-neutral-500">Step 2/4</p>
-      <h1 className="mt-2 text-2xl font-bold text-neutral-800">Tell Us About Your Restaurant</h1>
-      <p className="mt-1 text-base font-semibold text-neutral-600">
-        Add your restaurant details so we can set up your profile and help you start managing your business.
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6" noValidate>
+      <p className="text-sm font-bold text-neutral-400">Step 2 of 4</p>
+      <h1 className="mt-2 text-2xl font-extrabold text-neutral-900">
+        Tell Us About Your Restaurant
+      </h1>
+      <p className="mt-1 text-sm text-neutral-500">
+        Add your restaurant details so we can set up your profile and help you
+        start managing your business.
       </p>
-      <div className="mt-4 h-px bg-neutral-200" />
+      <div className="mt-4 h-px bg-neutral-100" />
 
-      <div className="mt-6 grid gap-x-12 gap-y-5 md:grid-cols-2">
+      {Object.keys(errors).length > 0 && (
+        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          Please fix the errors below before continuing.
+        </div>
+      )}
+
+      <div className="mt-6 grid gap-x-10 gap-y-4 md:grid-cols-2">
         <Input
           label="Restaurant Name"
           placeholder="e.g. Taste of Kigali"
+          icon={<Store size={16} />}
           error={errors.name?.message}
           {...register("name")}
         />
 
+        {/* Styled Select */}
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-neutral-700">
-            Restaurant Type
+            Cuisine Type
           </span>
           <span className="relative block">
             <select
-              className="h-12 w-full appearance-none rounded-lg border border-neutral-200 bg-neutral-50/50 px-4 text-sm text-neutral-700 outline-none transition focus:border-[#22c51f] focus:ring-2 focus:ring-green-100/80"
+              className={`h-12 w-full appearance-none rounded-lg border bg-neutral-50/50 px-4 pr-10 text-sm text-neutral-700 outline-none transition focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80 ${
+                errors.type
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                  : "border-neutral-200"
+              }`}
               {...register("type")}
             >
               <option value="">Select cuisine type</option>
-              <option value="Fine Dining">Fine Dining</option>
-              <option value="Casual Dining">Casual Dining</option>
-              <option value="Cafe">Cafe</option>
-              <option value="Quick Service">Quick Service</option>
-              <option value="Burgers & American">Burgers &amp; American</option>
-              <option value="Pizza & Italian">Pizza &amp; Italian</option>
-              <option value="Japanese & Sushi">Japanese &amp; Sushi</option>
-              <option value="African Cuisine">African Cuisine</option>
-              <option value="Indian Cuisine">Indian Cuisine</option>
-              <option value="Bakery & Pastry">Bakery &amp; Pastry</option>
+              {cuisineTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
             </select>
             <ChevronDown
-              className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400"
-              size={20}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              size={18}
             />
           </span>
           {errors.type?.message && (
-            <span className="mt-1 block text-sm text-red-600">{errors.type.message}</span>
+            <span className="mt-1 block text-xs text-red-500">
+              {errors.type.message}
+            </span>
           )}
         </label>
 
@@ -123,7 +181,6 @@ export function RestaurantInfoForm() {
           {...register("openingHours")}
         />
 
-        {/* Phone with Controller */}
         <Controller
           name="phone"
           control={control}
@@ -135,35 +192,51 @@ export function RestaurantInfoForm() {
               onChange={(e) => field.onChange(e.target.value)}
               onBlur={field.onBlur}
               name={field.name}
+              ref={field.ref}
             />
           )}
         />
 
         <Input
-          label="Email"
+          label="Restaurant Email"
           type="email"
           placeholder="restaurant@email.com"
           error={errors.email?.message}
           {...register("email")}
         />
 
+        {/* Styled Textarea */}
         <div className="md:col-span-2">
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-neutral-700">
-              Description <span className="text-neutral-400">(optional)</span>
+              Description{" "}
+              <span className="text-neutral-400">(optional)</span>
             </span>
             <textarea
               placeholder="Tell customers what makes your restaurant special..."
               rows={3}
-              className="w-full resize-none rounded-lg border border-neutral-200 bg-neutral-50/50 px-4 py-3 text-sm text-neutral-700 outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-2 focus:ring-green-100/80"
+              maxLength={500}
+              className={`w-full resize-none rounded-lg border bg-neutral-50/50 px-4 py-3 text-sm text-neutral-700 outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80 ${
+                errors.description
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                  : "border-neutral-200"
+              }`}
               {...register("description")}
             />
+            <span className="mt-1 block text-right text-xs text-neutral-400">
+              {description.length}/500
+            </span>
           </label>
+          {errors.description?.message && (
+            <span className="mt-1 block text-xs text-red-500">
+              {errors.description.message}
+            </span>
+          )}
         </div>
       </div>
 
       {/* Logo upload */}
-      <label className="mt-4 grid min-h-20 cursor-pointer place-items-center rounded-xl border-2 border-dashed border-green-200 bg-green-50/20 text-center transition hover:bg-green-50">
+      <label className="mt-5 grid min-h-[120px] cursor-pointer place-items-center rounded-xl border-2 border-dashed border-green-200 bg-green-50/20 text-center transition hover:bg-green-50">
         <input
           type="file"
           className="sr-only"
@@ -180,23 +253,25 @@ export function RestaurantInfoForm() {
               className="mx-auto mb-2 h-16 w-16 rounded-xl object-cover ring-2 ring-green-200"
             />
           ) : (
-            <Upload className="text-[#22c51f]" size={20} />
+            <Upload className="text-[#22c51f]" size={22} />
           )}
-          <span className="mt-1 block text-base font-bold">
+          <span className="mt-1 block text-sm font-bold text-neutral-700">
             {uploading
               ? "Uploading…"
               : logoPreview
-              ? "Click to change logo"
-              : "Click to Upload your restaurant Logo"}
+                ? "Click to change logo"
+                : "Upload your restaurant logo"}
           </span>
-          <span className="mt-1 block text-sm font-medium text-neutral-400">
+          <span className="mt-1 block text-xs text-neutral-400">
             Max 5 MB · JPEG, PNG, WebP
           </span>
         </span>
       </label>
 
-      <div className="mt-8 flex justify-end">
-        <Button type="submit" className="h-11 px-8">Next</Button>
+      <div className="mt-6 flex justify-end">
+        <Button type="submit" size="lg" disabled={isSubmitting}>
+          {isSubmitting ? "Saving..." : "Next Step"}
+        </Button>
       </div>
     </form>
   );
