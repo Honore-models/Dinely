@@ -48,14 +48,14 @@ export function SpecialDishesSection() {
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
           <p className="text-xs font-bold uppercase tracking-wider text-[#22c51f]">
-            Our Menu
+            Trending Now
           </p>
           <h2 className="mt-2 text-2xl font-extrabold text-neutral-900 md:text-3xl">
-            Special Dishes at Our Restaurant
+            Popular Dishes Near You
           </h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-neutral-500">
-            Discover our handpicked selection of signature dishes, crafted by expert
-            chefs using the freshest ingredients.
+            Discover handpicked signature dishes from top-rated restaurants,
+            crafted by expert chefs using the freshest ingredients.
           </p>
         </div>
 

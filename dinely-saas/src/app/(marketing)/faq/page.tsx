@@ -5,7 +5,7 @@ import { useState } from "react";
 const faqs = [
   {
     q: "What is Dinely?",
-    a: "Dinely is an all-in-one restaurant management and food ordering platform. It helps restaurant owners manage their menus, bookings, orders, staff, and analytics — while giving customers a seamless way to discover restaurants, browse menus, and order food.",
+    a: "Dinely is an all-in-one restaurant management and food ordering platform. It helps restaurant owners manage their menus, bookings, orders, staff, and analytics -while giving customers a seamless way to discover restaurants, browse menus, and order food.",
   },
   {
     q: "How do I create an account?",
@@ -51,9 +51,12 @@ export default function FAQPage() {
             Frequently Asked Questions
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-sm text-neutral-500">
-            Everything you need to know about Dinely. Can&apos;t find what you&apos;re looking for?
-            {" "}
-            <a href="/contact" className="font-bold text-[#22c51f] hover:underline">
+            Everything you need to know about Dinely. Can&apos;t find what
+            you&apos;re looking for?{" "}
+            <a
+              href="/contact"
+              className="font-bold text-[#22c51f] hover:underline"
+            >
               Contact our team
             </a>
             .

@@ -11,7 +11,12 @@ import {
   Smartphone,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import { fadeUp, smoothEase, staggerContainer, viewportOnce } from "@/lib/motion";
+import {
+  fadeUp,
+  smoothEase,
+  staggerContainer,
+  viewportOnce,
+} from "@/lib/motion";
 
 const features = [
   {
@@ -46,21 +51,21 @@ const features = [
   },
   {
     icon: Smartphone,
-    title: "Customer App",
+    title: "Customer Experience",
     description:
-      "A beautiful mobile-first experience for customers to browse, order, and review.",
+      "A beautiful mobile-first experience for customers to browse menus, order food, and leave reviews.",
   },
   {
     icon: MapPin,
     title: "Restaurant Discovery",
     description:
-      "Help customers find you with ratings, reviews, photos, and detailed profiles.",
+      "Customers find restaurants with ratings, reviews, photos, and detailed profiles.",
   },
   {
     icon: Headphones,
     title: "Priority Support",
     description:
-      "Get dedicated assistance whenever you need it with our expert support team.",
+      "Dedicated assistance for restaurant owners whenever you need it with our expert support team.",
   },
 ];
 
@@ -81,13 +86,13 @@ export function FeaturesSection() {
             Features
           </span>
           <h2 className="mt-4 text-3xl font-bold text-neutral-900 md:text-4xl">
-            Everything you need to
-            <br />
-            <span className="text-[#22c51f]">run your restaurant</span>
+            Built for owners.{" "}
+            <span className="text-[#22c51f]">Loved by customers.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-neutral-500">
-            From managing your menu and bookings to tracking revenue and customer
-            satisfaction — Dinely gives you all the tools in one place.
+            Restaurant owners get powerful tools to manage their business -menu,
+            bookings, orders, and analytics. Customers get a seamless way to
+            discover, order, and review their favourite restaurants.
           </p>
         </motion.div>
 

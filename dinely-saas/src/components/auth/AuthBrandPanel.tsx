@@ -20,11 +20,14 @@ export function AuthBrandPanel() {
           Run your restaurant with confidence
         </h2>
         <p className="mt-4 text-sm leading-relaxed text-white/80 xl:text-base">
-          Everything you need to manage orders, menus, and staff — in one place.
+          Everything you need to manage orders, menus, and staff -in one place.
         </p>
         <ul className="mt-8 space-y-3">
           {highlights.map((item) => (
-            <li key={item} className="flex items-center gap-3 text-sm text-white/90">
+            <li
+              key={item}
+              className="flex items-center gap-3 text-sm text-white/90"
+            >
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/20">
                 <Check size={14} strokeWidth={3} />
               </span>
@@ -34,7 +37,9 @@ export function AuthBrandPanel() {
         </ul>
       </div>
 
-      <p className="relative text-xs text-white/50">© {new Date().getFullYear()} Dinely. All rights reserved.</p>
+      <p className="relative text-xs text-white/50">
+        © {new Date().getFullYear()} Dinely. All rights reserved.
+      </p>
     </aside>
   );
 }

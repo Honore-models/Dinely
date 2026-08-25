@@ -40,28 +40,34 @@ export function WhyChooseUsSection() {
               Why choose us
             </h2>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-neutral-500">
-              We focus on great taste, fresh ingredients, and fast service you can
-              rely on. Quality, affordability, and a friendly atmosphere make every
-              visit special. Choose us for delicious food, quick convenience, and a
-              satisfying experience.
+              For customers: great taste, fresh ingredients, and fast service
+              you can rely on. For restaurant owners: the tools to manage
+              everything from menu to delivery. Quality, affordability, and a
+              friendly atmosphere make every experience special.
             </p>
-            <a
-              href="/explore"
-              className="mt-5 inline-flex h-11 items-center rounded-xl bg-[#22c51f] px-7 text-sm font-bold text-white transition hover:bg-[#1bad1a]"
-            >
-              Explore More
-            </a>
+            <div className="mt-5 flex flex-wrap items-center gap-4">
+              <a
+                href="/get-started"
+                className="inline-flex h-11 items-center rounded-xl bg-[#22c51f] px-7 text-sm font-bold text-white transition hover:bg-[#1bad1a]"
+              >
+                Get Started
+              </a>
+              <a
+                href="/explore"
+                className="inline-flex h-11 items-center rounded-xl border-2 border-[#22c51f] bg-transparent px-7 text-sm font-bold text-[#22c51f] transition hover:bg-green-50"
+              >
+                Explore Restaurants
+              </a>
+            </div>
           </div>
 
-          {/* Right side — 2x2 grid */}
+          {/* Right side -2x2 grid */}
           <div className="grid grid-cols-2 gap-4">
             {services.map((service, index) => (
               <div
                 key={service.title}
                 className={`rounded-2xl p-5 transition ${
-                  index === 0
-                    ? "bg-[#f8fdf8] shadow-sm"
-                    : "bg-neutral-50"
+                  index === 0 ? "bg-[#f8fdf8] shadow-sm" : "bg-neutral-50"
                 }`}
               >
                 <div className="grid h-10 w-10 place-items-center rounded-xl bg-white text-[#22c51f] shadow-sm">

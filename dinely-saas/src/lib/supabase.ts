@@ -9,7 +9,7 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
   );
 }
 
-// Singleton for server-side (API routes) — uses service_role to bypass RLS
+// Singleton for server-side (API routes) -uses service_role to bypass RLS
 declare global {
   // eslint-disable-next-line no-var
   var _supabase: SupabaseClient | undefined;
@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === "development") {
 
 export { supabase };
 
-// Public (anon) client — for client-side usage if needed
+// Public (anon) client -for client-side usage if needed
 export function getPublicClient() {
   return createClient(SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 }

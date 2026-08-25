@@ -1,4 +1,4 @@
-/** Smooth easing — gentle deceleration, no harsh stops */
+/** Smooth easing -gentle deceleration, no harsh stops */
 export const smoothEase = [0.22, 1, 0.36, 1] as const;
 
 export const smoothTransition = {

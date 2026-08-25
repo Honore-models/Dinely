@@ -20,33 +20,35 @@ export function HeroSection() {
             </p>
 
             <h1 className="text-4xl font-extrabold leading-[1.1] text-neutral-900 md:text-5xl lg:text-[56px]">
-              Discover Restaurants
-              <br />& <span className="text-[#22c51f]">Taste the Best</span>
-              <br />Food Near You.
+              Your Restaurant,
+              <br />
+              <span className="text-[#22c51f]">Your Customers</span>,
+              <br />
+              One Platform.
             </h1>
 
             <p className="mt-6 max-w-md text-base leading-relaxed text-neutral-500">
-              Find the finest and freshest restaurants, order food to satisfy your
-              cravings, and manage your restaurant business — all in one powerful
-              platform.
+              Restaurant owners -manage your menu, bookings, and orders.
+              Customers - discover great restaurants and order your favourite
+              food. Everyone wins with Dinely.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Button href="/explore" variant="animated">
-                Order Now
+              <Button href="/get-started" variant="animated">
+                Get Started
               </Button>
               <Link
                 href="/explore"
                 className="inline-flex h-12 items-center gap-2 rounded-xl border-2 border-[#22c51f] bg-transparent px-7 text-sm font-bold text-[#22c51f] transition hover:bg-green-50"
               >
-                Explore More
+                Explore Restaurants
               </Link>
             </div>
           </div>
 
           {/* Right image */}
           <div className="relative">
-            {/* Main food image — no background */}
+            {/* Main food image - no background */}
             <div className="relative mx-auto h-[420px] w-[420px] md:h-[520px] md:w-[520px]">
               <Image
                 src="/Order_food.png"
@@ -57,7 +59,7 @@ export function HeroSection() {
               />
             </div>
 
-            {/* Floating card — Owner */}
+            {/* Floating card -Owner */}
             <div className="animate-float-card-1 absolute -bottom-2 left-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white/90 backdrop-blur-sm px-4 py-3 shadow-lg md:bottom-8 md:-left-6">
               <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#e8f5e9]">
                 <Image
@@ -68,7 +70,9 @@ export function HeroSection() {
                 />
               </div>
               <div>
-                <p className="text-xs font-bold text-neutral-900">Robert Fisher</p>
+                <p className="text-xs font-bold text-neutral-900">
+                  Robert Fisher
+                </p>
                 <p className="text-xs text-neutral-500">Restaurant Owner</p>
               </div>
               <div className="ml-1 grid h-8 w-8 place-items-center rounded-full bg-[#22c51f] text-white">
@@ -76,7 +80,7 @@ export function HeroSection() {
               </div>
             </div>
 
-            {/* Floating card — Dish */}
+            {/* Floating card -Dish */}
             <div className="animate-float-card-2 absolute -bottom-2 right-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white/90 backdrop-blur-sm px-4 py-3 shadow-lg md:bottom-20 md:-right-6">
               <div className="relative h-10 w-10 overflow-hidden rounded-full bg-neutral-100">
                 <Image
@@ -87,10 +91,16 @@ export function HeroSection() {
                 />
               </div>
               <div>
-                <p className="text-xs font-bold text-neutral-900">Classic Beef Burger</p>
+                <p className="text-xs font-bold text-neutral-900">
+                  Classic Beef Burger
+                </p>
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} size={10} className="fill-amber-400 text-amber-400" />
+                    <Star
+                      key={i}
+                      size={10}
+                      className="fill-amber-400 text-amber-400"
+                    />
                   ))}
                 </div>
               </div>

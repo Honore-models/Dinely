@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
 });
 
-// Price IDs — set these in your .env.local after creating products in Stripe dashboard
+// Price IDs -set these in your .env.local after creating products in Stripe dashboard
 const PRICE_IDS: Record<string, Record<string, string>> = {
   Starter: {
     monthly: process.env.STRIPE_PRICE_STARTER_MONTHLY || "",
@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
   if (!priceId) {
     return NextResponse.json(
       {
-        error: "Invalid plan or billing cycle. Check your Stripe price IDs in .env.local",
+        error:
+          "Invalid plan or billing cycle. Check your Stripe price IDs in .env.local",
       },
       { status: 400 },
     );
@@ -67,7 +68,10 @@ export async function POST(req: NextRequest) {
       stripeCustomerId = customer.id;
       await supabase
         .from("users")
-        .update({ stripe_customer_id: stripeCustomerId, updated_at: new Date().toISOString() })
+        .update({
+          stripe_customer_id: stripeCustomerId,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", session.userId);
     }
 
@@ -91,6 +95,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: checkoutSession.url });
   } catch (err) {
     console.error("[POST /api/payments]", err);
-    return NextResponse.json({ error: "Payment setup failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Payment setup failed" },
+      { status: 500 },
+    );
   }
 }

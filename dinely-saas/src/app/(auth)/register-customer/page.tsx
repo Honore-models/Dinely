@@ -119,7 +119,7 @@ export default function CustomerRegisterPage() {
           <p className="mt-3 text-center text-xs text-neutral-400">
             Want to list your restaurant?{" "}
             <Link
-              href="/register"
+              href="/onboarding/step-1"
               className="font-semibold text-neutral-600 hover:underline"
             >
               Register as owner

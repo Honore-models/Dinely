@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth";
 
 // POST /api/upload
 // Accepts: multipart/form-data with a "file" field (image).
-// Returns: { url: string } — the uploaded image URL.
+// Returns: { url: string } -the uploaded image URL.
 //
 // Uses Cloudinary unsigned upload. Set CLOUDINARY_CLOUD_NAME and
 // CLOUDINARY_UPLOAD_PRESET in .env.local (create a free account at cloudinary.com).

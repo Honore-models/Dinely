@@ -14,8 +14,12 @@ const fillColors = {
   orange: "#fdf8f4",
 };
 
-/** Top-down chair icon — modern rounded seat with curved backrest */
-export function TableChair({ color, rotation = 0, className = "" }: TableChairProps) {
+/** Top-down chair icon -modern rounded seat with curved backrest */
+export function TableChair({
+  color,
+  rotation = 0,
+  className = "",
+}: TableChairProps) {
   const stroke = strokeColors[color];
   const fill = fillColors[color];
 

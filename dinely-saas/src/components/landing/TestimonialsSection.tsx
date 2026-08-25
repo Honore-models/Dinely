@@ -38,7 +38,7 @@ const testimonials = [
     role: "Chef, Taste of Kigali",
     avatar: "/man2.jpg",
     quote:
-      "Managing menu items and tracking orders has never been easier. Dinely helps me focus on what I do best — cooking great food for happy customers.",
+      "Managing menu items and tracking orders has never been easier. Dinely helps me focus on what I do best -cooking great food for happy customers.",
   },
 ];
 
@@ -47,8 +47,10 @@ export function TestimonialsSection() {
   const dragRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<number | null>(null);
 
-  const prev = () => setActive((a) => (a > 0 ? a - 1 : testimonials.length - 1));
-  const next = () => setActive((a) => (a < testimonials.length - 1 ? a + 1 : 0));
+  const prev = () =>
+    setActive((a) => (a > 0 ? a - 1 : testimonials.length - 1));
+  const next = () =>
+    setActive((a) => (a < testimonials.length - 1 ? a + 1 : 0));
 
   // Touch/mouse drag
   const onPointerDown = (e: React.PointerEvent) => {
@@ -70,8 +72,8 @@ export function TestimonialsSection() {
             What clients say?
           </h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-neutral-500">
-            Clients love our tasty food, friendly service, and quick, satisfying
-            experience every visit.
+            Hear from restaurant owners who grew their business and customers
+            who love discovering new favourite spots.
           </p>
         </div>
 
@@ -124,7 +126,9 @@ export function TestimonialsSection() {
                       />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-neutral-900">{t.name}</p>
+                      <p className="text-sm font-bold text-neutral-900">
+                        {t.name}
+                      </p>
                       <p className="text-[11px] text-neutral-500">{t.role}</p>
                     </div>
                   </div>

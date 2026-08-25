@@ -25,7 +25,9 @@ export function OurStorySection() {
             </p>
 
             <h2 className="text-3xl font-extrabold leading-tight text-neutral-900 md:text-4xl">
-              Crafted with love, <span className="text-[#22c51f]">spiced with passion</span>, and made to satisfy every bite.
+              Crafted with love,{" "}
+              <span className="text-[#22c51f]">spiced with passion</span>, and
+              made to satisfy every bite.
             </h2>
 
             {/* Large kitchen image */}
@@ -69,17 +71,19 @@ export function OurStorySection() {
             </div>
 
             <p className="mt-6 text-sm leading-relaxed text-neutral-500">
-              At Dinely, every dish is crafted with love and every restaurant is
-              carefully selected. From our kitchen to your plate, we create flavors
-              that delight, satisfy, and bring joy in every bite. That&apos;s the Dinely
-              promise.
+              At Dinely, every restaurant is carefully selected and every dish
+              is crafted with love. We connect amazing restaurants with hungry
+              customers -giving owners the tools to thrive and diners the
+              experiences they deserve. That&apos;s the Dinely promise.
             </p>
 
             {/* Stats */}
             <div className="mt-8 grid grid-cols-4 gap-4">
               {stats.map((stat) => (
                 <div key={stat.label}>
-                  <p className="text-2xl font-extrabold text-neutral-900">{stat.value}</p>
+                  <p className="text-2xl font-extrabold text-neutral-900">
+                    {stat.value}
+                  </p>
                   <p className="mt-1 text-xs text-neutral-500">{stat.label}</p>
                 </div>
               ))}
@@ -102,11 +106,16 @@ export function OurStorySection() {
                   </div>
                 ))}
               </div>
-            <button
-              type="button"
-              onClick={() => window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank")}
-              className="flex items-center gap-2 text-sm font-bold text-neutral-900 transition hover:text-[#22c51f]"
-            >
+              <button
+                type="button"
+                onClick={() =>
+                  window.open(
+                    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                    "_blank",
+                  )
+                }
+                className="flex items-center gap-2 text-sm font-bold text-neutral-900 transition hover:text-[#22c51f]"
+              >
                 <span className="grid h-10 w-10 place-items-center rounded-full border-2 border-neutral-200 text-[#22c51f]">
                   <Play size={16} className="ml-0.5" />
                 </span>

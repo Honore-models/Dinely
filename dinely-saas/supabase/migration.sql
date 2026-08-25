@@ -1,5 +1,5 @@
 -- ============================================================
--- Dinely SaaS — Supabase Postgres Migration
+-- Dinely SaaS -Supabase Postgres Migration
 -- Run this in the Supabase SQL Editor to create all tables.
 -- ============================================================
 

@@ -54,8 +54,8 @@ export function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:block">
-            <Button href="/register" className="text-sm">
-              Sign Up
+            <Button href="/login" className="text-sm">
+              Sign In
             </Button>
           </div>
 
@@ -87,7 +87,7 @@ export function Header() {
           </nav>
           <div className="mt-3 border-t border-neutral-100 pt-3">
             <Link
-              href="/register"
+              href="/get-started"
               onClick={() => setMobileOpen(false)}
               className="block rounded-lg bg-[#22c51f] py-3 text-center text-sm font-bold text-white transition hover:bg-[#1bad1a]"
             >

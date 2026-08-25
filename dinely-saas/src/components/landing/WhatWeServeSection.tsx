@@ -26,12 +26,11 @@ export function WhatWeServeSection() {
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-wider text-[#22c51f]">
-            What we serve
+            What we offer
           </p>
           <h2 className="mt-3 text-3xl font-extrabold text-neutral-900 md:text-4xl">
-            Your Favourite Food
-            <br />
-            Delivery Partner
+            One Platform,
+            <br />Every Way to Enjoy Food
           </h2>
         </div>
 

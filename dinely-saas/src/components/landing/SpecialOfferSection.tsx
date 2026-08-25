@@ -15,12 +15,12 @@ export function SpecialOfferSection() {
                 Special Offer
               </p>
               <h2 className="mt-2 text-xl font-extrabold leading-tight text-neutral-900 md:text-2xl">
-                Tasty Fare, Refreshing Drinks, Joyful Company
+                Great Food, Happy Customers, Thriving Restaurants
               </h2>
               <p className="mt-2 max-w-md text-xs leading-relaxed text-neutral-600">
-                Discover restaurants that bring joy to every bite, perfect ambiance
-                to refresh the spirit, and wonderful company that makes every
-                moment brighter and truly unforgettable.
+                Customers discover new flavours and enjoy special deals.
+                Restaurant owners attract more diners and grow their revenue.
+                Dinely makes every meal and every business better.
               </p>
               <div className="mt-4 flex flex-wrap items-center gap-4">
                 <Link
@@ -30,13 +30,17 @@ export function SpecialOfferSection() {
                   Order Now
                 </Link>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-xl font-extrabold text-neutral-900">$58.99</span>
-                  <span className="text-xs text-neutral-400 line-through">$79.99</span>
+                  <span className="text-xl font-extrabold text-neutral-900">
+                    $58.99
+                  </span>
+                  <span className="text-xs text-neutral-400 line-through">
+                    $79.99
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Right image — offer.png as-is */}
+            {/* Right image -offer.png as-is */}
             <div className="relative h-[200px] w-full overflow-hidden md:h-[260px]">
               <Image
                 src="/offer.png"

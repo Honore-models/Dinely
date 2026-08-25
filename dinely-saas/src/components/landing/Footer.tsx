@@ -9,7 +9,6 @@ const footerLinks = {
     { label: "Contact", href: "/contact" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/privacy" },
-    { label: "Refund Policy", href: "/privacy" },
   ],
   Company: [
     { label: "About Us", href: "/about" },
@@ -21,7 +20,7 @@ const footerLinks = {
     { label: "Offers", href: "/offers" },
     { label: "Explore Restaurants", href: "/explore" },
     { label: "Track Order", href: "/orders" },
-    { label: "Menu", href: "/home" },
+    { label: "Get Started", href: "/get-started" },
     { label: "Pricing", href: "/pricing" },
   ],
 };
@@ -52,8 +51,16 @@ function InstagramIcon() {
 
 const socialLinks = [
   { icon: XIcon, href: "https://x.com/NIYOGUSHIMWAHo1", label: "X" },
-  { icon: LinkedInIcon, href: "https://www.linkedin.com/in/niyogushimwa-honore-8427b339a/", label: "LinkedIn" },
-  { icon: InstagramIcon, href: "https://www.instagram.com/honor_e25/", label: "Instagram" },
+  {
+    icon: LinkedInIcon,
+    href: "https://www.linkedin.com/in/niyogushimwa-honore-8427b339a/",
+    label: "LinkedIn",
+  },
+  {
+    icon: InstagramIcon,
+    href: "https://www.instagram.com/honor_e25/",
+    label: "Instagram",
+  },
 ];
 
 export function Footer() {
@@ -65,7 +72,7 @@ export function Footer() {
           <div>
             <DinelyLogo width={100} height={36} />
             <p className="mt-4 max-w-[220px] text-xs leading-relaxed text-neutral-500">
-              Dinely — the all-in-one platform for restaurant management and food
+              Dinely -the all-in-one platform for restaurant management and food
               ordering. Discover, manage, and grow.
             </p>
             <div className="mt-5 flex gap-3">
@@ -127,8 +134,6 @@ export function Footer() {
             </div>
           </div>
         </div>
-
-
       </div>
     </footer>
   );
