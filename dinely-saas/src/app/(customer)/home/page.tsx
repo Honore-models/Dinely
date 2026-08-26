@@ -3,29 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Clock, MapPin, Star } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { CategoryPills } from "@/components/customer/CategoryPills";
 import { RestaurantCard } from "@/components/customer/RestaurantCard";
 import { useRestaurants } from "@/hooks/useRestaurants";
 import { useFavourites } from "@/hooks/useFavourites";
+import { ExploreButton } from "@/components/ui/ExploreButton";
 
 interface Restaurant {
   id: string;
   name: string;
   type: string;
+  address?: string;
   logo?: string;
   rating?: number;
+  review_count?: number;
 }
 
-const ratingOptions = ["4.5 & above", "4.0 & above", "3.5 & above", "3.0 & above"];
-const ratingValues: Record<string, number> = {
-  "4.5 & above": 4.5,
-  "4.0 & above": 4.0,
-  "3.5 & above": 3.5,
-  "3.0 & above": 3.0,
-};
-
-// Fallback images when no logo is uploaded
 const FALLBACK_IMAGES = [
   "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80",
   "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80",
@@ -36,11 +30,17 @@ const FALLBACK_IMAGES = [
 ];
 
 function getRestaurantImage(r: Restaurant, idx: number): string {
-  if (r.logo && r.logo.startsWith("http")) {
-    return r.logo;
-  }
+  if (r.logo && r.logo.startsWith("http")) return r.logo;
   return FALLBACK_IMAGES[idx % FALLBACK_IMAGES.length];
 }
+
+const ratingOptions = ["4.5 & above", "4.0 & above", "3.5 & above", "3.0 & above"];
+const ratingValues: Record<string, number> = {
+  "4.5 & above": 4.5,
+  "4.0 & above": 4.0,
+  "3.5 & above": 3.5,
+  "3.0 & above": 3.0,
+};
 
 export default function HomePage() {
   const [sortBy, setSortBy] = useState("Recommended");
@@ -49,11 +49,11 @@ export default function HomePage() {
   const [offerFilters, setOfferFilters] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [category, setCategory] = useState("burgers");
+  const [category, setCategory] = useState("");
 
   const ratingValue = ratingFilter ? ratingValues[ratingFilter] : undefined;
   const { restaurants, loading } = useRestaurants({
-    search: searchQuery,
+    search: searchQuery || undefined,
     rating: ratingValue,
   });
   const { favouriteIds, toggle: toggleFav } = useFavourites();
@@ -65,6 +65,7 @@ export default function HomePage() {
     setOfferFilters([]);
     setSearchQuery("");
     setSearchInput("");
+    setCategory("");
   };
 
   const toggleFilter = (
@@ -75,17 +76,17 @@ export default function HomePage() {
     setList(list.includes(key) ? list.filter((v) => v !== key) : [...list, key]);
   };
 
-  const sorted = [...restaurants].sort((a, b) => {
-    if (sortBy === "Rating")
-      return (b.rating ?? 0) - (a.rating ?? 0);
-    return 0;
-  });
+  const sorted = useMemo(() => {
+    const arr = [...restaurants];
+    if (sortBy === "Rating") arr.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    return arr;
+  }, [restaurants, sortBy]);
 
   const popular = sorted.slice(0, 3);
-  const more = sorted.slice(3);
+  const topRated = [...sorted].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 2);
 
   return (
-    <div>
+    <div className="min-h-screen bg-white">
       {/* ── Hero banner ─────────────────────────────────────────────────────── */}
       <section className="mx-4 mt-4 overflow-hidden rounded-2xl bg-gradient-to-br from-[#e8f5e9] to-[#f1f8e9] px-8 py-8 lg:mx-8 lg:px-12">
         <div className="flex items-center justify-between">
@@ -131,13 +132,13 @@ export default function HomePage() {
           </div>
 
           <div className="hidden lg:block">
-            <div className="relative h-44 w-44">
+            <div className="relative h-64 w-64">
               <Image
-                src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80"
+                src="/home_image.png"
                 alt="Delicious food"
                 fill
                 className="rounded-full object-cover shadow-lg"
-                sizes="176px"
+                sizes="256px"
               />
               <span className="absolute -left-4 top-4 text-2xl">🌿</span>
               <span className="absolute -right-2 bottom-6 text-xl">🌿</span>
@@ -148,7 +149,10 @@ export default function HomePage() {
 
       {/* ── Explore by category ──────────────────────────────────────────────── */}
       <section className="mx-4 mt-8 lg:mx-8">
-        <h2 className="mb-4 text-lg font-bold text-neutral-900">Explore by Category</h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-neutral-900">Explore by Category</h2>
+          <ExploreButton />
+        </div>
         <CategoryPills selected={category} onSelect={setCategory} />
       </section>
 
@@ -168,6 +172,7 @@ export default function HomePage() {
               </button>
             </div>
 
+            {/* Sort by */}
             <div className="mt-4">
               <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">Sort by</p>
               <div className="relative mt-2">
@@ -183,10 +188,11 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Delivery Time */}
             <div className="mt-5">
               <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">Delivery Time</p>
               <div className="mt-2 space-y-2">
-                {["10 min or less", "15 -30 min", "30-45 min", "45 min or more"].map((opt) => (
+                {["10 min or less", "15 –30 min", "30–45 min", "45 min or more"].map((opt) => (
                   <label key={opt} className="flex cursor-pointer items-center gap-2">
                     <input
                       type="checkbox"
@@ -200,6 +206,7 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Ratings */}
             <div className="mt-5">
               <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">Ratings</p>
               <div className="mt-2 space-y-2">
@@ -221,6 +228,7 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Offers */}
             <div className="mt-5">
               <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">Offers</p>
               <div className="mt-2 space-y-2">
@@ -248,7 +256,7 @@ export default function HomePage() {
                 <div key={i} className="h-64 animate-pulse rounded-2xl bg-neutral-100" />
               ))}
             </div>
-          ) : restaurants.length === 0 ? (
+          ) : sorted.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center">
               <p className="text-base font-semibold text-neutral-500">
                 No restaurants found
@@ -269,29 +277,6 @@ export default function HomePage() {
                 </h2>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                   {popular.map((r, i) => (
-                  <RestaurantCard
-                    key={r.id}
-                    id={r.id}
-                    name={r.name}
-                    cuisine={r.type}
-                    rating={r.rating ?? 0}
-                    deliveryTime="30 – 40 Min"
-                    deliveryFee="Free delivery Over $25"
-                    image={getRestaurantImage(r, i)}
-                    isFavourite={favouriteIds.has(r.id)}
-                    onToggleFavourite={toggleFav}
-                  />
-                ))}
-                </div>
-              </section>
-
-              {more.length > 0 && (
-                <section className="mt-8">
-                  <h2 className="text-lg font-bold text-neutral-900">
-                    More Restaurants
-                  </h2>
-                  <div className="mt-4 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                    {more.map((r, i) => (
                     <RestaurantCard
                       key={r.id}
                       id={r.id}
@@ -299,12 +284,53 @@ export default function HomePage() {
                       cuisine={r.type}
                       rating={r.rating ?? 0}
                       deliveryTime="30 – 40 Min"
-                      deliveryFee="Free delivery"
-                      image={getRestaurantImage(r, i + 3)}
+                      deliveryFee="Free delivery Over $25"
+                      image={getRestaurantImage(r, i)}
                       isFavourite={favouriteIds.has(r.id)}
                       onToggleFavourite={toggleFav}
                     />
                   ))}
+                </div>
+              </section>
+
+              {topRated.length > 0 && (
+                <section className="mt-8">
+                  <h2 className="text-lg font-bold text-neutral-900">
+                    Top related Restaurants
+                  </h2>
+                  <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                    {topRated.map((r, i) => (
+                      <Link
+                        key={r.id}
+                        href={`/restaurants/${r.id}`}
+                        className="group flex overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm transition hover:shadow-md"
+                      >
+                        <div className="flex-1 p-4">
+                          <h3 className="text-sm font-bold text-neutral-900">{r.name}</h3>
+                          <div className="mt-1 flex items-center gap-1 text-xs text-neutral-600">
+                            <Star size={11} className="fill-amber-400 text-amber-400" />
+                            <span>{(r.rating ?? 0).toFixed(1)} ({r.review_count ?? 0})</span>
+                          </div>
+                          <p className="mt-1 text-xs text-neutral-500">{r.type}</p>
+                          <p className="mt-1 text-xs text-[#22c51f]">
+                            {r.address || "OpenBakenessergracht 109"}
+                          </p>
+                          <p className="mt-1 text-xs font-semibold text-[#22c51f] hover:underline">
+                            Ask about
+                          </p>
+                          <p className="mt-0.5 text-xs text-neutral-700">{r.name}</p>
+                        </div>
+                        <div className="relative h-auto w-36 shrink-0 bg-neutral-100">
+                          <Image
+                            src={getRestaurantImage(r, i)}
+                            alt={r.name}
+                            fill
+                            className="object-cover transition duration-300 group-hover:scale-105"
+                            sizes="144px"
+                          />
+                        </div>
+                      </Link>
+                    ))}
                   </div>
                 </section>
               )}

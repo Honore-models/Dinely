@@ -1,38 +1,102 @@
 "use client";
 
 import Link from "next/link";
-import { Check, ChevronRight, Circle, Clock, Mail, Phone } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import {
+  CheckCircle,
+  ChevronRight,
+  Clock,
+  CookingPot,
+  Loader2,
+  MapPin,
+  Package,
+  Truck,
+  XCircle,
+} from "lucide-react";
+import { ordersApi } from "@/lib/api";
 
-const orderSteps = [
-  {
-    id: "confirmed",
-    label: "Order Confirmed",
-    time: "10:30 AM",
-    done: true,
-  },
-  {
-    id: "preparing",
-    label: "Preparing your food",
-    time: "11:00 AM",
-    done: true,
-  },
-  {
-    id: "onway",
-    label: "On the way",
-    time: "10:00 AM",
-    done: false,
-  },
-  {
-    id: "delivered",
-    label: "Delivered",
-    time: "–",
-    done: false,
-  },
+interface Order {
+  id: string;
+  customer_name: string;
+  items: { name: string; quantity: number; price: number }[];
+  type: "Delivery" | "Takeaway" | "Dine-in";
+  total: number;
+  status: "Pending" | "Active" | "Completed" | "Cancelled";
+  created_at: string;
+  delivery_address?: string;
+}
+
+const statusSteps = [
+  { key: "Pending", label: "Order Placed", icon: Clock, description: "Your order has been received" },
+  { key: "Active", label: "Preparing", icon: CookingPot, description: "The kitchen is preparing your food" },
+  { key: "Completed", label: "Delivered", icon: CheckCircle, description: "Your order has been delivered" },
 ];
 
-export default function TrackOrderPage() {
+export default function OrderTrackPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const orderId = searchParams.get("orderId");
+
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!orderId) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchOrder = async () => {
+      try {
+        const { data } = await ordersApi.get(orderId);
+        setOrder(data as unknown as Order);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load order");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+
+    // Poll for status updates every 10 seconds
+    const interval = setInterval(fetchOrder, 10000);
+    return () => clearInterval(interval);
+  }, [orderId]);
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <Loader2 size={32} className="mx-auto animate-spin text-neutral-300" />
+        <p className="mt-4 text-sm text-neutral-500">Loading your order...</p>
+      </div>
+    );
+  }
+
+  if (!orderId || error || !order) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <XCircle size={48} className="mx-auto text-neutral-300" />
+        <p className="mt-4 text-base font-semibold text-neutral-500">
+          {error || "Order not found"}
+        </p>
+        <Link
+          href="/home"
+          className="mt-4 inline-block rounded-full bg-[#22c51f] px-6 py-2.5 text-sm font-bold text-white transition hover:bg-[#1bad1a]"
+        >
+          Browse Restaurants
+        </Link>
+      </div>
+    );
+  }
+
+  const currentStepIndex = statusSteps.findIndex((s) => s.key === order.status);
+  const isCancelled = order.status === "Cancelled";
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8">
+    <div className="mx-auto max-w-xl px-4 py-8 lg:px-8">
       {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
         <Link href="/home" className="transition hover:text-neutral-800">
@@ -43,40 +107,78 @@ export default function TrackOrderPage() {
           Orders
         </Link>
         <ChevronRight size={14} />
-        <span className="font-semibold text-neutral-900">Track Orders</span>
+        <span className="font-semibold text-neutral-900">Track</span>
       </nav>
 
-      <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-        {/* Order status panel */}
-        <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-neutral-900">Order Status</h2>
+      {/* Order header */}
+      <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm text-center">
+        {isCancelled ? (
+          <>
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-red-100">
+              <XCircle size={32} className="text-red-500" />
+            </div>
+            <h1 className="mt-4 text-xl font-extrabold text-neutral-900">
+              Order Cancelled
+            </h1>
+            <p className="mt-1 text-sm text-neutral-500">
+              This order has been cancelled
+            </p>
+          </>
+        ) : order.status === "Completed" ? (
+          <>
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-green-100">
+              <CheckCircle size={32} className="text-[#22c51f]" />
+            </div>
+            <h1 className="mt-4 text-xl font-extrabold text-neutral-900">
+              Order Delivered! 🎉
+            </h1>
+            <p className="mt-1 text-sm text-neutral-500">
+              Your order has been delivered successfully
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-blue-100">
+              <Truck size={32} className="text-blue-600" />
+            </div>
+            <h1 className="mt-4 text-xl font-extrabold text-neutral-900">
+              {order.status === "Pending" ? "Order Confirmed!" : "Preparing Your Order..."}
+            </h1>
+            <p className="mt-1 text-sm text-neutral-500">
+              Order #{order.id.slice(-6).toUpperCase()}
+            </p>
+          </>
+        )}
+      </div>
 
-          <div className="relative mt-6">
-            {orderSteps.map((step, idx) => {
-              const isLast = idx === orderSteps.length - 1;
+      {/* Status timeline */}
+      {!isCancelled && (
+        <div className="mt-6 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+          <h2 className="text-sm font-bold text-neutral-900">Order Status</h2>
+          <div className="mt-5 space-y-0">
+            {statusSteps.map((step, idx) => {
+              const isCompleted = idx <= currentStepIndex;
+              const isCurrent = idx === currentStepIndex;
+              const StepIcon = step.icon;
+
               return (
-                <div key={step.id} className="flex items-start gap-3">
-                  {/* Indicator + line */}
+                <div key={step.key} className="flex gap-4">
+                  {/* Icon + line */}
                   <div className="flex flex-col items-center">
                     <div
-                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 ${
-                        step.done
-                          ? "border-[#22c51f] bg-[#22c51f] text-white"
-                          : "border-neutral-300 bg-white"
+                      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${
+                        isCompleted
+                          ? "bg-[#22c51f] text-white"
+                          : "border-2 border-neutral-200 bg-white text-neutral-400"
                       }`}
                     >
-                      {step.done ? (
-                        <Check size={14} strokeWidth={3} />
-                      ) : (
-                        <Circle size={10} className="text-neutral-300" />
-                      )}
+                      <StepIcon size={14} />
                     </div>
-                    {!isLast && (
+                    {idx < statusSteps.length - 1 && (
                       <div
-                        className={`my-1 w-0.5 flex-1 ${
-                          step.done ? "bg-[#22c51f]" : "bg-neutral-200"
+                        className={`w-0.5 flex-1 ${
+                          idx < currentStepIndex ? "bg-[#22c51f]" : "bg-neutral-200"
                         }`}
-                        style={{ minHeight: 32 }}
                       />
                     )}
                   </div>
@@ -85,75 +187,84 @@ export default function TrackOrderPage() {
                   <div className="pb-6">
                     <p
                       className={`text-sm font-bold ${
-                        step.done ? "text-neutral-900" : "text-neutral-400"
+                        isCompleted ? "text-neutral-900" : "text-neutral-400"
                       }`}
                     >
                       {step.label}
+                      {isCurrent && !isCompleted && (
+                        <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-600">
+                          Current
+                        </span>
+                      )}
                     </p>
-                    <p className="mt-0.5 text-xs text-neutral-400">{step.time}</p>
+                    <p
+                      className={`mt-0.5 text-xs ${
+                        isCompleted ? "text-neutral-500" : "text-neutral-300"
+                      }`}
+                    >
+                      {step.description}
+                    </p>
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
+      )}
 
-        {/* Map area */}
-        <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm">
-          {/* ETA banner */}
-          <div className="flex items-center gap-4 border-b border-neutral-100 px-6 py-4">
-            <div>
-              <p className="text-sm font-bold text-neutral-900">Estimated Delivery</p>
-              <p className="mt-0.5 flex items-center gap-1.5 text-sm font-bold text-[#22c51f]">
-                <Clock size={14} />
-                30 – 40 Min
-              </p>
-              <p className="mt-0.5 text-xs text-neutral-500">
-                The rider is on the way to you
-              </p>
+      {/* Order details */}
+      <div className="mt-6 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+        <h2 className="text-sm font-bold text-neutral-900">Order Details</h2>
+
+        <div className="mt-4 space-y-3">
+          {order.items.map((item, idx) => (
+            <div key={idx} className="flex items-center justify-between text-sm">
+              <span className="text-neutral-700">
+                <span className="font-bold text-[#22c51f]">{item.quantity}×</span>{" "}
+                {item.name}
+              </span>
+              <span className="font-semibold text-neutral-900">
+                ${(item.price * item.quantity).toFixed(2)}
+              </span>
             </div>
-          </div>
+          ))}
+        </div>
 
-          {/* Map placeholder */}
-          <div className="relative flex-1 bg-neutral-100" style={{ height: 360 }}>
-            {/* Using an OpenStreetMap iframe as a real map */}
-            <iframe
-              title="Delivery map"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=30.0272%2C-1.9878%2C30.0872%2C-1.9278&layer=mapnik"
-              className="h-full w-full border-0"
-              loading="lazy"
-            />
-
-            {/* Rider info overlay */}
-            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between border-t border-neutral-200 bg-white px-5 py-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full bg-neutral-200 text-sm font-bold text-neutral-600">
-                  P
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-neutral-900">Peterson</p>
-                  <p className="text-xs text-neutral-500">Your delivery partner</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  aria-label="Call delivery partner"
-                  className="grid h-10 w-10 place-items-center rounded-full border border-neutral-200 text-neutral-600 transition hover:bg-neutral-50"
-                >
-                  <Phone size={18} />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Message delivery partner"
-                  className="grid h-10 w-10 place-items-center rounded-full border border-neutral-200 text-neutral-600 transition hover:bg-neutral-50"
-                >
-                  <Mail size={18} />
-                </button>
-              </div>
-            </div>
+        <div className="mt-4 border-t border-neutral-100 pt-3">
+          <div className="flex justify-between text-sm font-bold text-neutral-900">
+            <span>Total</span>
+            <span className="text-[#22c51f]">${order.total.toFixed(2)}</span>
           </div>
         </div>
+
+        <div className="mt-4 space-y-2 text-sm text-neutral-500">
+          <div className="flex items-center gap-2">
+            <Package size={14} className="text-neutral-400" />
+            <span>{order.type}</span>
+          </div>
+          {order.delivery_address && (
+            <div className="flex items-center gap-2">
+              <MapPin size={14} className="text-neutral-400" />
+              <span>{order.delivery_address}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="mt-6 flex gap-3">
+        <Link
+          href="/home"
+          className="flex-1 rounded-xl border border-[#22c51f] py-3 text-center text-sm font-bold text-[#22c51f] transition hover:bg-green-50"
+        >
+          Order Again
+        </Link>
+        <Link
+          href="/orders"
+          className="flex-1 rounded-xl bg-neutral-900 py-3 text-center text-sm font-bold text-white transition hover:bg-neutral-800"
+        >
+          View All Orders
+        </Link>
       </div>
     </div>
   );
