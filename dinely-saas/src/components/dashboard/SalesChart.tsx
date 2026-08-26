@@ -22,7 +22,9 @@ export function SalesChart({ revenueChart, loading }: SalesChartProps) {
   const raw =
     revenueChart.length > 0
       ? revenueChart.slice(-7).map((d) => ({
-          day: new Date(d.date).toLocaleDateString("en-US", { weekday: "short" }),
+          day: new Date(d.date).toLocaleDateString("en-US", {
+            weekday: "short",
+          }),
           value: d.revenue,
           sales: d.revenue,
         }))
@@ -46,7 +48,9 @@ export function SalesChart({ revenueChart, loading }: SalesChartProps) {
     return { ...d, x, y };
   });
 
-  const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+  const linePath = points
+    .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+    .join(" ");
   const areaPath = `${linePath} L ${points[points.length - 1].x} ${PAD.top + chartH} L ${points[0].x} ${PAD.top + chartH} Z`;
 
   const peak = points[Math.max(peakIndex, 0)];
@@ -96,26 +100,74 @@ export function SalesChart({ revenueChart, loading }: SalesChartProps) {
               const y = PAD.top + chartH - (tick / 100) * chartH;
               return (
                 <g key={tick}>
-                  <line x1={PAD.left} y1={y} x2={PAD.left + chartW} y2={y} stroke="#f0f0f0" strokeWidth={1} strokeDasharray={tick === 0 ? undefined : "4 4"} />
-                  <text x={PAD.left - 8} y={y + 4} textAnchor="end" className="fill-neutral-400 text-[10px] font-semibold">{tick}%</text>
+                  <line
+                    x1={PAD.left}
+                    y1={y}
+                    x2={PAD.left + chartW}
+                    y2={y}
+                    stroke="#f0f0f0"
+                    strokeWidth={1}
+                    strokeDasharray={tick === 0 ? undefined : "4 4"}
+                  />
+                  <text
+                    x={PAD.left - 8}
+                    y={y + 4}
+                    textAnchor="end"
+                    className="fill-neutral-400 text-[10px] font-semibold"
+                  >
+                    {tick}%
+                  </text>
                 </g>
               );
             })}
 
             <path d={areaPath} fill="url(#salesArea2)" />
-            <path d={linePath} fill="none" stroke="url(#salesLine2)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d={linePath}
+              fill="none"
+              stroke="url(#salesLine2)"
+              strokeWidth={2.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
 
             {points.map((p, i) => (
               <g key={p.day}>
-                <circle cx={p.x} cy={p.y} r={i === peakIndex ? 6 : 4} fill="white" stroke={i === peakIndex ? "#22c51f" : "#a8d49e"} strokeWidth={2} />
-                <text x={p.x} y={HEIGHT - 10} textAnchor="middle" className="fill-neutral-500 text-[11px] font-semibold">{p.day}</text>
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={i === peakIndex ? 6 : 4}
+                  fill="white"
+                  stroke={i === peakIndex ? "#22c51f" : "#a8d49e"}
+                  strokeWidth={2}
+                />
+                <text
+                  x={p.x}
+                  y={HEIGHT - 10}
+                  textAnchor="middle"
+                  className="fill-neutral-500 text-[11px] font-semibold"
+                >
+                  {p.day}
+                </text>
               </g>
             ))}
 
             {peak.value > 0 && (
               <g transform={`translate(${peak.x}, 0)`}>
-                <rect x={-tooltipW / 2} y={tooltipRectY} width={tooltipW} height={tooltipH} rx={6} fill="#1f2937" />
-                <text x={0} y={tooltipRectY + 16} textAnchor="middle" className="fill-white text-[10px] font-bold">
+                <rect
+                  x={-tooltipW / 2}
+                  y={tooltipRectY}
+                  width={tooltipW}
+                  height={tooltipH}
+                  rx={6}
+                  fill="#1f2937"
+                />
+                <text
+                  x={0}
+                  y={tooltipRectY + 16}
+                  textAnchor="middle"
+                  className="fill-white text-[10px] font-bold"
+                >
                   {formatVal(peak.sales)}
                 </text>
               </g>
@@ -127,7 +179,9 @@ export function SalesChart({ revenueChart, loading }: SalesChartProps) {
       <div className="mt-3 flex flex-wrap gap-4 border-t border-neutral-100 pt-4">
         <div className="text-xs font-semibold text-neutral-500">
           <span className="text-neutral-400">Peak day </span>
-          <span className="text-neutral-800">{raw[Math.max(peakIndex, 0)]?.day ?? "—"}</span>
+          <span className="text-neutral-800">
+            {raw[Math.max(peakIndex, 0)]?.day ?? "-"}
+          </span>
         </div>
         <div className="text-xs font-semibold text-neutral-500">
           <span className="text-neutral-400">Total </span>

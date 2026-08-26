@@ -12,7 +12,6 @@ import {
   User,
   Building2,
   MapPin,
-  ArrowLeft,
   Loader2,
   Check,
 } from "lucide-react";
@@ -22,10 +21,10 @@ import { useOnboardingStore, type PlanName } from "@/store/onboardingStore";
 import { VisaIcon, MastercardIcon, AmexIcon } from "../ui/Icons";
 import { restaurantsApi, paymentsApi, authApi } from "@/lib/api";
 
-const planPrices: Record<PlanName, number> = {
-  Starter: 9,
-  Professional: 14,
-  Enterprise: 20,
+const planPrices: Record<PlanName, { monthly: number; yearly: number }> = {
+  Starter: { monthly: 9, yearly: 7 },
+  Professional: { monthly: 14, yearly: 11 },
+  Enterprise: { monthly: 20, yearly: 16 },
 };
 
 const planFeatures: Record<PlanName, string[]> = {
@@ -59,7 +58,7 @@ export function PaymentForm() {
   const router = useRouter();
   const { selectedPlan, billingCycle, restaurantInfo, ownerInfo } =
     useOnboardingStore();
-  const price = planPrices[selectedPlan];
+  const price = planPrices[selectedPlan][billingCycle];
   const tax = Number((price * 0.1).toFixed(2));
   const total = price + tax;
 
@@ -89,7 +88,20 @@ export function PaymentForm() {
     return digits;
   };
 
+  // Card validation
+  const cardDigits = cardNumber.replace(/\s/g, "");
+  const isCardValid =
+    cardDigits.length >= 15 && cardExpiry.length >= 4 && cardCvc.length >= 3;
+
   const handleActivate = async () => {
+    if (!isCardValid) {
+      setError(
+        "Please fill in all payment details (card number, expiry, and CVC).",
+      );
+      setStep("error");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -101,10 +113,7 @@ export function PaymentForm() {
       } catch (regErr) {
         const msg = regErr instanceof Error ? regErr.message : "";
         // If already registered (e.g. page refresh), continue
-        if (
-          !msg.includes("already exists") &&
-          !msg.includes("already have")
-        ) {
+        if (!msg.includes("already exists") && !msg.includes("already have")) {
           throw regErr;
         }
       }
@@ -117,21 +126,21 @@ export function PaymentForm() {
         billingCycle,
       });
 
-      // Step 3: Try Stripe Checkout (optional — skip if not configured)
+      // Step 3: Try Stripe Checkout (optional - skip if not configured)
       try {
         const { url } = await paymentsApi.createCheckout(
           selectedPlan,
-          billingCycle
+          billingCycle,
         );
         if (url) {
           window.location.href = url;
           return;
         }
       } catch {
-        // Stripe not configured — go straight to dashboard
+        // Stripe not configured - go straight to dashboard
       }
 
-      // Done — redirect to dashboard
+      // Done - redirect to dashboard
       setStep("done");
       setTimeout(() => {
         router.push("/dashboard");
@@ -139,7 +148,9 @@ export function PaymentForm() {
     } catch (err) {
       setStep("error");
       setError(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
       );
       setLoading(false);
     }
@@ -218,7 +229,6 @@ export function PaymentForm() {
               value={cardName}
               onChange={(e) => setCardName(e.target.value)}
             />
-
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium text-neutral-700">
                 Card Number
@@ -244,15 +254,12 @@ export function PaymentForm() {
                 </div>
               </div>
             </label>
-
             <div className="grid grid-cols-2 gap-3">
               <Input
                 label="Expiry"
                 placeholder="MM/YY"
                 value={cardExpiry}
-                onChange={(e) =>
-                  setCardExpiry(formatExpiry(e.target.value))
-                }
+                onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
                 maxLength={5}
               />
               <Input
@@ -265,7 +272,6 @@ export function PaymentForm() {
                 maxLength={4}
               />
             </div>
-
             {/* Billing Address */}
             <div className="pt-2">
               <h3 className="mb-3 text-sm font-bold text-neutral-700">
@@ -291,8 +297,17 @@ export function PaymentForm() {
                       <option value="KE">Kenya</option>
                       <option value="UG">Uganda</option>
                       <option value="TZ">Tanzania</option>
+                      <option value="CD">Congo (DRC)</option>
+                      <option value="BI">Burundi</option>
+                      <option value="SS">South Sudan</option>
                       <option value="US">United States</option>
                       <option value="GB">United Kingdom</option>
+                      <option value="CA">Canada</option>
+                      <option value="DE">Germany</option>
+                      <option value="FR">France</option>
+                      <option value="ZA">South Africa</option>
+                      <option value="NG">Nigeria</option>
+                      <option value="AE">UAE</option>
                     </select>
                   </div>
                 </label>
@@ -314,7 +329,6 @@ export function PaymentForm() {
                 </div>
               </div>
             </div>
-
             {/* Security notice */}
             <div className="flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 p-3">
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#22c51f]">
@@ -324,13 +338,16 @@ export function PaymentForm() {
                 Your payment is secure and encrypted. You will only be charged
                 after confirmation.
               </p>
-            </div>            <Button
+            </div>{" "}
+            <Button
               type="button"
               size="lg"
               className="w-full"
               onClick={handleActivate}
-              disabled={loading || step === "registering" || step === "creating"
-            }>
+              disabled={
+                loading || step === "registering" || step === "creating"
+              }
+            >
               {loading || step === "registering" || step === "creating" ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
@@ -343,9 +360,11 @@ export function PaymentForm() {
                 </>
               )}
             </Button>
-
             <p className="flex items-start gap-1.5 text-xs text-neutral-500">
-              <ShieldCheck className="mt-0.5 shrink-0 text-[#22c51f]" size={14} />{" "}
+              <ShieldCheck
+                className="mt-0.5 shrink-0 text-[#22c51f]"
+                size={14}
+              />{" "}
               By proceeding, you agree to our{" "}
               <Link href="/privacy" className="font-semibold text-[#22c51f]">
                 Terms of Service
@@ -416,9 +435,7 @@ export function PaymentForm() {
 
           {/* Restaurant info preview */}
           <div className="mt-4 border-t border-neutral-100 pt-4">
-            <h3 className="text-sm font-bold text-neutral-700">
-              Restaurant
-            </h3>
+            <h3 className="text-sm font-bold text-neutral-700">Restaurant</h3>
             <p className="mt-1 text-xs text-neutral-500">
               {restaurantInfo.name || "Not set"}
             </p>

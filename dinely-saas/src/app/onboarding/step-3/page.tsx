@@ -17,7 +17,7 @@ const plans: {
   {
     name: "Starter",
     monthly: 9,
-    yearly: 9,
+    yearly: 7,
     description: "For small restaurants just getting started",
     features: [
       "Restaurant profile page",
@@ -30,7 +30,7 @@ const plans: {
   {
     name: "Professional",
     monthly: 14,
-    yearly: 14,
+    yearly: 11,
     description: "For growing restaurants that need more power",
     features: [
       "Everything in Starter",
@@ -45,7 +45,7 @@ const plans: {
   {
     name: "Enterprise",
     monthly: 20,
-    yearly: 20,
+    yearly: 16,
     description: "For multi-branch restaurants and chains",
     features: [
       "Everything in Professional",
@@ -77,8 +77,13 @@ export default function StepThreePage() {
       </p>
       <div className="mt-4 h-px bg-neutral-100" />
 
-      <div className="mt-5 flex justify-center">
+      <div className="mt-5 flex items-center justify-center gap-3">
         <ToggleBilling value={billingCycle} onChange={setBillingCycle} />
+        {billingCycle === "yearly" && (
+          <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-[#22c51f]">
+            Save up to 20%
+          </span>
+        )}
       </div>
 
       <div className="mt-6 grid items-stretch gap-5 lg:grid-cols-3">
@@ -128,9 +133,18 @@ export default function StepThreePage() {
                 </span>
                 <span className="text-sm text-neutral-500">/month</span>
               </div>
-              {billingCycle === "yearly" && (
-                <p className="mt-0.5 text-xs font-semibold text-[#22c51f]">
-                  Billed annually
+              {billingCycle === "yearly" ? (
+                <div className="mt-0.5 flex items-center gap-2">
+                  <p className="text-xs font-semibold text-[#22c51f]">
+                    Billed annually (${price * 12}/yr)
+                  </p>
+                  <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-[#22c51f]">
+                    Save ${Math.round((1 - price / plan.monthly) * 100)}%
+                  </span>
+                </div>
+              ) : (
+                <p className="mt-0.5 text-xs text-neutral-400">
+                  Billed monthly
                 </p>
               )}
 

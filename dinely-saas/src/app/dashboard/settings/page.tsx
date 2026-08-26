@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import { DashboardCard } from "@/components/dashboard/DashboardCard";
 import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
-import { ShieldCheck, Bell, CreditCard, Zap, Save, Loader2, CheckCircle2 } from "lucide-react";
+import {
+  ShieldCheck,
+  Bell,
+  CreditCard,
+  Zap,
+  Save,
+  Loader2,
+  CheckCircle2,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRestaurant } from "@/hooks/useRestaurant";
 
@@ -24,10 +32,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-neutral-700">{label}</label>
+      <label className="block text-sm font-medium text-neutral-700">
+        {label}
+      </label>
       {readOnly ? (
         <p className="mt-2 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
-          {value || "—"}
+          {value || "-"}
         </p>
       ) : (
         <input
@@ -162,15 +172,35 @@ export default function SettingsPage() {
                 <ShieldCheck size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">Owner Details</h2>
-                <p className="text-sm text-neutral-500">Your personal account information.</p>
+                <h2 className="text-base font-bold text-neutral-900">
+                  Owner Details
+                </h2>
+                <p className="text-sm text-neutral-500">
+                  Your personal account information.
+                </p>
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="First name" value={firstName} onChange={setFirstName} placeholder="John" />
-              <Field label="Last name" value={lastName} onChange={setLastName} placeholder="Park" />
+              <Field
+                label="First name"
+                value={firstName}
+                onChange={setFirstName}
+                placeholder="John"
+              />
+              <Field
+                label="Last name"
+                value={lastName}
+                onChange={setLastName}
+                placeholder="Park"
+              />
               <Field label="Primary email" value={user?.email ?? ""} readOnly />
-              <Field label="Phone" value={phone} onChange={setPhone} type="tel" placeholder="+250 784 000 000" />
+              <Field
+                label="Phone"
+                value={phone}
+                onChange={setPhone}
+                type="tel"
+                placeholder="+250 784 000 000"
+              />
             </div>
           </DashboardCard>
 
@@ -181,23 +211,61 @@ export default function SettingsPage() {
                 <ShieldCheck size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">Restaurant Details</h2>
-                <p className="text-sm text-neutral-500">Business profile shown to customers.</p>
+                <h2 className="text-base font-bold text-neutral-900">
+                  Restaurant Details
+                </h2>
+                <p className="text-sm text-neutral-500">
+                  Business profile shown to customers.
+                </p>
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Restaurant name" value={restName} onChange={setRestName} placeholder="e.g. Taste of Kigali" />
-              <Field label="Type / Cuisine" value={restType} onChange={setRestType} placeholder="e.g. Casual Dining" />
+              <Field
+                label="Restaurant name"
+                value={restName}
+                onChange={setRestName}
+                placeholder="e.g. Taste of Kigali"
+              />
+              <Field
+                label="Type / Cuisine"
+                value={restType}
+                onChange={setRestType}
+                placeholder="e.g. Casual Dining"
+              />
               <div className="sm:col-span-2">
-                <Field label="Address" value={restAddress} onChange={setRestAddress} placeholder="Street, City, Country" />
+                <Field
+                  label="Address"
+                  value={restAddress}
+                  onChange={setRestAddress}
+                  placeholder="Street, City, Country"
+                />
               </div>
-              <Field label="Phone" value={restPhone} onChange={setRestPhone} type="tel" placeholder="+250 7XX XXX XXX" />
-              <Field label="Email" value={restEmail} onChange={setRestEmail} type="email" placeholder="restaurant@email.com" />
+              <Field
+                label="Phone"
+                value={restPhone}
+                onChange={setRestPhone}
+                type="tel"
+                placeholder="+250 7XX XXX XXX"
+              />
+              <Field
+                label="Email"
+                value={restEmail}
+                onChange={setRestEmail}
+                type="email"
+                placeholder="restaurant@email.com"
+              />
               <div className="sm:col-span-2">
-                <Field label="Opening hours" value={restHours} onChange={setRestHours} placeholder="e.g. 08:00 – 22:00" />
+                <Field
+                  label="Opening hours"
+                  value={restHours}
+                  onChange={setRestHours}
+                  placeholder="e.g. 08:00 – 22:00"
+                />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-neutral-700">Description</label>
+                <label className="block text-sm font-medium text-neutral-700">
+                  Description
+                </label>
                 <textarea
                   value={restDescription}
                   onChange={(e) => setRestDescription(e.target.value)}
@@ -216,21 +284,27 @@ export default function SettingsPage() {
                 <CreditCard size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">Billing</h2>
-                <p className="text-sm text-neutral-500">Subscription and payment settings.</p>
+                <h2 className="text-base font-bold text-neutral-900">
+                  Billing
+                </h2>
+                <p className="text-sm text-neutral-500">
+                  Subscription and payment settings.
+                </p>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
                 <p className="text-xs font-semibold text-neutral-500">Plan</p>
                 <p className="mt-1 text-sm font-bold text-neutral-900">
-                  {restaurant?.plan ?? "—"}
+                  {restaurant?.plan ?? "-"}
                 </p>
               </div>
               <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
-                <p className="text-xs font-semibold text-neutral-500">Billing cycle</p>
+                <p className="text-xs font-semibold text-neutral-500">
+                  Billing cycle
+                </p>
                 <p className="mt-1 text-sm font-bold capitalize text-neutral-900">
-                  {restaurant?.billing_cycle ?? "—"}
+                  {restaurant?.billing_cycle ?? "-"}
                 </p>
               </div>
               <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
@@ -242,7 +316,7 @@ export default function SettingsPage() {
                       : "text-amber-600"
                   }`}
                 >
-                  {restaurant?.subscription_status ?? "—"}
+                  {restaurant?.subscription_status ?? "-"}
                 </p>
               </div>
             </div>
@@ -258,15 +332,23 @@ export default function SettingsPage() {
                 <ShieldCheck size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">Security</h2>
-                <p className="text-sm text-neutral-500">Account protection settings.</p>
+                <h2 className="text-base font-bold text-neutral-900">
+                  Security
+                </h2>
+                <p className="text-sm text-neutral-500">
+                  Account protection settings.
+                </p>
               </div>
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
                 <div>
-                  <p className="text-sm font-semibold text-neutral-900">Two-factor auth</p>
-                  <p className="text-xs text-neutral-500">Extra layer of security</p>
+                  <p className="text-sm font-semibold text-neutral-900">
+                    Two-factor auth
+                  </p>
+                  <p className="text-xs text-neutral-500">
+                    Extra layer of security
+                  </p>
                 </div>
                 <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-[#22c51f]">
                   Enabled
@@ -274,7 +356,9 @@ export default function SettingsPage() {
               </div>
               <div className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
                 <div>
-                  <p className="text-sm font-semibold text-neutral-900">Session timeout</p>
+                  <p className="text-sm font-semibold text-neutral-900">
+                    Session timeout
+                  </p>
                   <p className="text-xs text-neutral-500">Auto sign-out</p>
                 </div>
                 <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-bold text-neutral-600">
@@ -291,21 +375,39 @@ export default function SettingsPage() {
                 <Bell size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">Notifications</h2>
-                <p className="text-sm text-neutral-500">Control what alerts you receive.</p>
+                <h2 className="text-base font-bold text-neutral-900">
+                  Notifications
+                </h2>
+                <p className="text-sm text-neutral-500">
+                  Control what alerts you receive.
+                </p>
               </div>
             </div>
             <div className="space-y-3">
               {[
-                { label: "New bookings", value: notifBookings, set: setNotifBookings },
-                { label: "Order alerts", value: notifOrders, set: setNotifOrders },
-                { label: "Weekly summaries", value: notifSummary, set: setNotifSummary },
+                {
+                  label: "New bookings",
+                  value: notifBookings,
+                  set: setNotifBookings,
+                },
+                {
+                  label: "Order alerts",
+                  value: notifOrders,
+                  set: setNotifOrders,
+                },
+                {
+                  label: "Weekly summaries",
+                  value: notifSummary,
+                  set: setNotifSummary,
+                },
               ].map(({ label, value, set: setter }) => (
                 <div
                   key={label}
                   className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4"
                 >
-                  <p className="text-sm font-semibold text-neutral-900">{label}</p>
+                  <p className="text-sm font-semibold text-neutral-900">
+                    {label}
+                  </p>
                   <button
                     type="button"
                     onClick={() => setter((v) => !v)}
@@ -333,13 +435,23 @@ export default function SettingsPage() {
                 <Zap size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">Integrations</h2>
-                <p className="text-sm text-neutral-500">Connected apps and services.</p>
+                <h2 className="text-base font-bold text-neutral-900">
+                  Integrations
+                </h2>
+                <p className="text-sm text-neutral-500">
+                  Connected apps and services.
+                </p>
               </div>
             </div>
             <div className="space-y-3">
               {[
-                { name: "Stripe", status: restaurant?.subscription_status === "active" ? "Connected" : "Pending setup" },
+                {
+                  name: "Stripe",
+                  status:
+                    restaurant?.subscription_status === "active"
+                      ? "Connected"
+                      : "Pending setup",
+                },
                 { name: "Cloudinary", status: "Connected" },
                 { name: "Google Calendar", status: "Not connected" },
               ].map((intg) => (
@@ -348,7 +460,9 @@ export default function SettingsPage() {
                   className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4"
                 >
                   <div>
-                    <p className="text-sm font-semibold text-neutral-900">{intg.name}</p>
+                    <p className="text-sm font-semibold text-neutral-900">
+                      {intg.name}
+                    </p>
                     <p className="text-xs text-neutral-500">{intg.status}</p>
                   </div>
                   <span

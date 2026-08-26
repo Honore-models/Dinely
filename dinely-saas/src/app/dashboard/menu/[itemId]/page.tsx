@@ -1,18 +1,5 @@
-import { notFound } from "next/navigation";
-import { MenuDetailView } from "../../../../components/dashboard/menu/MenuDetailView";
-import { menuItems } from "@/lib/dashboard/mockData";
+import MenuItemDetailPage from "@/components/dashboard/menu/MenuDetailView";
 
-interface MenuItemPageProps {
-  params: Promise<{ itemId: string }>;
-}
-
-export default async function MenuItemPage({ params }: MenuItemPageProps) {
-  const { itemId } = await params;
-  const item = menuItems.find((m) => m.id === itemId);
-
-  if (!item) {
-    notFound();
-  }
-
-  return <MenuDetailView item={item} />;
+export default function MenuItemPage() {
+  return <MenuItemDetailPage />;
 }

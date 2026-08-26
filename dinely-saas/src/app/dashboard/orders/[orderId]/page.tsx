@@ -1,176 +1,116 @@
 "use client";
 
-import { OrderDetails } from "../../../../components/dashboard/OrderDetails";
-import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { OrderDetails } from "@/components/dashboard/OrderDetails";
+import { ordersApi } from "@/lib/api";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
 
-// Mock data - this should come from your API in production
-const orders = [
-  {
-    id: "1",
-    orderID: "#100",
-    customer: {
-      name: "John Lee",
-      phone: "+120 9834 24411",
-      address: "123 Main Street, New York, NY 001",
-    },
-    items: [
-      { name: "Pizza", quantity: 2, price: "$85.5", category: "Garlic Bread" },
-    ],
-    type: "Delivery" as const,
-    total: "$100",
-    subtotal: "$97",
-    deliveryFee: "$3",
-    date: "29 may 2026",
-    time: "10:30 AM",
-    status: "Completed" as const,
-    payment: {
-      method: "Online Payment",
-      status: "Paid",
-      transactionID: "KN209512358324150914",
-    },
-  },
-  {
-    id: "2",
-    orderID: "#101",
-    customer: {
-      name: "Ketty S",
-      phone: "+120 9834 24411",
-      address: "123 Main Street, New York, NY 001",
-    },
-    items: [
-      {
-        name: "Chicken Burger",
-        quantity: 2,
-        price: "$98.2",
-        category: "Coke, Sprite",
-      },
-    ],
-    type: "Takeaway" as const,
-    total: "$98.2",
-    subtotal: "$95.2",
-    deliveryFee: "$3",
-    date: "28 may 2026",
-    time: "08:15 AM",
-    status: "Active" as const,
-    payment: {
-      method: "Online Payment",
-      status: "Paid",
-      transactionID: "KN209512358324150914",
-    },
-  },
-  {
-    id: "3",
-    orderID: "#102",
-    customer: {
-      name: "Peterson",
-      phone: "+120 9834 24411",
-      address: "123 Main Street, New York, NY 001",
-    },
-    items: [
-      {
-        name: "Veg Pasta",
-        quantity: 1,
-        price: "$70",
-        category: "Garlic Bread",
-      },
-    ],
-    type: "Dine-in" as const,
-    total: "$70",
-    subtotal: "$67",
-    deliveryFee: "$3",
-    date: "24 mar 2026",
-    time: "13:20 PM",
-    status: "Completed" as const,
-    payment: {
-      method: "Online Payment",
-      status: "Paid",
-      transactionID: "KN209512358324150914",
-    },
-  },
-  {
-    id: "4",
-    orderID: "#103",
-    customer: {
-      name: "Ming joe",
-      phone: "+120 9834 24411",
-      address: "123 Main Street, New York, NY 001",
-    },
-    items: [
-      {
-        name: "Grilled Chicken",
-        quantity: 3,
-        price: "$120",
-        category: "French Fries, Ice Juice",
-      },
-    ],
-    type: "Delivery" as const,
-    total: "$120",
-    subtotal: "$117",
-    deliveryFee: "$3",
-    date: "12 may 2026",
-    time: "10:45 AM",
-    status: "Cancelled" as const,
-    payment: {
-      method: "Online Payment",
-      status: "Paid",
-      transactionID: "KN209512358324150914",
-    },
-  },
-  {
-    id: "5",
-    orderID: "#104",
-    customer: {
-      name: "Ashraf.K",
-      phone: "+120 9834 24411",
-      address: "123 Main Street, New York, NY 001",
-    },
-    items: [
-      {
-        name: "Veg Burger",
-        quantity: 2,
-        price: "$45.1",
-        category: "Garlic Bread",
-      },
-    ],
-    type: "Takeaway" as const,
-    total: "$45.1",
-    subtotal: "$42.1",
-    deliveryFee: "$3",
-    date: "24 may 2026",
-    time: "09:50 PM",
-    status: "Active" as const,
-    payment: {
-      method: "Online Payment",
-      status: "Paid",
-      transactionID: "KN209512358324150914",
-    },
-  },
-];
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface OrderData {
+  id: string;
+  customer_name: string;
+  customer_email?: string;
+  items: OrderItem[];
+  type: "Delivery" | "Takeaway" | "Dine-in";
+  total: number;
+  status: "Pending" | "Active" | "Completed" | "Cancelled";
+  created_at: string;
+  delivery_address?: string;
+  notes?: string;
+}
 
 export default function OrderDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const orderId = params.orderId as string;
 
-  // Find the order by ID
-  const order = orders.find((o) => o.id === orderId);
+  const [order, setOrder] = useState<OrderData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!order) {
-    return <div>Order not found</div>;
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const { data } = await ordersApi.get(orderId);
+        setOrder(data as unknown as OrderData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load order");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrder();
+  }, [orderId]);
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 size={24} className="animate-spin text-neutral-300" />
+      </div>
+    );
   }
+
+  if (error || !order) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <p className="text-base font-semibold text-neutral-500">
+          {error || "Order not found"}
+        </p>
+        <Link
+          href="/dashboard/orders"
+          className="mt-4 text-sm font-bold text-[#22c51f] hover:underline"
+        >
+          Back to orders
+        </Link>
+      </div>
+    );
+  }
+
+  const date = new Date(order.created_at).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const time = new Date(order.created_at).toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const subtotal = order.total * 0.9;
+  const deliveryFee = order.total * 0.1;
 
   return (
     <OrderDetails
-      orderID={order.orderID}
-      date={order.date}
-      time={order.time}
-      status={order.status}
-      customer={order.customer}
+      orderID={`#${order.id.slice(-6).toUpperCase()}`}
+      date={date}
+      time={time}
+      status={order.status as "Completed" | "Active" | "Cancelled"}
+      customer={{
+        name: order.customer_name || "Customer",
+        phone: order.customer_email || "-",
+        address: order.delivery_address || "-",
+      }}
       type={order.type}
-      items={order.items}
-      subtotal={order.subtotal}
-      deliveryFee={order.deliveryFee}
-      total={order.total}
-      payment={order.payment}
+      items={order.items.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: `$${item.price.toFixed(2)}`,
+      }))}
+      subtotal={`$${subtotal.toFixed(2)}`}
+      deliveryFee={`$${deliveryFee.toFixed(2)}`}
+      total={`$${order.total.toFixed(2)}`}
+      payment={{
+        method: "Online Payment",
+        status: order.status === "Completed" ? "Paid" : "Pending",
+        transactionID: `TXN-${order.id.slice(-8).toUpperCase()}`,
+      }}
     />
   );
 }

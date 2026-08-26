@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
+import { useState } from "react";
 import { User, Mail, LockKeyhole } from "lucide-react";
 import { useOnboardingStore } from "@/store/onboardingStore";
+import { authApi } from "@/lib/api";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { PhoneInput } from "../ui/PhoneInput";
@@ -37,12 +39,13 @@ type OwnerFormValues = z.infer<typeof ownerSchema>;
 export function OwnerInfoForm() {
   const router = useRouter();
   const { ownerInfo, setOwnerInfo } = useOnboardingStore();
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     register,
     control,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting },
   } = useForm<OwnerFormValues>({
     resolver: zodResolver(ownerSchema),
     defaultValues: ownerInfo,
@@ -51,8 +54,21 @@ export function OwnerInfoForm() {
 
   const password = watch("password");
 
-  const onSubmit = (values: OwnerFormValues) => {
+  const onSubmit = async (values: OwnerFormValues) => {
+    setSubmitError(null);
     setOwnerInfo(values);
+
+    try {
+      await authApi.register(values);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      // If account already exists, allow proceeding (user may have refreshed)
+      if (!msg.includes("already exists") && !msg.includes("already have")) {
+        setSubmitError(msg || "Failed to create account. Please try again.");
+        return;
+      }
+    }
+
     router.push("/onboarding/step-2");
   };
 
@@ -85,9 +101,9 @@ export function OwnerInfoForm() {
 
         {/* Form fields */}
         <div className="grid gap-4 md:grid-cols-2">
-          {Object.keys(errors).length > 0 && (
+          {(Object.keys(errors).length > 0 || submitError) && (
             <div className="col-span-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-              Please fix the errors below before continuing.
+              {submitError || "Please fix the errors below before continuing."}
             </div>
           )}
 
@@ -175,7 +191,7 @@ export function OwnerInfoForm() {
           size="lg"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Saving..." : "Next Step"}
+          {isSubmitting ? "Creating account..." : "Next Step"}
         </Button>
       </div>
     </form>

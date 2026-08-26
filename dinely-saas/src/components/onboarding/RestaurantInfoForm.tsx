@@ -31,7 +31,10 @@ const restaurantSchema = z.object({
     .max(20, "Phone number is too long"),
   email: z.string().email("Please enter a valid email address"),
   logo: z.string().optional(),
-  description: z.string().max(500, "Description must be under 500 characters").optional(),
+  description: z
+    .string()
+    .max(500, "Description must be under 500 characters")
+    .optional(),
 });
 
 type RestaurantFormValues = z.infer<typeof restaurantSchema>;
@@ -59,7 +62,7 @@ export function RestaurantInfoForm() {
   const { restaurantInfo, setRestaurantInfo } = useOnboardingStore();
   const [uploading, setUploading] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string>(
-    restaurantInfo.logo || ""
+    restaurantInfo.logo || "",
   );
 
   const {
@@ -93,7 +96,7 @@ export function RestaurantInfoForm() {
       setValue("logo", url, { shouldValidate: true });
       setLogoPreview(url);
     } catch {
-      // Upload failed silently — logo is optional
+      // Upload failed silently - logo is optional
     } finally {
       setUploading(false);
     }
@@ -209,8 +212,7 @@ export function RestaurantInfoForm() {
         <div className="md:col-span-2">
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-neutral-700">
-              Description{" "}
-              <span className="text-neutral-400">(optional)</span>
+              Description <span className="text-neutral-400">(optional)</span>
             </span>
             <textarea
               placeholder="Tell customers what makes your restaurant special..."

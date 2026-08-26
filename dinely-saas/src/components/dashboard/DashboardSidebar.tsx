@@ -22,6 +22,8 @@ export function DashboardSidebar() {
   );
   const { restaurant } = useRestaurant();
   const restaurantName = restaurant?.name || "My Restaurant";
+  const restaurantLogo = restaurant?.logo || "";
+  const restaurantInitials = restaurantName.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase();
 
   const handleLogout = async () => {
     await authApi.logout();
@@ -39,9 +41,17 @@ export function DashboardSidebar() {
           type="button"
           className="flex w-full items-center gap-3 bg-transparent py-2 text-left transition hover:opacity-80"
         >
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#22c51f] text-neutral-900">
-            <UtensilsCrossed size={18} strokeWidth={2} />
-          </span>
+          {restaurantLogo ? (
+            <img
+              src={restaurantLogo}
+              alt={restaurantName}
+              className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-green-100"
+            />
+          ) : (
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#22c51f] text-xs font-bold text-white">
+              {restaurantInitials}
+            </span>
+          )}
           <span className="min-w-0 flex-1 truncate text-[15px] font-bold text-neutral-950">
             {restaurantName}
           </span>

@@ -5,24 +5,53 @@ import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader"
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { analyticsApi, menuApi } from "@/lib/api";
 import {
-  Camera, CheckCircle2, Clock, Globe, Loader2, Mail, MapPin, Pencil, Phone, Save, Star, X,
+  Camera,
+  CheckCircle2,
+  Clock,
+  Globe,
+  Loader2,
+  Mail,
+  MapPin,
+  Pencil,
+  Phone,
+  Save,
+  Star,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { uploadApi } from "@/lib/api";
 
-interface MenuItem { id: string; name: string; price: number; orders: number; image?: string; }
+interface MenuItem {
+  id: string;
+  name: string;
+  price: number;
+  orders: number;
+  image?: string;
+}
 
-const FALLBACK = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80";
+const FALLBACK =
+  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80";
 
 export default function MyRestaurantPage() {
   const { restaurant, loading, update } = useRestaurant();
 
-  const [topItems, setTopItems] = useState<{ name: string; revenue: number; quantity: number }[]>([]);
+  const [topItems, setTopItems] = useState<
+    { name: string; revenue: number; quantity: number }[]
+  >([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
 
   const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState({ name: "", type: "", address: "", phone: "", email: "", openingHours: "", description: "", logo: "" });
+  const [form, setForm] = useState({
+    name: "",
+    type: "",
+    address: "",
+    phone: "",
+    email: "",
+    openingHours: "",
+    description: "",
+    logo: "",
+  });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -44,15 +73,20 @@ export default function MyRestaurantPage() {
   }, [restaurant]);
 
   useEffect(() => {
-    analyticsApi.get("30d").then((data) => {
-      setTopItems(data.topItems.slice(0, 3));
-      setTotalRevenue(data.revenue.current);
-      setTotalOrders(data.orders.current);
-    }).catch(() => {});
+    analyticsApi
+      .get("30d")
+      .then((data) => {
+        setTopItems(data.topItems.slice(0, 3));
+        setTotalRevenue(data.revenue.current);
+        setTotalOrders(data.orders.current);
+      })
+      .catch(() => {});
   }, []);
 
-  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((p) => ({ ...p, [field]: e.target.value }));
+  const set =
+    (field: string) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setForm((p) => ({ ...p, [field]: e.target.value }));
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,7 +95,11 @@ export default function MyRestaurantPage() {
     try {
       const { url } = await uploadApi.upload(file);
       setForm((p) => ({ ...p, logo: url }));
-    } catch { /* ignore */ } finally { setUploadingLogo(false); }
+    } catch {
+      /* ignore */
+    } finally {
+      setUploadingLogo(false);
+    }
   };
 
   const handleSave = async () => {
@@ -71,7 +109,11 @@ export default function MyRestaurantPage() {
       setSaved(true);
       setEditMode(false);
       setTimeout(() => setSaved(false), 3000);
-    } catch { /* ignore */ } finally { setSaving(false); }
+    } catch {
+      /* ignore */
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -89,7 +131,8 @@ export default function MyRestaurantPage() {
     );
   }
 
-  const coverImage = form.logo && form.logo.startsWith("http") ? form.logo : FALLBACK;
+  const coverImage =
+    form.logo && form.logo.startsWith("http") ? form.logo : FALLBACK;
 
   return (
     <>
@@ -99,16 +142,32 @@ export default function MyRestaurantPage() {
         action={
           editMode ? (
             <div className="flex items-center gap-2">
-              <button onClick={() => setEditMode(false)} className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 hover:bg-neutral-50">
+              <button
+                onClick={() => setEditMode(false)}
+                className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 hover:bg-neutral-50"
+              >
                 <X size={15} /> Cancel
               </button>
-              <button onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 rounded-lg bg-[#22c51f] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1bad1a] disabled:opacity-60">
-                {saving ? <Loader2 size={15} className="animate-spin" /> : saved ? <CheckCircle2 size={15} /> : <Save size={15} />}
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex items-center gap-1.5 rounded-lg bg-[#22c51f] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1bad1a] disabled:opacity-60"
+              >
+                {saving ? (
+                  <Loader2 size={15} className="animate-spin" />
+                ) : saved ? (
+                  <CheckCircle2 size={15} />
+                ) : (
+                  <Save size={15} />
+                )}
                 {saving ? "Saving…" : "Save"}
               </button>
             </div>
           ) : (
-            <button onClick={() => setEditMode(true)} className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 hover:bg-neutral-50">
+            <button
+              onClick={() => setEditMode(true)}
+              className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 hover:bg-neutral-50"
+            >
               <Pencil size={15} /> Edit Profile
             </button>
           )
@@ -126,11 +185,28 @@ export default function MyRestaurantPage() {
         <div className="rounded-2xl border border-neutral-100 bg-white shadow-sm overflow-hidden">
           {/* Cover image */}
           <div className="relative h-52 bg-neutral-200">
-            <Image src={coverImage} alt={form.name} fill className="object-cover" priority sizes="100vw" />
+            <Image
+              src={coverImage}
+              alt={form.name}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
             {editMode && (
               <label className="absolute bottom-3 right-3 flex cursor-pointer items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs font-semibold text-white hover:bg-black/80">
-                <input type="file" accept="image/*" className="sr-only" onChange={handleLogoUpload} disabled={uploadingLogo} />
-                {uploadingLogo ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleLogoUpload}
+                  disabled={uploadingLogo}
+                />
+                {uploadingLogo ? (
+                  <Loader2 size={12} className="animate-spin" />
+                ) : (
+                  <Camera size={12} />
+                )}
                 {uploadingLogo ? "Uploading…" : "Change Cover"}
               </label>
             )}
@@ -141,15 +217,41 @@ export default function MyRestaurantPage() {
               <div className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   {[
-                    { label: "Restaurant Name", field: "name", placeholder: "The Golden Plate" },
-                    { label: "Type / Cuisine", field: "type", placeholder: "Burgers & American" },
-                    { label: "Address", field: "address", placeholder: "KN 5 Rd, Kigali, Rwanda" },
-                    { label: "Phone", field: "phone", placeholder: "+250 245 253 342" },
-                    { label: "Email", field: "email", placeholder: "contact@restaurant.com" },
-                    { label: "Opening Hours", field: "openingHours", placeholder: "10:45 – 20:30" },
+                    {
+                      label: "Restaurant Name",
+                      field: "name",
+                      placeholder: "The Golden Plate",
+                    },
+                    {
+                      label: "Type / Cuisine",
+                      field: "type",
+                      placeholder: "Burgers & American",
+                    },
+                    {
+                      label: "Address",
+                      field: "address",
+                      placeholder: "KN 5 Rd, Kigali, Rwanda",
+                    },
+                    {
+                      label: "Phone",
+                      field: "phone",
+                      placeholder: "+250 245 253 342",
+                    },
+                    {
+                      label: "Email",
+                      field: "email",
+                      placeholder: "contact@restaurant.com",
+                    },
+                    {
+                      label: "Opening Hours",
+                      field: "openingHours",
+                      placeholder: "10:45 – 20:30",
+                    },
                   ].map(({ label, field, placeholder }) => (
                     <label key={field} className="block">
-                      <span className="mb-1 block text-xs font-semibold text-neutral-600">{label}</span>
+                      <span className="mb-1 block text-xs font-semibold text-neutral-600">
+                        {label}
+                      </span>
                       <input
                         value={(form as Record<string, string>)[field]}
                         onChange={set(field)}
@@ -160,7 +262,9 @@ export default function MyRestaurantPage() {
                   ))}
                 </div>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold text-neutral-600">Description</span>
+                  <span className="mb-1 block text-xs font-semibold text-neutral-600">
+                    Description
+                  </span>
                   <textarea
                     value={form.description}
                     onChange={set("description")}
@@ -174,32 +278,53 @@ export default function MyRestaurantPage() {
               <>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-neutral-900">{restaurant.name}</h2>
-                    <p className="text-sm text-neutral-500">{restaurant.type}</p>
+                    <h2 className="text-2xl font-bold text-neutral-900">
+                      {restaurant.name}
+                    </h2>
+                    <p className="text-sm text-neutral-500">
+                      {restaurant.type}
+                    </p>
                     <div className="mt-2 flex items-center gap-2">
-                      <Star size={14} className="fill-amber-400 text-amber-400" />
+                      <Star
+                        size={14}
+                        className="fill-amber-400 text-amber-400"
+                      />
                       <span className="text-sm font-bold text-neutral-900">
-                        {(restaurant as unknown as Record<string, unknown>).rating as number ?? "—"}
+                        {((restaurant as unknown as Record<string, unknown>)
+                          .rating as number) ?? "-"}
                       </span>
                       <span className="text-sm text-neutral-400">
-                        ({(restaurant as unknown as Record<string, unknown>).review_count as number ?? 0} reviews)
+                        (
+                        {((restaurant as unknown as Record<string, unknown>)
+                          .review_count as number) ?? 0}{" "}
+                        reviews)
                       </span>
                     </div>
                   </div>
                   <div className="flex gap-3 text-center">
                     <div className="rounded-xl bg-green-50 px-4 py-3">
-                      <p className="text-lg font-bold text-[#22c51f]">${totalRevenue.toFixed(0)}</p>
-                      <p className="text-xs font-semibold text-neutral-500">Revenue (30d)</p>
+                      <p className="text-lg font-bold text-[#22c51f]">
+                        ${totalRevenue.toFixed(0)}
+                      </p>
+                      <p className="text-xs font-semibold text-neutral-500">
+                        Revenue (30d)
+                      </p>
                     </div>
                     <div className="rounded-xl bg-neutral-50 px-4 py-3">
-                      <p className="text-lg font-bold text-neutral-900">{totalOrders}</p>
-                      <p className="text-xs font-semibold text-neutral-500">Orders (30d)</p>
+                      <p className="text-lg font-bold text-neutral-900">
+                        {totalOrders}
+                      </p>
+                      <p className="text-xs font-semibold text-neutral-500">
+                        Orders (30d)
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {restaurant.description && (
-                  <p className="mt-4 text-sm leading-relaxed text-neutral-600">{restaurant.description}</p>
+                  <p className="mt-4 text-sm leading-relaxed text-neutral-600">
+                    {restaurant.description}
+                  </p>
                 )}
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -227,7 +352,9 @@ export default function MyRestaurantPage() {
 
         {/* Right: Top selling items */}
         <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
-          <h3 className="mb-4 text-base font-bold text-neutral-900">Top Selling Items</h3>
+          <h3 className="mb-4 text-base font-bold text-neutral-900">
+            Top Selling Items
+          </h3>
           {topItems.length === 0 ? (
             <p className="text-sm text-neutral-400">No order data yet.</p>
           ) : (
@@ -238,8 +365,12 @@ export default function MyRestaurantPage() {
                     {i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-neutral-900">{item.name}</p>
-                    <p className="text-xs text-neutral-500">{item.quantity} orders · ${item.revenue.toFixed(2)}</p>
+                    <p className="truncate text-sm font-semibold text-neutral-900">
+                      {item.name}
+                    </p>
+                    <p className="text-xs text-neutral-500">
+                      {item.quantity} orders · ${item.revenue.toFixed(2)}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -250,12 +381,18 @@ export default function MyRestaurantPage() {
             <h3 className="text-sm font-bold text-neutral-900">Subscription</h3>
             <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-neutral-700">{restaurant.plan}</p>
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${restaurant.subscription_status === "active" ? "bg-green-100 text-[#22c51f]" : "bg-amber-100 text-amber-600"}`}>
+                <p className="text-sm font-semibold text-neutral-700">
+                  {restaurant.plan}
+                </p>
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${restaurant.subscription_status === "active" ? "bg-green-100 text-[#22c51f]" : "bg-amber-100 text-amber-600"}`}
+                >
                   {restaurant.subscription_status}
                 </span>
               </div>
-              <p className="mt-0.5 text-xs capitalize text-neutral-500">{restaurant.billing_cycle} billing</p>
+              <p className="mt-0.5 text-xs capitalize text-neutral-500">
+                {restaurant.billing_cycle} billing
+              </p>
             </div>
           </div>
         </div>
