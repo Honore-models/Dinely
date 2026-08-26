@@ -96,17 +96,17 @@ export default function FoodBookingsPage() {
           ].map(({ label, value, color }) => (
             <div
               key={label}
-              className="rounded-2xl border border-neutral-100 bg-white p-4 text-center shadow-sm"
+              className="rounded-2xl border border-neutral-100 bg-white p-4 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
             >
-              <p className={`text-2xl font-bold ${color}`}>{value}</p>
-              <p className="mt-0.5 text-xs font-semibold text-neutral-500">{label}</p>
+              <p className={`text-2xl font-bold ${color} dark:text-white`}>{value}</p>
+              <p className="mt-0.5 text-xs font-semibold text-neutral-500 dark:text-neutral-400">{label}</p>
             </div>
           ))}
         </div>
       </DashboardSection>
 
       <DashboardSection>
-        <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-neutral-100">
+        <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-neutral-100 dark:bg-neutral-900 dark:ring-neutral-800">
           <div className="mb-5 flex items-center gap-4">
             <div className="relative max-w-sm flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -118,7 +118,7 @@ export default function FoodBookingsPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-[#22c51f] focus:outline-none focus:ring-1 focus:ring-green-100"
+                className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-[#22c51f] focus:outline-none focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500"
               />
             </div>
           </div>
@@ -134,8 +134,8 @@ export default function FoodBookingsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="border-b border-neutral-200">
-                  <tr className="text-xs font-semibold text-neutral-500">
+                <thead className="border-b border-neutral-200 dark:border-neutral-700">
+                  <tr className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
                     <th className="px-4 py-3 text-left">ID</th>
                     <th className="px-4 py-3 text-left">Customer</th>
                     <th className="px-4 py-3 text-left">Type</th>
@@ -146,11 +146,11 @@ export default function FoodBookingsPage() {
                 </thead>
                 <tbody className="divide-y divide-neutral-100">
                   {paginated.map((b) => (
-                    <tr key={b.id} className="hover:bg-neutral-50">
-                      <td className="px-4 py-4 text-sm font-semibold text-neutral-900">
+                    <tr key={b.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800">
+                      <td className="px-4 py-4 text-sm font-semibold text-neutral-900 dark:text-white">
                         #{b.id.slice(-6).toUpperCase()}
                       </td>
-                      <td className="px-4 py-4 text-sm text-neutral-700">
+                      <td className="px-4 py-4 text-sm text-neutral-700 dark:text-neutral-300">
                         {b.customer_name}
                       </td>
                       <td className="px-4 py-4 text-sm">
@@ -163,10 +163,10 @@ export default function FoodBookingsPage() {
                           {b.type}
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-sm text-neutral-700">
+                      <td className="px-4 py-4 text-sm text-neutral-700 dark:text-neutral-300">
                         {b.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
                       </td>
-                      <td className="px-4 py-4 text-sm font-semibold text-neutral-900">
+                      <td className="px-4 py-4 text-sm font-semibold text-neutral-900 dark:text-white">
                         ${b.total.toFixed(2)}
                       </td>
                       <td className="px-4 py-4">
@@ -185,14 +185,14 @@ export default function FoodBookingsPage() {
 
           {totalPages > 1 && (
             <div className="mt-5 flex items-center justify-between">
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 {filtered.length} booking{filtered.length !== 1 ? "s" : ""}
               </p>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40"
+                  className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
                 >
                   <ChevronLeft size={13} />
                 </button>
@@ -204,7 +204,7 @@ export default function FoodBookingsPage() {
                       className={`h-7 w-7 rounded text-xs font-semibold ${
                         p === page
                           ? "bg-[#22c51f] text-white"
-                          : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                          : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
                       }`}
                     >
                       {p}
@@ -214,7 +214,7 @@ export default function FoodBookingsPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40"
+                  className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
                 >
                   <ChevronRight size={13} />
                 </button>

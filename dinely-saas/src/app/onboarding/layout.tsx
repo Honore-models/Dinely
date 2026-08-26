@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { StepperProgress } from "@/components/onboarding/StepperProgress";
+import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
 
 function getCurrentStep(pathname: string) {
   const match = pathname.match(/step-(\d)/);
@@ -26,8 +27,8 @@ function MobileStepIndicator({ currentStep }: { currentStep: number }) {
                 isCompleted
                   ? "bg-[#22c51f] text-white"
                   : isActive
-                    ? "bg-[#22c51f] text-white ring-2 ring-green-200"
-                    : "border-2 border-green-200 text-green-600"
+                    ? "bg-[#22c51f] text-white ring-2 ring-green-200 dark:ring-green-800"
+                    : "border-2 border-green-200 text-green-600 dark:border-green-800 dark:text-green-400"
               }`}
             >
               {isCompleted ? "✓" : stepNum}
@@ -35,7 +36,7 @@ function MobileStepIndicator({ currentStep }: { currentStep: number }) {
             {i < stepLabels.length - 1 && (
               <div
                 className={`h-0.5 flex-1 rounded-full transition-colors ${
-                  stepNum < currentStep ? "bg-[#22c51f]" : "bg-green-100"
+                  stepNum < currentStep ? "bg-[#22c51f]" : "bg-green-100 dark:bg-green-900"
                 }`}
               />
             )}
@@ -52,16 +53,20 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
   const backHref = currentStep <= 1 ? "/" : `/onboarding/step-${currentStep - 1}`;
 
   return (
-    <main className="grid h-screen overflow-hidden bg-white lg:grid-cols-[340px_1fr] xl:grid-cols-[360px_1fr]">
+    <main className="grid h-screen overflow-hidden bg-white dark:bg-neutral-950 lg:grid-cols-[340px_1fr] xl:grid-cols-[360px_1fr]">
       <div className="hidden lg:block">
         <StepperProgress currentStep={currentStep} />
       </div>
       <section className="overflow-y-auto px-4 py-6 lg:px-8 lg:py-8">
         <div className="mx-auto flex min-h-full w-full max-w-[960px] flex-col justify-center">
-          <MobileStepIndicator currentStep={currentStep} />
+          <div className="mb-6 flex items-center justify-between">
+            <MobileStepIndicator currentStep={currentStep} />
+            <div className="hidden lg:block" />
+            <DarkModeToggle variant="compact" />
+          </div>
           <Link
             href={backHref}
-            className="mb-6 inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#22c51f] px-4 py-1.5 text-sm font-bold text-[#22c51f] transition-colors hover:bg-green-50"
+            className="mb-6 inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#22c51f] px-4 py-1.5 text-sm font-bold text-[#22c51f] transition-colors hover:bg-green-50 dark:hover:bg-green-950"
           >
             <ChevronLeft size={20} /> {currentStep === 4 ? "Go back to plans" : "Back"}
           </Link>

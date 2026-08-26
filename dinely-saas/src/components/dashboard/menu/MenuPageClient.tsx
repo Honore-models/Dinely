@@ -173,7 +173,7 @@ export function MenuPageClient() {
             placeholder="Search menu items..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="h-11 w-full rounded-lg border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-2 focus:ring-green-100/80"
+            className="h-11 w-full rounded-lg border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-2 focus:ring-green-100/80 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-[#22c555]"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -182,7 +182,7 @@ export function MenuPageClient() {
             className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
               !selectedCategory
                 ? "bg-[#22c51f] text-white"
-                : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
             }`}
           >
             All
@@ -194,7 +194,7 @@ export function MenuPageClient() {
               className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
                 selectedCategory === cat
                   ? "bg-[#22c51f] text-white"
-                  : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                  : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
               }`}
             >
               {cat}
@@ -206,12 +206,12 @@ export function MenuPageClient() {
       {loading ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-56 animate-pulse rounded-xl bg-neutral-100" />
+            <div key={i} className="h-56 animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-800" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center">
-          <p className="text-base font-semibold text-neutral-500">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center dark:border-neutral-800 dark:bg-neutral-900">
+          <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400">
             {items.length === 0 ? "No menu items yet" : "No items match your search"}
           </p>
           {items.length === 0 && (
@@ -228,7 +228,7 @@ export function MenuPageClient() {
           {filtered.map((item) => (
             <div
               key={item.id}
-              className="group overflow-hidden rounded-xl border border-neutral-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-green-200/60 hover:shadow-md"
+              className="group overflow-hidden rounded-xl border border-neutral-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-green-200/60 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
                 {item.image ? (
@@ -245,13 +245,13 @@ export function MenuPageClient() {
                 <div className="absolute top-2 right-2 flex gap-1">
                   <button
                     onClick={() => openEdit(item)}
-                    className="rounded-lg bg-white/90 px-2.5 py-1 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-white"
+                    className="rounded-lg bg-white/90 px-2.5 py-1 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-white dark:bg-neutral-800/90 dark:text-neutral-300 dark:hover:bg-neutral-700"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="rounded-lg bg-white/90 px-2.5 py-1 text-xs font-semibold text-red-500 shadow-sm hover:bg-white"
+                    className="rounded-lg bg-white/90 px-2.5 py-1 text-xs font-semibold text-red-500 shadow-sm hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-700"
                   >
                     Delete
                   </button>
@@ -260,7 +260,7 @@ export function MenuPageClient() {
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="font-bold text-neutral-800">{item.name}</h3>
+                    <h3 className="font-bold text-neutral-800 dark:text-white">{item.name}</h3>
                     <p className="mt-0.5 text-sm font-semibold text-[#22c51f]">
                       {item.category}
                     </p>
@@ -270,7 +270,7 @@ export function MenuPageClient() {
                   </p>
                 </div>
                 {item.description && (
-                  <p className="mt-2 line-clamp-2 text-xs text-neutral-500">
+                  <p className="mt-2 line-clamp-2 text-xs text-neutral-500 dark:text-neutral-400">
                     {item.description}
                   </p>
                 )}
@@ -283,12 +283,12 @@ export function MenuPageClient() {
       {/* Add / Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl">
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl dark:bg-neutral-900">
             <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4">
-              <h2 className="text-base font-bold text-neutral-900">
+              <h2 className="text-base font-bold text-neutral-900 dark:text-white">
                 {editing ? "Edit Menu Item" : "Add Menu Item"}
               </h2>
-              <button onClick={closeModal} className="rounded-full p-1 hover:bg-neutral-100">
+              <button onClick={closeModal} className="rounded-full p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                 <X size={18} />
               </button>
             </div>
@@ -300,21 +300,21 @@ export function MenuPageClient() {
               )}
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold text-neutral-600">Name *</span>
+                  <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Name *</span>
                   <input
                     required
                     value={form.name}
                     onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                     placeholder="e.g. Margherita Pizza"
-                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
+                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-[#22c555]"
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold text-neutral-600">Category *</span>
+                  <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Category *</span>
                   <select
                     value={form.category}
                     onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
-                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f]"
+                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-[#22c555]"
                   >
                     {CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -322,7 +322,7 @@ export function MenuPageClient() {
                   </select>
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold text-neutral-600">Price ($) *</span>
+                  <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Price ($) *</span>
                   <input
                     required
                     type="number"
@@ -335,8 +335,8 @@ export function MenuPageClient() {
                   />
                 </label>
                 <div className="block">
-                  <span className="mb-1 block text-xs font-semibold text-neutral-600">Image</span>
-                  <label className="flex h-[42px] w-full cursor-pointer items-center gap-2 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-3 text-sm text-neutral-500 hover:bg-neutral-100">
+                  <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Image</span>
+                  <label className="flex h-[42px] w-full cursor-pointer items-center gap-2 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-3 text-sm text-neutral-500 hover:bg-neutral-100 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700">
                     <input type="file" accept="image/*" className="sr-only" onChange={handleImageUpload} />
                     {uploading ? (
                       <Loader2 size={14} className="animate-spin" />
@@ -348,7 +348,7 @@ export function MenuPageClient() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block">
-                    <span className="mb-1 block text-xs font-semibold text-neutral-600">Description</span>
+                    <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Description</span>
                     <textarea
                       value={form.description}
                       onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
@@ -360,7 +360,7 @@ export function MenuPageClient() {
                 </div>
               </div>
               <div className="mt-5 flex justify-end gap-3">
-                <button type="button" onClick={closeModal} className="rounded-xl border border-neutral-200 px-5 py-2.5 text-sm font-semibold text-neutral-600 hover:bg-neutral-50">
+                <button type="button" onClick={closeModal} className="rounded-xl border border-neutral-200 px-5 py-2.5 text-sm font-semibold text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800">
                   Cancel
                 </button>
                 <button

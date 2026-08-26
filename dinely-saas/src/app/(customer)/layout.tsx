@@ -2,7 +2,7 @@ import { CustomerTopNav } from "@/components/customer/CustomerTopNav";
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
       <CustomerTopNav />
       <main>{children}</main>
     </div>

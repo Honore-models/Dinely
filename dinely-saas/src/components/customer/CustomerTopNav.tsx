@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import {
-  Bell,
   ChevronDown,
   LogOut,
   Menu,
@@ -16,6 +15,8 @@ import {
 import { DinelyLogo } from "@/components/brand/DinelyLogo";
 import { useCartStore } from "@/store/cartStore";
 import { useAuth } from "@/hooks/useAuth";
+import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
+import { NotificationDropdown } from "@/components/ui/NotificationDropdown";
 
 const navLinks = [
   { label: "Home", href: "/home" },
@@ -72,7 +73,7 @@ export function CustomerTopNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-neutral-100 bg-white/80 backdrop-blur-lg">
+      <header className="sticky top-0 z-50 border-b border-neutral-100 bg-white/80 backdrop-blur-lg dark:border-neutral-800 dark:bg-neutral-950/80">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link href="/home" className="shrink-0">
@@ -91,8 +92,8 @@ export function CustomerTopNav() {
                   href={link.href}
                   className={`relative rounded-lg px-3.5 py-2 text-sm font-semibold transition ${
                     active
-                      ? "text-emerald-600"
-                      : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
                   }`}
                 >
                   {link.label}
@@ -114,17 +115,20 @@ export function CustomerTopNav() {
               <input
                 type="text"
                 placeholder="Search restaurants..."
-                className="w-full rounded-full border border-neutral-200 bg-neutral-50 py-2 pl-9 pr-4 text-sm text-neutral-800 outline-none placeholder:text-neutral-400 transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10"
+                className="w-full rounded-full border border-neutral-200 bg-neutral-50 py-2 pl-9 pr-4 text-sm text-neutral-800 outline-none placeholder:text-neutral-400 transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-emerald-500 dark:focus:bg-neutral-900"
               />
             </div>
           </div>
 
           {/* Right actions */}
           <div className="flex shrink-0 items-center gap-1.5">
+            {/* Dark mode toggle */}
+            <DarkModeToggle variant="compact" />
+
             {/* Cart */}
             <Link
               href="/cart"
-              className="relative grid h-10 w-10 place-items-center rounded-xl text-neutral-600 transition hover:bg-neutral-50"
+              className="relative grid h-10 w-10 place-items-center rounded-xl text-neutral-600 transition hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
               aria-label="Cart"
             >
               <ShoppingCart size={20} />
@@ -136,25 +140,19 @@ export function CustomerTopNav() {
             </Link>
 
             {/* Notifications */}
-            <button
-              type="button"
-              className="grid h-10 w-10 place-items-center rounded-xl text-neutral-600 transition hover:bg-neutral-50"
-              aria-label="Notifications"
-            >
-              <Bell size={20} />
-            </button>
+            <NotificationDropdown variant="compact" />
 
             {/* User */}
             <div className="relative" ref={dropdownRef}>
               <button
                 type="button"
                 onClick={() => setDropdownOpen((v) => !v)}
-                className="flex items-center gap-2.5 rounded-xl py-1.5 pl-1.5 pr-2.5 transition hover:bg-neutral-50"
+                className="flex items-center gap-2.5 rounded-xl py-1.5 pl-1.5 pr-2.5 transition hover:bg-neutral-50 dark:hover:bg-neutral-800"
               >
-                <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">
+                <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-emerald-100 text-xs font-bold text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
                   {initials}
                 </span>
-                <span className="hidden text-sm font-semibold text-neutral-800 lg:inline">
+                <span className="hidden text-sm font-semibold text-neutral-800 dark:text-white lg:inline">
                   {displayName}
                 </span>
                 <ChevronDown
@@ -166,12 +164,12 @@ export function CustomerTopNav() {
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-60 overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-xl shadow-neutral-100/50">
-                  <div className="border-b border-neutral-50 px-4 py-3.5">
-                    <p className="text-sm font-bold text-neutral-900">
+                <div className="absolute right-0 top-full mt-2 w-60 overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-xl shadow-neutral-100/50 dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-neutral-900/50">
+                  <div className="border-b border-neutral-50 px-4 py-3.5 dark:border-neutral-800">
+                    <p className="text-sm font-bold text-neutral-900 dark:text-white">
                       {displayName}
                     </p>
-                    <p className="mt-0.5 text-xs text-neutral-500">
+                    <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                       {user?.email || "Guest"}
                     </p>
                   </div>
@@ -182,7 +180,7 @@ export function CustomerTopNav() {
                         setDropdownOpen(false);
                         router.push("/profile");
                       }}
-                      className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
+                      className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800"
                     >
                       <User size={16} className="text-neutral-400" />
                       My Profile
@@ -193,7 +191,7 @@ export function CustomerTopNav() {
                         setDropdownOpen(false);
                         router.push("/orders");
                       }}
-                      className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
+                      className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800"
                     >
                       <ShoppingCart size={16} className="text-neutral-400" />
                       My Orders
@@ -204,7 +202,7 @@ export function CustomerTopNav() {
                         setDropdownOpen(false);
                         setShowLogoutConfirm(true);
                       }}
-                      className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                      className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950"
                     >
                       <LogOut size={16} />
                       Sign out
@@ -218,7 +216,7 @@ export function CustomerTopNav() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="grid h-10 w-10 place-items-center rounded-xl text-neutral-600 transition hover:bg-neutral-50 md:hidden"
+              className="grid h-10 w-10 place-items-center rounded-xl text-neutral-600 transition hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-neutral-800 md:hidden"
               aria-label="Menu"
             >
               {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -228,7 +226,7 @@ export function CustomerTopNav() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="border-t border-neutral-100 bg-white px-4 py-4 md:hidden">
+          <div className="border-t border-neutral-100 bg-white px-4 py-4 dark:border-neutral-800 dark:bg-neutral-900 md:hidden">
             <nav className="space-y-1">
               {navLinks.map((link) => {
                 const active =
@@ -240,8 +238,8 @@ export function CustomerTopNav() {
                     href={link.href}
                     className={`block rounded-xl px-4 py-3 text-sm font-semibold transition ${
                       active
-                        ? "bg-emerald-50 text-emerald-600"
-                        : "text-neutral-700 hover:bg-neutral-50"
+                        ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400"
+                        : "text-neutral-700 hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
                     }`}
                   >
                     {link.label}
@@ -258,7 +256,7 @@ export function CustomerTopNav() {
                 <input
                   type="text"
                   placeholder="Search restaurants..."
-                  className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2.5 pl-9 pr-4 text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
+                  className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2.5 pl-9 pr-4 text-sm text-neutral-800 outline-none placeholder:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500"
                 />
               </div>
             </div>
@@ -269,24 +267,24 @@ export function CustomerTopNav() {
       {/* Logout confirmation modal */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl">
+          <div className="w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-neutral-900">
             <div className="px-6 py-8 text-center">
               <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-red-100">
                 <LogOut size={24} className="text-red-600" />
               </div>
-              <h3 className="text-lg font-bold text-neutral-900">
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
                 Sign out of your account?
               </h3>
-              <p className="mt-2 text-sm text-neutral-500">
+              <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
                 You&apos;ll need to sign in again to access your orders,
                 favourites, and profile.
               </p>
             </div>
-            <div className="flex border-t border-neutral-100">
+            <div className="flex border-t border-neutral-100 dark:border-neutral-800">
               <button
                 type="button"
                 onClick={() => setShowLogoutConfirm(false)}
-                className="flex-1 px-4 py-3.5 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-50"
+                className="flex-1 px-4 py-3.5 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
               >
                 Cancel
               </button>
@@ -294,7 +292,7 @@ export function CustomerTopNav() {
                 type="button"
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="flex-1 border-l border-neutral-100 px-4 py-3.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60"
+                className="flex-1 border-l border-neutral-100 px-4 py-3.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60 dark:border-neutral-800 dark:text-red-400 dark:hover:bg-red-950"
               >
                 {loggingOut ? "Signing out…" : "Sign out"}
               </button>

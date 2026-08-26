@@ -37,11 +37,11 @@ export function PopularMenu({ topItems, loading }: PopularMenuProps) {
       {loading ? (
         <div className="mt-4 space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-12 animate-pulse rounded-lg bg-neutral-100" />
+            <div key={i} className="h-12 animate-pulse rounded-lg bg-neutral-100 dark:bg-neutral-800" />
           ))}
         </div>
       ) : topItems.length === 0 ? (
-        <div className="mt-6 text-center text-sm text-neutral-400">
+        <div className="mt-6 text-center text-sm text-neutral-400 dark:text-neutral-500">
           No order data yet. Orders will appear here once placed.
         </div>
       ) : (
@@ -55,7 +55,7 @@ export function PopularMenu({ topItems, loading }: PopularMenuProps) {
             return (
               <li key={item.id}>
                 <div className="flex items-center gap-3">
-                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-green-50 text-xs font-bold text-[#22c51f]">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-green-50 text-xs font-bold text-[#22c51f] dark:bg-green-950 dark:text-green-400">
                     {index + 1}
                   </span>
                   <Image
@@ -63,21 +63,21 @@ export function PopularMenu({ topItems, loading }: PopularMenuProps) {
                     alt={item.name}
                     width={44}
                     height={44}
-                    className="h-11 w-11 shrink-0 rounded-lg object-cover ring-2 ring-white"
+                    className="h-11 w-11 shrink-0 rounded-lg object-cover ring-2 ring-white dark:ring-neutral-800"
                     unoptimized={!image.includes("unsplash")}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="truncate text-sm font-bold text-neutral-800">{item.name}</p>
+                      <p className="truncate text-sm font-bold text-neutral-800 dark:text-white">{item.name}</p>
                       <span className="flex shrink-0 items-center gap-0.5 text-xs font-bold text-[#22c51f]">
                         <TrendingUp size={12} />
                         {item.quantity}x
                       </span>
                     </div>
-                    <p className="text-xs font-semibold text-neutral-500">
+                    <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
                       ${item.revenue.toFixed(2)}
                     </p>
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-700">
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-[#7cc243] to-[#22c51f]"
                         style={{ width: `${barWidth}%` }}

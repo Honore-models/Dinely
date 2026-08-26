@@ -26,6 +26,8 @@ export const restaurantSchema = z.object({
   email: z.string().email("Enter a valid email"),
   logo: z.string().optional(),
   description: z.string().optional(),
+  website: z.string().optional(),
+  capacity: z.string().optional(),
 });
 
 // ─── Menu ─────────────────────────────────────────────────────────────────────

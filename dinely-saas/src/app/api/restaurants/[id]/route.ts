@@ -66,6 +66,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     if (parsed.data.email) updateData.email = parsed.data.email;
     if (parsed.data.logo !== undefined) updateData.logo = parsed.data.logo;
     if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
+    if (parsed.data.website !== undefined) updateData.website = parsed.data.website;
+    if (parsed.data.capacity !== undefined) updateData.capacity = parsed.data.capacity;
 
     const { error } = await supabase
       .from("restaurants")

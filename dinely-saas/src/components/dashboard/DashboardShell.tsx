@@ -3,7 +3,7 @@ import { DashboardSidebar } from "./DashboardSidebar";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f1f3f5]">
+    <div className="flex h-screen overflow-hidden bg-neutral-100 dark:bg-neutral-950">
       <DashboardSidebar />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <DashboardHeader />

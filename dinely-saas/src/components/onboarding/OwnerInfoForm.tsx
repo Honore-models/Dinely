@@ -62,7 +62,6 @@ export function OwnerInfoForm() {
       await authApi.register(values);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
-      // If account already exists, allow proceeding (user may have refreshed)
       if (!msg.includes("already exists") && !msg.includes("already have")) {
         setSubmitError(msg || "Failed to create account. Please try again.");
         return;
@@ -74,20 +73,20 @@ export function OwnerInfoForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6" noValidate>
-      <p className="text-sm font-bold text-neutral-400">Step 1 of 4</p>
-      <h1 className="mt-2 text-2xl font-extrabold text-neutral-900">
+      <p className="text-sm font-bold text-neutral-400 dark:text-neutral-500">Step 1 of 4</p>
+      <h1 className="mt-2 text-2xl font-extrabold text-neutral-900 dark:text-white">
         Restaurant Owner Info
       </h1>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
         Set up your account to manage your restaurant. This information is used
         to access your dashboard.
       </p>
-      <div className="mt-4 h-px bg-neutral-100" />
+      <div className="mt-4 h-px bg-neutral-100 dark:bg-neutral-800" />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[260px_1fr]">
         {/* Left sidebar */}
         <div>
-          <p className="text-sm leading-relaxed text-neutral-500">
+          <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
             Let&apos;s get to know you! Share your details so we can set up
             your restaurant account.
           </p>
@@ -102,7 +101,7 @@ export function OwnerInfoForm() {
         {/* Form fields */}
         <div className="grid gap-4 md:grid-cols-2">
           {(Object.keys(errors).length > 0 || submitError) && (
-            <div className="col-span-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            <div className="col-span-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
               {submitError || "Please fix the errors below before continuing."}
             </div>
           )}
@@ -172,8 +171,8 @@ export function OwnerInfoForm() {
                     key={rule.label}
                     className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                       rule.test
-                        ? "bg-green-100 text-green-700"
-                        : "bg-neutral-100 text-neutral-400"
+                        ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
+                        : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500"
                     }`}
                   >
                     {rule.test ? "✓" : "·"} {rule.label}

@@ -11,17 +11,17 @@ export function ReservationList() {
       padding="none"
     >
       <div className="border-b border-neutral-100 px-5 py-4">
-        <p className="text-sm font-bold text-neutral-900">Reservations</p>
+        <p className="text-sm font-bold text-neutral-900 dark:text-white">Reservations</p>
         <div className="mt-3 flex gap-2">
           <button
             type="button"
-            className="rounded-lg border border-[#22c51f] bg-green-50 px-3.5 py-1.5 text-xs font-bold text-[#22c51f]"
+            className="rounded-lg border border-[#22c51f] bg-green-50 px-3.5 py-1.5 text-xs font-bold text-[#22c51f] dark:bg-green-950 dark:text-green-400"
           >
             All 12
           </button>
           <button
             type="button"
-            className="rounded-lg px-3.5 py-1.5 text-xs font-semibold text-neutral-500 transition hover:bg-neutral-50"
+            className="rounded-lg px-3.5 py-1.5 text-xs font-semibold text-neutral-500 transition hover:bg-neutral-50 dark:hover:bg-neutral-800"
           >
             Reservation
           </button>
@@ -31,7 +31,7 @@ export function ReservationList() {
           <input
             type="search"
             placeholder="Search customer..."
-            className="h-10 w-full rounded-lg border border-neutral-200/80 bg-neutral-50/50 pl-9 pr-3 text-sm font-medium outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80"
+            className="h-10 w-full rounded-lg border border-neutral-200/80 bg-neutral-50/50 pl-9 pr-3 text-sm font-medium outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-[#22c555]"
           />
         </div>
       </div>
@@ -42,7 +42,7 @@ export function ReservationList() {
           return (
             <li
               key={res.id}
-              className="flex gap-3 rounded-lg border border-neutral-100 p-3 transition hover:border-green-200/60 hover:bg-green-50/40"
+              className="flex gap-3 rounded-lg border border-neutral-100 p-3 transition hover:border-green-200/60 hover:bg-green-50/40 dark:border-neutral-800 dark:hover:border-green-800 dark:hover:bg-green-950/30"
             >
               <div
                 className={`flex w-[68px] shrink-0 flex-col items-center justify-center rounded-lg px-1.5 py-2.5 text-center text-[11px] font-bold leading-tight text-white ${
@@ -52,12 +52,12 @@ export function ReservationList() {
                 {isDine ? "On Dine" : res.time}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-neutral-800">{res.customer}</p>
+                <p className="text-sm font-bold text-neutral-800 dark:text-white">{res.customer}</p>
                 <p className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-[#22c51f]">
                   <Check size={11} />
                   {res.status}
                 </p>
-                <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-neutral-500">
+                <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">
                   <Phone size={11} />
                   {res.phone}
                 </p>
@@ -67,7 +67,7 @@ export function ReservationList() {
         })}
       </ul>
 
-      <div className="border-t border-neutral-100 p-4">
+      <div className="border-t border-neutral-100 p-4 dark:border-neutral-800">
         <button
           type="button"
           className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#22c51f] text-sm font-bold text-white shadow-sm transition hover:bg-[#1bad1a]"

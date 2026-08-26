@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ChefHat, Utensils, ArrowRight, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { DinelyLogo } from "@/components/brand/DinelyLogo";
+import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
 
 const roles = [
   {
@@ -49,11 +50,14 @@ export default function GetStartedPage() {
   const [hovered, setHovered] = useState<string | null>(null);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-white via-green-50/30 to-white px-4 py-12">
-      {/* Logo */}
-      <Link href="/" className="mb-10 flex items-center">
-        <DinelyLogo width={120} height={42} priority />
-      </Link>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-white via-green-50/30 to-white px-4 py-12 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
+      {/* Logo + Toggle */}
+      <div className="mb-10 flex items-center gap-4">
+        <Link href="/" className="flex items-center">
+          <DinelyLogo width={120} height={42} priority />
+        </Link>
+        <DarkModeToggle variant="compact" />
+      </div>
 
       {/* Heading */}
       <div className="text-center">
@@ -61,7 +65,7 @@ export default function GetStartedPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="text-3xl font-extrabold tracking-tight text-neutral-900 md:text-4xl"
+          className="text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white md:text-4xl"
         >
           Welcome to <span className="text-[#22c51f]">Dinely</span>
         </motion.h1>
@@ -69,7 +73,7 @@ export default function GetStartedPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.1 }}
-          className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-neutral-500 md:text-base"
+          className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-neutral-500 dark:text-neutral-400 md:text-base"
         >
           How would you like to use Dinely? Choose your role to get started.
         </motion.p>
@@ -93,9 +97,9 @@ export default function GetStartedPage() {
               className={`group relative cursor-pointer overflow-hidden rounded-2xl border-2 p-7 transition-all duration-300 ${
                 isHovered
                   ? role.color === "green"
-                    ? "border-[#22c51f] bg-green-50/60 shadow-xl shadow-green-100/60"
-                    : "border-amber-400 bg-amber-50/60 shadow-xl shadow-amber-100/60"
-                  : "border-neutral-200 bg-white hover:border-neutral-300"
+                    ? "border-[#22c51f] bg-green-50/60 shadow-xl shadow-green-100/60 dark:bg-green-950/40 dark:shadow-green-950/60"
+                    : "border-amber-400 bg-amber-50/60 shadow-xl shadow-amber-100/60 dark:bg-amber-950/40 dark:shadow-amber-950/60"
+                  : "border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-600"
               }`}
             >
               {/* Icon */}
@@ -106,15 +110,15 @@ export default function GetStartedPage() {
                       ? "bg-[#22c51f] text-white"
                       : "bg-amber-400 text-white"
                     : role.color === "green"
-                      ? "bg-green-50 text-[#22c51f]"
-                      : "bg-amber-50 text-amber-500"
+                      ? "bg-green-50 text-[#22c51f] dark:bg-green-950"
+                      : "bg-amber-50 text-amber-500 dark:bg-amber-950"
                 }`}
               >
                 <Icon size={26} />
               </div>
 
               {/* Text */}
-              <h2 className="mt-5 text-xl font-extrabold text-neutral-900">
+              <h2 className="mt-5 text-xl font-extrabold text-neutral-900 dark:text-white">
                 {role.title}
               </h2>
               <p
@@ -124,7 +128,7 @@ export default function GetStartedPage() {
               >
                 {role.subtitle}
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-neutral-500">
+              <p className="mt-3 text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
                 {role.description}
               </p>
 
@@ -133,7 +137,7 @@ export default function GetStartedPage() {
                 {role.features.map((feature) => (
                   <li
                     key={feature}
-                    className="flex items-center gap-2.5 text-sm text-neutral-600"
+                    className="flex items-center gap-2.5 text-sm text-neutral-600 dark:text-neutral-300"
                   >
                     <span
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white ${
@@ -176,7 +180,7 @@ export default function GetStartedPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.45, delay: 0.5 }}
-        className="mt-8 text-center text-xs text-neutral-400"
+        className="mt-8 text-center text-xs text-neutral-400 dark:text-neutral-500"
       >
         Already have an account?{" "}
         <Link

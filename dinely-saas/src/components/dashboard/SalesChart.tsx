@@ -4,8 +4,8 @@ import { ChartCardHeader } from "./ChartCardHeader";
 import { DashboardCard } from "./DashboardCard";
 
 const WIDTH = 520;
-const HEIGHT = 248;
-const PAD = { top: 48, right: 16, bottom: 32, left: 44 };
+const HEIGHT = 140;
+const PAD = { top: 24, right: 16, bottom: 28, left: 44 };
 const chartW = WIDTH - PAD.left - PAD.right;
 const chartH = HEIGHT - PAD.top - PAD.bottom;
 
@@ -68,19 +68,19 @@ export function SalesChart({ revenueChart, loading }: SalesChartProps) {
         title="Revenue Overview"
         subtitle="Daily revenue performance"
         action={
-          <span className="rounded-lg bg-green-50 px-3 py-1 text-xs font-bold text-[#22c51f]">
+          <span className="rounded-lg bg-green-50 px-3 py-1 text-xs font-bold text-[#22c51f] dark:bg-green-950 dark:text-green-400">
             Last 7 days
           </span>
         }
       />
 
       {loading ? (
-        <div className="mt-4 h-48 animate-pulse rounded-xl bg-neutral-100" />
+        <div className="mt-4 h-28 animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-800" />
       ) : (
-        <div className="overflow-x-auto overflow-y-visible">
+        <div className="mt-2 overflow-x-auto overflow-y-visible">
           <svg
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-            className="w-full min-w-[320px] overflow-visible"
+            className="w-full overflow-visible"
             role="img"
             aria-label="Revenue line chart"
             style={{ overflow: "visible" }}
@@ -105,7 +105,7 @@ export function SalesChart({ revenueChart, loading }: SalesChartProps) {
                     y1={y}
                     x2={PAD.left + chartW}
                     y2={y}
-                    stroke="#f0f0f0"
+                    stroke="var(--chart-grid, #f0f0f0)"
                     strokeWidth={1}
                     strokeDasharray={tick === 0 ? undefined : "4 4"}
                   />
@@ -113,7 +113,7 @@ export function SalesChart({ revenueChart, loading }: SalesChartProps) {
                     x={PAD.left - 8}
                     y={y + 4}
                     textAnchor="end"
-                    className="fill-neutral-400 text-[10px] font-semibold"
+                    className="fill-neutral-400 dark:fill-neutral-500 text-[10px] font-semibold"
                   >
                     {tick}%
                   </text>
@@ -136,14 +136,14 @@ export function SalesChart({ revenueChart, loading }: SalesChartProps) {
                 <circle
                   cx={p.x}
                   cy={p.y}
-                  r={i === peakIndex ? 6 : 4}
-                  fill="white"
+                  r={i === peakIndex ? 5 : 3.5}
+                  fill="var(--chart-dot-fill, white)"
                   stroke={i === peakIndex ? "#22c51f" : "#a8d49e"}
                   strokeWidth={2}
                 />
                 <text
                   x={p.x}
-                  y={HEIGHT - 10}
+                  y={HEIGHT - 8}
                   textAnchor="middle"
                   className="fill-neutral-500 text-[11px] font-semibold"
                 >
@@ -176,20 +176,20 @@ export function SalesChart({ revenueChart, loading }: SalesChartProps) {
         </div>
       )}
 
-      <div className="mt-3 flex flex-wrap gap-4 border-t border-neutral-100 pt-4">
+      <div className="mt-3 flex flex-wrap gap-4 border-t border-neutral-100 dark:border-neutral-700 pt-3">
         <div className="text-xs font-semibold text-neutral-500">
-          <span className="text-neutral-400">Peak day </span>
-          <span className="text-neutral-800">
+          <span className="text-neutral-400 dark:text-neutral-500">Peak day </span>
+          <span className="text-neutral-800 dark:text-neutral-200">
             {raw[Math.max(peakIndex, 0)]?.day ?? "-"}
           </span>
         </div>
         <div className="text-xs font-semibold text-neutral-500">
-          <span className="text-neutral-400">Total </span>
+          <span className="text-neutral-400 dark:text-neutral-500">Total </span>
           <span className="text-[#22c51f]">{formatVal(totalSales)}</span>
         </div>
         <div className="text-xs font-semibold text-neutral-500">
-          <span className="text-neutral-400">Avg. daily </span>
-          <span className="text-neutral-800">{formatVal(avgDaily)}</span>
+          <span className="text-neutral-400 dark:text-neutral-500">Avg. daily </span>
+          <span className="text-neutral-800 dark:text-neutral-200">{formatVal(avgDaily)}</span>
         </div>
       </div>
     </DashboardCard>

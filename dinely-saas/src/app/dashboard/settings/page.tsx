@@ -32,11 +32,11 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-neutral-700">
+      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
         {label}
       </label>
       {readOnly ? (
-        <p className="mt-2 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+        <p className="mt-2 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
           {value || "-"}
         </p>
       ) : (
@@ -45,7 +45,7 @@ function Field({
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange?.(e.target.value)}
-          className="mt-2 w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-[#22c51f] focus:ring-2 focus:ring-green-100"
+          className="mt-2 w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-[#22c51f] focus:ring-2 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-[#22c555] dark:focus:ring-green-900/50"
         />
       )}
     </div>
@@ -69,6 +69,8 @@ export default function SettingsPage() {
   const [restEmail, setRestEmail] = useState("");
   const [restHours, setRestHours] = useState("");
   const [restDescription, setRestDescription] = useState("");
+  const [restWebsite, setRestWebsite] = useState("");
+  const [restCapacity, setRestCapacity] = useState("");
 
   // Notification preferences (stored locally for now)
   const [notifBookings, setNotifBookings] = useState(true);
@@ -97,6 +99,8 @@ export default function SettingsPage() {
       setRestEmail(restaurant.email ?? "");
       setRestHours(restaurant.opening_hours ?? "");
       setRestDescription(restaurant.description ?? "");
+      setRestWebsite(restaurant.website ?? "");
+      setRestCapacity(restaurant.capacity ?? "");
     }
   }, [restaurant]);
 
@@ -115,6 +119,8 @@ export default function SettingsPage() {
           email: restEmail,
           opening_hours: restHours,
           description: restDescription,
+          website: restWebsite,
+          capacity: restCapacity,
         }),
       ]);
       setSaved(true);
@@ -168,14 +174,14 @@ export default function SettingsPage() {
           {/* Owner details */}
           <DashboardCard>
             <div className="mb-5 flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f]">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f] dark:bg-green-950 dark:text-green-400">
                 <ShieldCheck size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">
+                <h2 className="text-base font-bold text-neutral-900 dark:text-white">
                   Owner Details
                 </h2>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                   Your personal account information.
                 </p>
               </div>
@@ -207,14 +213,14 @@ export default function SettingsPage() {
           {/* Restaurant details */}
           <DashboardCard>
             <div className="mb-5 flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f]">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f] dark:bg-green-950 dark:text-green-400">
                 <ShieldCheck size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">
+                <h2 className="text-base font-bold text-neutral-900 dark:text-white">
                   Restaurant Details
                 </h2>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                   Business profile shown to customers.
                 </p>
               </div>
@@ -262,8 +268,20 @@ export default function SettingsPage() {
                   placeholder="e.g. 08:00 – 22:00"
                 />
               </div>
+              <Field
+                label="Website"
+                value={restWebsite}
+                onChange={setRestWebsite}
+                placeholder="https://yourrestaurant.com"
+              />
+              <Field
+                label="Seating Capacity"
+                value={restCapacity}
+                onChange={setRestCapacity}
+                placeholder="e.g. 50 seats"
+              />
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-neutral-700">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                   Description
                 </label>
                 <textarea
@@ -271,7 +289,7 @@ export default function SettingsPage() {
                   onChange={(e) => setRestDescription(e.target.value)}
                   placeholder="Tell customers what makes your restaurant special..."
                   rows={3}
-                  className="mt-2 w-full resize-none rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-700 outline-none transition focus:border-[#22c51f] focus:ring-2 focus:ring-green-100"
+                  className="mt-2 w-full resize-none rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-700 outline-none transition focus:border-[#22c51f] focus:ring-2 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:placeholder:text-neutral-500 dark:focus:border-[#22c555] dark:focus:ring-green-900/50"
                 />
               </div>
             </div>
@@ -280,34 +298,34 @@ export default function SettingsPage() {
           {/* Billing */}
           <DashboardCard>
             <div className="mb-5 flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f]">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f] dark:bg-green-950 dark:text-green-400">
                 <CreditCard size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">
+                <h2 className="text-base font-bold text-neutral-900 dark:text-white">
                   Billing
                 </h2>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                   Subscription and payment settings.
                 </p>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
-                <p className="text-xs font-semibold text-neutral-500">Plan</p>
-                <p className="mt-1 text-sm font-bold text-neutral-900">
+              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
+                <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">Plan</p>
+                <p className="mt-1 text-sm font-bold text-neutral-900 dark:text-white">
                   {restaurant?.plan ?? "-"}
                 </p>
               </div>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
-                <p className="text-xs font-semibold text-neutral-500">
+              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
+                <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
                   Billing cycle
                 </p>
-                <p className="mt-1 text-sm font-bold capitalize text-neutral-900">
+                <p className="mt-1 text-sm font-bold capitalize text-neutral-900 dark:text-white">
                   {restaurant?.billing_cycle ?? "-"}
                 </p>
               </div>
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
                 <p className="text-xs font-semibold text-neutral-500">Status</p>
                 <p
                   className={`mt-1 text-sm font-bold capitalize ${
@@ -328,40 +346,40 @@ export default function SettingsPage() {
           {/* Security */}
           <DashboardCard>
             <div className="mb-5 flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f]">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f] dark:bg-green-950 dark:text-green-400">
                 <ShieldCheck size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">
+                <h2 className="text-base font-bold text-neutral-900 dark:text-white">
                   Security
                 </h2>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                   Account protection settings.
                 </p>
               </div>
             </div>
             <div className="space-y-3">
-              <div className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+              <div className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
                 <div>
-                  <p className="text-sm font-semibold text-neutral-900">
+                  <p className="text-sm font-semibold text-neutral-900 dark:text-white">
                     Two-factor auth
                   </p>
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
                     Extra layer of security
                   </p>
                 </div>
-                <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-[#22c51f]">
+                <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-[#22c51f] dark:bg-green-950 dark:text-green-400">
                   Enabled
                 </span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+              <div className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
                 <div>
-                  <p className="text-sm font-semibold text-neutral-900">
+                  <p className="text-sm font-semibold text-neutral-900 dark:text-white">
                     Session timeout
                   </p>
-                  <p className="text-xs text-neutral-500">Auto sign-out</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">Auto sign-out</p>
                 </div>
-                <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-bold text-neutral-600">
+                <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-bold text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300">
                   7 days
                 </span>
               </div>
@@ -371,14 +389,14 @@ export default function SettingsPage() {
           {/* Notifications */}
           <DashboardCard>
             <div className="mb-5 flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f]">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f] dark:bg-green-950 dark:text-green-400">
                 <Bell size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">
+                <h2 className="text-base font-bold text-neutral-900 dark:text-white">
                   Notifications
                 </h2>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                   Control what alerts you receive.
                 </p>
               </div>
@@ -403,16 +421,16 @@ export default function SettingsPage() {
               ].map(({ label, value, set: setter }) => (
                 <div
                   key={label}
-                  className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4"
+                  className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800"
                 >
-                  <p className="text-sm font-semibold text-neutral-900">
+                  <p className="text-sm font-semibold text-neutral-900 dark:text-white">
                     {label}
                   </p>
                   <button
                     type="button"
                     onClick={() => setter((v) => !v)}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      value ? "bg-[#22c51f]" : "bg-neutral-200"
+                      value ? "bg-[#22c51f]" : "bg-neutral-300 dark:bg-neutral-600"
                     }`}
                     role="switch"
                     aria-checked={value}
@@ -431,14 +449,14 @@ export default function SettingsPage() {
           {/* Integrations */}
           <DashboardCard>
             <div className="mb-5 flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f]">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-[#22c51f] dark:bg-green-950 dark:text-green-400">
                 <Zap size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-neutral-900">
+                <h2 className="text-base font-bold text-neutral-900 dark:text-white">
                   Integrations
                 </h2>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                   Connected apps and services.
                 </p>
               </div>
@@ -457,19 +475,19 @@ export default function SettingsPage() {
               ].map((intg) => (
                 <div
                   key={intg.name}
-                  className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4"
+                  className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800"
                 >
                   <div>
-                    <p className="text-sm font-semibold text-neutral-900">
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-white">
                       {intg.name}
                     </p>
-                    <p className="text-xs text-neutral-500">{intg.status}</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">{intg.status}</p>
                   </div>
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-bold ${
                       intg.status === "Connected"
-                        ? "bg-green-100 text-[#22c51f]"
-                        : "bg-neutral-100 text-neutral-500"
+                        ? "bg-green-100 text-[#22c51f] dark:bg-green-950 dark:text-green-400"
+                        : "bg-neutral-100 text-neutral-500 dark:bg-neutral-700 dark:text-neutral-400"
                     }`}
                   >
                     {intg.status === "Connected" ? "Active" : "Setup"}

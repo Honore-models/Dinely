@@ -14,10 +14,10 @@ export default function ClientsPage() {
 
   useEffect(() => {
     clientsApi.list().then((res) => {
-      const data = res.data as unknown as { status: string; totalSpent: number }[];
+      const data = res.data as unknown as { status: string; totalSpent: number; orderCount: number; bookingCount: number; reviewCount: number }[];
       setMetrics({
         total: data.length,
-        active: data.filter((c) => c.status === "active").length,
+        active: data.filter((c) => c.status === "active" || c.status === "loyal").length,
         newClients: data.filter((c) => c.status === "new").length,
         totalRevenue: data.reduce((s, c) => s + (c.totalSpent ?? 0), 0),
       });
@@ -29,9 +29,10 @@ export default function ClientsPage() {
       <DashboardPageHeader title="Clients" description="View and manage your restaurant customers." />
 
       <DashboardSection className="mb-6">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           <MetricCard title="Total Clients"         value={String(metrics.total)}           change={0} changeLabel="all time"          variant="primary" />
-          <MetricCard title="Active Clients"        value={String(metrics.active)}          change={0} changeLabel="repeat customers" />
+          <MetricCard title="Active & Loyal"        value={String(metrics.active)}          change={0} changeLabel="repeat customers" />
+          <MetricCard title="New Clients"           value={String(metrics.newClients)}      change={0} changeLabel="first interaction" />
           <MetricCard title="Revenue From Clients"  value={`$${metrics.totalRevenue.toFixed(0)}`} change={0} changeLabel="all time" />
         </div>
       </DashboardSection>

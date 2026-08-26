@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { CategoryPills } from "@/components/customer/CategoryPills";
 import { RestaurantCard } from "@/components/customer/RestaurantCard";
 import { useRestaurants } from "@/hooks/useRestaurants";
@@ -36,10 +36,10 @@ export default function ExplorePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8">
-      <h1 className="text-2xl font-extrabold text-neutral-900">
+      <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-white">
         Explore Restaurants
       </h1>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
         Discover the best restaurants and cuisines near you
       </p>
 
@@ -55,13 +55,13 @@ export default function ExplorePage() {
             placeholder="Search for restaurants, cuisines or dishes..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-xl border border-neutral-200 bg-white py-3 pl-11 pr-4 text-sm text-neutral-800 outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
+            className="w-full rounded-xl border border-neutral-200 bg-white py-3 pl-11 pr-4 text-sm text-neutral-800 outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:ring-green-900"
           />
         </div>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-semibold text-neutral-600 outline-none focus:border-[#22c51f]"
+          className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-semibold text-neutral-600 outline-none focus:border-[#22c51f] dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
         >
           <option>Recommended</option>
           <option>Rating</option>
@@ -78,12 +78,12 @@ export default function ExplorePage() {
         {loading ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-64 animate-pulse rounded-2xl bg-neutral-100" />
+              <div key={i} className="h-64 animate-pulse rounded-2xl bg-neutral-100 dark:bg-neutral-800" />
             ))}
           </div>
         ) : sorted.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center">
-            <p className="text-base font-semibold text-neutral-500">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center dark:border-neutral-800 dark:bg-neutral-900">
+            <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400">
               {query ? "No restaurants match your search" : "No restaurants found"}
             </p>
             <button
@@ -96,7 +96,7 @@ export default function ExplorePage() {
           </div>
         ) : (
           <>
-            <p className="mb-4 text-sm text-neutral-500">
+            <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
               {sorted.length} restaurant{sorted.length !== 1 ? "s" : ""} found
             </p>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

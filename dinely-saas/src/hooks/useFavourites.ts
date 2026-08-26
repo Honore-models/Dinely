@@ -28,7 +28,14 @@ export function useFavourites() {
       setFavourites(list);
       setFavouriteIds(new Set(list.map((r) => r.id)));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load favourites");
+      const msg = err instanceof Error ? err.message : "Failed to load favourites";
+      // If 401, user isn't logged in — show empty state instead of error
+      if (msg.includes("401") || msg.includes("Unauthorized")) {
+        setFavourites([]);
+        setFavouriteIds(new Set());
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }

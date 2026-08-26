@@ -8,7 +8,7 @@ export function DashboardSection({ title, children, className = "" }: DashboardS
   return (
     <section className={className}>
       {title ? (
-        <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-neutral-400">
+        <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
           {title}
         </h2>
       ) : null}

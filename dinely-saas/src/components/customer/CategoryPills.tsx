@@ -40,8 +40,8 @@ export function CategoryPills({ selected, onSelect }: CategoryPillsProps) {
             onClick={() => handleSelect(cat.id)}
             className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-all ${
               isActive
-                ? "border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/20"
-                : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-800"
+                ? "border-[#22c555] bg-gradient-to-r from-[#22c555] to-[#1bad1a] text-white shadow-md shadow-green-200 dark:shadow-green-900"
+                : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-white"
             }`}
           >
             <span className="text-base">{cat.emoji}</span>

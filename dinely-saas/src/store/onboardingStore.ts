@@ -21,6 +21,8 @@ export interface RestaurantInfo {
   email: string;
   logo?: string;
   description?: string;
+  website?: string;
+  capacity?: string;
 }
 
 interface OnboardingState {
@@ -49,6 +51,8 @@ const emptyRestaurantInfo: RestaurantInfo = {
   openingHours: "",
   phone: "",
   email: "",
+  website: "",
+  capacity: "",
 };
 
 export const useOnboardingStore = create<OnboardingState>()(

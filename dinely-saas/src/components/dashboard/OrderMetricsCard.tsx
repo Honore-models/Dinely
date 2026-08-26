@@ -22,12 +22,14 @@ export default function OrderMetricsCard({
       case "danger":
         return "bg-red-500 text-white";
       default:
-        return "bg-white text-neutral-900 border border-neutral-200";
+        return "bg-white text-neutral-900 border border-neutral-200 dark:bg-neutral-900 dark:text-white dark:border-neutral-700";
     }
   };
 
   const titleClass =
-    variant === "default" ? "text-neutral-500" : "text-white/80";
+    variant === "default"
+      ? "text-neutral-500 dark:text-neutral-400"
+      : "text-white/80";
 
   return (
     <div className={`rounded-xl p-6 shadow-sm ${getVariantClasses()}`}>

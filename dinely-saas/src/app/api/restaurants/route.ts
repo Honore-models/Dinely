@@ -116,6 +116,8 @@ export async function POST(req: NextRequest) {
         plan: (b.plan as string) || "Professional",
         billing_cycle: (b.billingCycle as string) || "monthly",
         subscription_status: "trialing",
+        website: parsed.data.website || null,
+        capacity: parsed.data.capacity || null,
       })
       .select("id")
       .single();

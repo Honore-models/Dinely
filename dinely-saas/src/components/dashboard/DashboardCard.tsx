@@ -18,7 +18,7 @@ export function DashboardCard({
 }: DashboardCardProps) {
   return (
     <article
-      className={`overflow-visible rounded-xl border border-neutral-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] ${paddingMap[padding]} ${className}`}
+      className={`overflow-visible rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900 ${paddingMap[padding]} ${className}`}
     >
       {children}
     </article>

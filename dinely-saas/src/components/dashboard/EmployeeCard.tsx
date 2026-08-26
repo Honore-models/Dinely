@@ -19,15 +19,15 @@ export function EmployeeCard({
   name, role, department, hireDate, email, phone, image, isActive = true, onEdit, onDelete,
 }: EmployeeCardProps) {
   return (
-    <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-neutral-100">
+    <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-neutral-100 dark:bg-neutral-900 dark:ring-neutral-800">
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-start gap-3">
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-neutral-200">
+          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
             {image ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={image} alt={name} className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-lg font-bold text-neutral-600">
+              <div className="flex h-full w-full items-center justify-center text-lg font-bold text-neutral-600 dark:text-neutral-300">
                 {name.charAt(0)}
               </div>
             )}
@@ -38,15 +38,15 @@ export function EmployeeCard({
             />
           </div>
           <div>
-            <h4 className="font-semibold text-neutral-900">{name}</h4>
-            <p className="text-sm text-neutral-500">{role}</p>
+            <h4 className="font-semibold text-neutral-900 dark:text-white">{name}</h4>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">{role}</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
           {onEdit && (
             <button
               onClick={onEdit}
-              className="grid h-8 w-8 place-items-center rounded-lg text-neutral-400 transition hover:bg-neutral-100 hover:text-[#22c51f]"
+              className="grid h-8 w-8 place-items-center rounded-lg text-neutral-400 transition hover:bg-neutral-100 hover:text-[#22c51f] dark:hover:bg-neutral-800"
             >
               <Pencil size={14} />
             </button>
@@ -54,7 +54,7 @@ export function EmployeeCard({
           {onDelete && (
             <button
               onClick={onDelete}
-              className="grid h-8 w-8 place-items-center rounded-lg text-neutral-400 transition hover:bg-red-50 hover:text-red-500"
+              className="grid h-8 w-8 place-items-center rounded-lg text-neutral-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950"
             >
               <Trash2 size={14} />
             </button>
@@ -65,17 +65,17 @@ export function EmployeeCard({
       <div className="space-y-2.5 text-sm">
         <div>
           <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">Department</p>
-          <p className="text-neutral-800">{department}</p>
+          <p className="text-neutral-800 dark:text-neutral-200">{department}</p>
         </div>
         <div>
           <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">Hire date</p>
-          <p className="text-neutral-800">{hireDate}</p>
+          <p className="text-neutral-800 dark:text-neutral-200">{hireDate}</p>
         </div>
-        <div className="flex items-center gap-2 text-neutral-600">
+        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
           <Mail size={13} className="shrink-0 text-neutral-400" />
           <span className="truncate text-xs">{email}</span>
         </div>
-        <div className="flex items-center gap-2 text-neutral-600">
+        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
           <Phone size={13} className="shrink-0 text-neutral-400" />
           <span className="text-xs">{phone}</span>
         </div>

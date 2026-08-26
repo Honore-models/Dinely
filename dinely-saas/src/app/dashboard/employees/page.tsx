@@ -149,16 +149,15 @@ export default function EmployeesPage() {
 
       {loading ? (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
+          {Array.from({ length: 6 }).map((_, i) => (              <div
               key={i}
-              className="h-52 animate-pulse rounded-xl bg-neutral-100"
+              className="h-52 animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-800"
             />
           ))}
         </div>
       ) : employees.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center shadow-sm">
-          <p className="text-base font-semibold text-neutral-500">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400">
             No employees yet
           </p>
           <button
@@ -190,14 +189,14 @@ export default function EmployeesPage() {
       {/* Add / Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl">
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl dark:bg-neutral-900">
             <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4">
-              <h2 className="text-base font-bold text-neutral-900">
+              <h2 className="text-base font-bold text-neutral-900 dark:text-white">
                 {editing ? "Edit Employee" : "Add Employee"}
               </h2>
               <button
                 onClick={closeModal}
-                className="rounded-full p-1 hover:bg-neutral-100"
+                className="rounded-full p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
               >
                 <X size={18} />
               </button>
@@ -252,7 +251,7 @@ export default function EmployeesPage() {
                   },
                 ].map(({ label, field, placeholder, required }) => (
                   <label key={field} className="block">
-                    <span className="mb-1 block text-xs font-semibold text-neutral-600">
+                    <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">
                       {label}
                     </span>
                     <input
@@ -260,13 +259,13 @@ export default function EmployeesPage() {
                       onChange={set(field)}
                       placeholder={placeholder}
                       required={required}
-                      className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
+                      className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-[#22c555]"
                     />
                   </label>
                 ))}
                 <div className="sm:col-span-2">
                   <label className="block">
-                    <span className="mb-1 block text-xs font-semibold text-neutral-600">
+                    <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">
                       Notes
                     </span>
                     <textarea
@@ -274,7 +273,7 @@ export default function EmployeesPage() {
                       onChange={set("notes")}
                       rows={2}
                       placeholder="Optional notes about this employee…"
-                      className="w-full resize-none rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
+                      className="w-full resize-none rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-[#22c555]"
                     />
                   </label>
                 </div>
@@ -283,7 +282,7 @@ export default function EmployeesPage() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-xl border border-neutral-200 px-5 py-2.5 text-sm font-semibold text-neutral-600 hover:bg-neutral-50"
+                  className="rounded-xl border border-neutral-200 px-5 py-2.5 text-sm font-semibold text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
                 >
                   Cancel
                 </button>

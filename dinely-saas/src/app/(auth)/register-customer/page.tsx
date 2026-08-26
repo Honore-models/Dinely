@@ -28,23 +28,23 @@ export default function CustomerRegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-12 dark:bg-neutral-950">
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
           <DinelyLogo width={120} height={42} />
         </div>
 
-        <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm">
-          <h1 className="text-2xl font-extrabold text-neutral-900">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-white">
             Create your account
           </h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
             Join Dinely to explore and order from the best restaurants.
           </p>
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                 {error}
               </div>
             )}
@@ -106,7 +106,7 @@ export default function CustomerRegisterPage() {
             </Button>
           </form>
 
-          <p className="mt-5 text-center text-sm text-neutral-500">
+          <p className="mt-5 text-center text-sm text-neutral-500 dark:text-neutral-400">
             Already have an account?{" "}
             <Link
               href="/login"
@@ -116,11 +116,11 @@ export default function CustomerRegisterPage() {
             </Link>
           </p>
 
-          <p className="mt-3 text-center text-xs text-neutral-400">
+          <p className="mt-3 text-center text-xs text-neutral-400 dark:text-neutral-500">
             Want to list your restaurant?{" "}
             <Link
               href="/onboarding/step-1"
-              className="font-semibold text-neutral-600 hover:underline"
+              className="font-semibold text-neutral-600 hover:underline dark:text-neutral-300"
             >
               Register as owner
             </Link>

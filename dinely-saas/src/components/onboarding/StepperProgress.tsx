@@ -30,7 +30,7 @@ interface StepperProgressProps {
 export function StepperProgress({ currentStep }: StepperProgressProps) {
   return (
     <div className="h-full py-4 pl-4 pr-0">
-      <aside className="flex h-full flex-col justify-center rounded-2xl bg-green-50/40 px-7 py-8 shadow-md shadow-neutral-200">
+      <aside className="flex h-full flex-col justify-center rounded-2xl bg-green-50/40 px-7 py-8 shadow-md shadow-neutral-200 dark:bg-green-950/30 dark:shadow-neutral-900">
       <div className="space-y-5">
         {steps.map((step, index) => {
           const isActive = step.number === currentStep;
@@ -39,20 +39,20 @@ export function StepperProgress({ currentStep }: StepperProgressProps) {
           return (
             <div key={step.number} className="relative flex gap-4">
               {index < steps.length - 1 ? (
-                <div className="absolute left-[14px] top-9 h-[70px] w-px bg-green-200" />
+                <div className="absolute left-[14px] top-9 h-[70px] w-px bg-green-200 dark:bg-green-800" />
               ) : null}
               <div
                 className={`relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 text-sm font-bold ${
                   isCompleted || isActive
                     ? "border-[#22c51f] bg-[#22c51f] text-white"
-                    : "border-[#22c51f] bg-white text-[#22c51f]"
+                    : "border-[#22c51f] bg-white text-[#22c51f] dark:bg-neutral-900"
                 }`}
               >
                 {isCompleted ? <Check size={16} /> : step.number}
               </div>
               <div>
-                <h2 className={`text-xl font-bold ${isActive ? "text-black" : "text-neutral-950"}`}>{step.title}</h2>
-                <p className="mt-1.5 max-w-xs text-xs font-medium leading-snug text-neutral-600">{step.description}</p>
+                <h2 className={`text-xl font-bold ${isActive ? "text-black dark:text-white" : "text-neutral-950 dark:text-neutral-300"}`}>{step.title}</h2>
+                <p className="mt-1.5 max-w-xs text-xs font-medium leading-snug text-neutral-600 dark:text-neutral-400">{step.description}</p>
               </div>
             </div>
           );

@@ -38,6 +38,8 @@ create table if not exists restaurants (
   email               text not null default '',
   logo                text,
   description         text,
+  website             text,
+  capacity            text,
   plan                text not null default 'Professional',
   billing_cycle       text not null default 'monthly',
   stripe_customer_id  text,

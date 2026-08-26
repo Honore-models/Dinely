@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { NextRequest } from "next/server";
+import { supabase } from "@/lib/supabase";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "change-this-secret-in-production-min-32-chars",
@@ -51,7 +52,27 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
 export async function getSession(req: NextRequest): Promise<JWTPayload | null> {
   const token = req.cookies.get("dinely_token")?.value;
   if (!token) return null;
-  return verifyToken(token);
+  const session = await verifyToken(token);
+  if (!session) return null;
+
+  // If owner but restaurantId missing from token, look it up from DB
+  if (session.role === "owner" && !session.restaurantId) {
+    try {
+      const { data: user } = await supabase
+        .from("users")
+        .select("restaurant_id")
+        .eq("id", session.userId)
+        .single();
+
+      if (user?.restaurant_id) {
+        session.restaurantId = user.restaurant_id;
+      }
+    } catch {
+      // Ignore lookup errors — route will handle missing restaurantId
+    }
+  }
+
+  return session;
 }
 
 // ─── Cookie config ────────────────────────────────────────────────────────────

@@ -13,7 +13,7 @@ const offers = [
     expiresIn: "3 days",
     restaurant: "All Restaurants",
     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80",
-    bgColor: "from-green-50 to-emerald-50",
+    bgColor: "from-green-50 to-emerald-50 dark:from-green-950/40 dark:to-emerald-950/30",
     badgeColor: "bg-[#22c51f]",
   },
   {
@@ -24,7 +24,7 @@ const offers = [
     expiresIn: "7 days",
     restaurant: "Selected Restaurants",
     image: "https://images.unsplash.com/photo-1526367790999-0150786686a2?w=600&q=80",
-    bgColor: "from-amber-50 to-orange-50",
+    bgColor: "from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/30",
     badgeColor: "bg-amber-500",
   },
   {
@@ -35,7 +35,7 @@ const offers = [
     expiresIn: "6 hours",
     restaurant: "The Golden Plate",
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80",
-    bgColor: "from-red-50 to-pink-50",
+    bgColor: "from-red-50 to-pink-50 dark:from-red-950/40 dark:to-pink-950/30",
     badgeColor: "bg-red-500",
   },
   {
@@ -46,7 +46,7 @@ const offers = [
     expiresIn: "2 days",
     restaurant: "Sushi Palace",
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&q=80",
-    bgColor: "from-blue-50 to-indigo-50",
+    bgColor: "from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/30",
     badgeColor: "bg-blue-500",
   },
 ];
@@ -56,9 +56,9 @@ export default function OffersPage() {
     <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8">
       <div className="flex items-center gap-3">
         <Tag size={24} className="text-[#22c51f]" />
-        <h1 className="text-2xl font-extrabold text-neutral-900">Offers & Deals</h1>
+        <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-white">Offers & Deals</h1>
       </div>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
         Exclusive discounts and promotions just for you
       </p>
 
@@ -66,7 +66,7 @@ export default function OffersPage() {
         {offers.map((offer) => (
           <article
             key={offer.id}
-            className={`overflow-hidden rounded-2xl border border-neutral-100 bg-gradient-to-br ${offer.bgColor} shadow-sm`}
+            className={`overflow-hidden rounded-2xl border border-neutral-100 bg-gradient-to-br ${offer.bgColor} shadow-sm dark:border-neutral-800`}
           >
             <div className="flex gap-4 p-5">
               <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
@@ -84,23 +84,23 @@ export default function OffersPage() {
                 >
                   {offer.restaurant}
                 </span>
-                <h3 className="mt-1.5 text-sm font-bold text-neutral-900 leading-snug">
+                <h3 className="mt-1.5 text-sm font-bold text-neutral-900 dark:text-white leading-snug">
                   {offer.title}
                 </h3>
-                <p className="mt-1 text-xs text-neutral-500 line-clamp-2">
+                <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2">
                   {offer.description}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between border-t border-white/60 px-5 py-3">
+            <div className="flex items-center justify-between border-t border-white/60 dark:border-neutral-800/60 px-5 py-3">
               <div className="flex items-center gap-3">
-                <div className="rounded-lg border border-dashed border-neutral-300 bg-white px-3 py-1.5">
-                  <p className="text-xs font-bold tracking-widest text-neutral-700">
+                <div className="rounded-lg border border-dashed border-neutral-300 bg-white px-3 py-1.5 dark:border-neutral-600 dark:bg-neutral-800">
+                  <p className="text-xs font-bold tracking-widest text-neutral-700 dark:text-neutral-300">
                     {offer.code}
                   </p>
                 </div>
-                <span className="flex items-center gap-1 text-xs text-neutral-400">
+                <span className="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
                   <Clock size={11} />
                   Expires in {offer.expiresIn}
                 </span>

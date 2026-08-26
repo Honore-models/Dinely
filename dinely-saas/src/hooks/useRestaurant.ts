@@ -13,6 +13,8 @@ interface Restaurant {
   email: string;
   logo?: string;
   description?: string;
+  website?: string;
+  capacity?: string;
   plan: string;
   billing_cycle: string;
   subscription_status: string;
@@ -26,26 +28,47 @@ export function useRestaurant(restaurantId?: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+    let retries = 0;
+    const maxRetries = 2;
+
     const load = async () => {
       setLoading(true);
       setError(null);
       try {
+        let data: Record<string, unknown> | null = null;
         if (restaurantId) {
-          const { data } = await restaurantsApi.get(restaurantId);
-          setRestaurant(data as unknown as Restaurant);
+          const res = await restaurantsApi.get(restaurantId);
+          data = res.data as Record<string, unknown>;
         } else {
-          const { data } = await restaurantsApi.mine();
-          setRestaurant(data as unknown as Restaurant);
+          const res = await restaurantsApi.mine();
+          data = res.data as Record<string, unknown> | null;
+        }
+
+        if (!cancelled) {
+          if (data) {
+            setRestaurant(data as unknown as Restaurant);
+          } else if (retries < maxRetries) {
+            // Restaurant might not be linked yet — retry after a short delay
+            retries++;
+            setTimeout(load, 1500);
+            return;
+          } else {
+            setRestaurant(null);
+          }
         }
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load restaurant",
-        );
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Failed to load restaurant",
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     load();
+    return () => { cancelled = true; };
   }, [restaurantId]);
 
   const update = async (data: Partial<Restaurant>) => {

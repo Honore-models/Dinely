@@ -11,15 +11,17 @@ interface Client {
   email: string;
   phone: string;
   orderCount: number;
+  bookingCount: number;
+  reviewCount: number;
   totalSpent: number;
-  lastVisit: string | Date;
-  status: "active" | "new" | "inactive";
+  lastActivity: string | Date;
+  status: "loyal" | "active" | "new";
 }
 
 const STATUS_BADGE: Record<string, string> = {
+  loyal: "bg-purple-100 text-purple-700",
   active: "bg-emerald-100 text-emerald-700",
   new: "bg-amber-100 text-amber-700",
-  inactive: "bg-neutral-100 text-neutral-500",
 };
 
 const PAGE_SIZE = 10;
@@ -60,7 +62,7 @@ export function ClientsTable() {
   return (
     <>
       <section>
-        <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-neutral-100">
+        <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-neutral-100 dark:bg-neutral-900 dark:ring-neutral-800">
           <div className="mb-5 flex items-center gap-4">
             <div className="relative max-w-sm flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -72,17 +74,15 @@ export function ClientsTable() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-[#22c51f] focus:outline-none focus:ring-1 focus:ring-green-100"
+                className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-[#22c51f] focus:outline-none focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500"
               />
             </div>
           </div>
 
           {loading ? (
             <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-12 animate-pulse rounded-lg bg-neutral-100"
+              {Array.from({ length: 5 }).map((_, i) => (              <div key={i}
+                className="h-12 animate-pulse rounded-lg bg-neutral-100 dark:bg-neutral-800"
                 />
               ))}
             </div>
@@ -90,13 +90,13 @@ export function ClientsTable() {
             <div className="overflow-x-auto">
               <table className="w-full table-auto">
                 <thead>
-                  <tr className="text-xs font-semibold text-neutral-500 border-b border-neutral-100">
+                  <tr className="text-xs font-semibold text-neutral-500 border-b border-neutral-100 dark:border-neutral-800 dark:text-neutral-400">
                     <th className="py-3 px-3 text-left">Name</th>
                     <th className="py-3 px-3 text-left">Email</th>
-                    <th className="py-3 px-3 text-left">Phone</th>
                     <th className="py-3 px-3 text-left">Orders</th>
+                    <th className="py-3 px-3 text-left">Bookings</th>
+                    <th className="py-3 px-3 text-left">Reviews</th>
                     <th className="py-3 px-3 text-left">Spent</th>
-                    <th className="py-3 px-3 text-left">Last Visit</th>
                     <th className="py-3 px-3 text-left">Status</th>
                   </tr>
                 </thead>
@@ -107,7 +107,7 @@ export function ClientsTable() {
                         colSpan={7}
                         className="py-10 text-center text-neutral-400"
                       >
-                        No clients found
+                        No clients yet. Customers will appear here after they place an order, make a booking, or leave a review.
                       </td>
                     </tr>
                   ) : (
@@ -118,8 +118,8 @@ export function ClientsTable() {
                         .slice(0, 2)
                         .join("")
                         .toUpperCase();
-                      const lastVisit = c.lastVisit
-                        ? new Date(c.lastVisit).toLocaleDateString("en-US", {
+                      const lastVisit = c.lastActivity
+                        ? new Date(c.lastActivity).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
                             year: "numeric",
@@ -128,15 +128,15 @@ export function ClientsTable() {
                       return (
                         <tr
                           key={c.id}
-                          onClick={() => setSelected(c)}
-                          className="cursor-pointer hover:bg-neutral-50"
+                          onClick={() => window.location.href = `/dashboard/clients/${c.id}`}
+                          className="cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800"
                         >
                           <td className="py-3.5 px-3">
                             <div className="flex items-center gap-3">
                               <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#22c51f]/10 text-sm font-bold text-[#22c51f]">
                                 {initials}
                               </div>
-                              <span className="font-semibold text-neutral-900">
+                              <span className="font-semibold text-neutral-900 dark:text-white">
                                 {c.name}
                               </span>
                             </div>
@@ -145,22 +145,25 @@ export function ClientsTable() {
                             <a
                               href={`mailto:${c.email}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="text-neutral-600 hover:underline"
+                              className="text-neutral-600 hover:underline dark:text-neutral-400"
                             >
                               {c.email}
                             </a>
                           </td>
-                          <td className="py-3.5 px-3 text-neutral-600">
+                          <td className="py-3.5 px-3 text-neutral-600 dark:text-neutral-400">
                             {c.phone || "-"}
                           </td>
-                          <td className="py-3.5 px-3 font-semibold text-neutral-900">
+                          <td className="py-3.5 px-3 font-semibold text-neutral-900 dark:text-white">
                             {c.orderCount}
                           </td>
-                          <td className="py-3.5 px-3 font-semibold text-neutral-900">
+                          <td className="py-3.5 px-3 font-semibold text-neutral-900 dark:text-white">
                             ${c.totalSpent.toFixed(2)}
                           </td>
-                          <td className="py-3.5 px-3 text-neutral-500">
-                            {lastVisit}
+                          <td className="py-3.5 px-3 font-semibold text-neutral-900 dark:text-white">
+                            {c.bookingCount}
+                          </td>
+                          <td className="py-3.5 px-3 font-semibold text-neutral-900 dark:text-white">
+                            {c.reviewCount}
                           </td>
                           <td className="py-3.5 px-3">
                             <span
@@ -179,7 +182,7 @@ export function ClientsTable() {
           )}
 
           <div className="mt-5 flex items-center justify-between">
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
               {clients.length} client{clients.length !== 1 ? "s" : ""}
             </p>
             {totalPages > 1 && (

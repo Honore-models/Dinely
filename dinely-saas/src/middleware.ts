@@ -59,10 +59,6 @@ export async function middleware(req: NextRequest) {
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
-    // Owners accidentally hitting customer routes → send to dashboard
-    if (session.role === "owner") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
   }
 
   // ── Auth pages: redirect already-logged-in users away ────────────────────

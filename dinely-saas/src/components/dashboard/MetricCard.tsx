@@ -34,14 +34,14 @@ export function MetricCard({
 
   return (
     <DashboardCard className="flex h-full flex-col justify-between" padding="lg">
-      <p className="text-sm font-semibold text-neutral-500">{title}</p>
-      <p className="mt-3 text-3xl font-bold tracking-tight text-neutral-900 lg:text-[2rem]">
+      <p className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">{title}</p>
+      <p className="mt-3 text-3xl font-bold tracking-tight text-neutral-900 dark:text-white lg:text-[2rem]">
         {value}
       </p>
       <p className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-[#22c51f]">
         <TrendingUp size={15} />
         <span>↑ {change}%</span>
-        <span className="font-medium text-neutral-400">{changeLabel}</span>
+        <span className="font-medium text-neutral-400 dark:text-neutral-500">{changeLabel}</span>
       </p>
     </DashboardCard>
   );

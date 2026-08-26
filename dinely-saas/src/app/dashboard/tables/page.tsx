@@ -125,9 +125,9 @@ export default function TablesPage() {
           { label: "Occupied", value: stats.occupied, color: "text-blue-600" },
           { label: "Reserved", value: stats.reserved, color: "text-amber-600" },
         ].map(({ label, value, color }) => (
-          <div key={label} className="rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm text-center">
-            <p className={`text-2xl font-bold ${color}`}>{value}</p>
-            <p className="mt-0.5 text-xs font-semibold text-neutral-500">{label}</p>
+          <div key={label} className="rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm text-center dark:border-neutral-800 dark:bg-neutral-900">
+            <p className={`text-2xl font-bold ${color} dark:text-white`}>{value}</p>
+            <p className="mt-0.5 text-xs font-semibold text-neutral-500 dark:text-neutral-400">{label}</p>
           </div>
         ))}
       </div>
@@ -135,12 +135,12 @@ export default function TablesPage() {
       {loading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-32 animate-pulse rounded-2xl bg-neutral-100" />
+            <div key={i} className="h-32 animate-pulse rounded-2xl bg-neutral-100 dark:bg-neutral-800" />
           ))}
         </div>
       ) : tables.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center">
-          <p className="text-base font-semibold text-neutral-500">No tables yet</p>
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center dark:border-neutral-800 dark:bg-neutral-900">
+          <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400">No tables yet</p>
           <button onClick={openAdd} className="mt-4 rounded-full bg-[#22c51f] px-6 py-2 text-sm font-bold text-white hover:bg-[#1bad1a]">
             Add your first table
           </button>
@@ -148,14 +148,14 @@ export default function TablesPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {tables.map((table) => (
-            <div key={table.id} className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm transition hover:shadow-md">
+            <div key={table.id} className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-lg font-bold text-neutral-900">Table #{table.number}</p>
-                  <p className="text-xs text-neutral-500">{table.capacity} seats{table.location ? ` · ${table.location}` : ""}</p>
+                  <p className="text-lg font-bold text-neutral-900 dark:text-white">Table #{table.number}</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">{table.capacity} seats{table.location ? ` · ${table.location}` : ""}</p>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => openEdit(table)} className="grid h-7 w-7 place-items-center rounded-lg text-neutral-400 hover:bg-neutral-100 hover:text-[#22c51f]">
+                  <button onClick={() => openEdit(table)} className="grid h-7 w-7 place-items-center rounded-lg text-neutral-400 hover:bg-neutral-100 hover:text-[#22c51f] dark:hover:bg-neutral-800">
                     <Pencil size={13} />
                   </button>
                   <button onClick={() => handleDelete(table.id)} className="grid h-7 w-7 place-items-center rounded-lg text-neutral-400 hover:bg-red-50 hover:text-red-500">
@@ -172,7 +172,7 @@ export default function TablesPage() {
                 {(table.status === "available" || table.status === "occupied") && (
                   <button
                     onClick={() => toggleStatus(table)}
-                    className="rounded-lg border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
+                    className="rounded-lg border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
                   >
                     {table.status === "available" ? "Mark Occupied" : "Mark Free"}
                   </button>
@@ -186,33 +186,33 @@ export default function TablesPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
+          <div className="w-full max-w-md rounded-2xl bg-white shadow-xl dark:bg-neutral-900">
             <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4">
-              <h2 className="text-base font-bold text-neutral-900">{editing ? "Edit Table" : "Add Table"}</h2>
-              <button onClick={closeModal} className="rounded-full p-1 hover:bg-neutral-100"><X size={18} /></button>
+              <h2 className="text-base font-bold text-neutral-900 dark:text-white">{editing ? "Edit Table" : "Add Table"}</h2>
+              <button onClick={closeModal} className="rounded-full p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"><X size={18} /></button>
             </div>
             <form onSubmit={handleSave} className="p-6 space-y-4">
               {error && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
               <div className="grid grid-cols-2 gap-4">
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold text-neutral-600">Table Number</span>
+                  <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Table Number</span>
                   <input type="number" min="1" required value={form.number} onChange={set("number")}
-                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f]" />
+                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-[#22c555]" />
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold text-neutral-600">Capacity (seats)</span>
+                  <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Capacity (seats)</span>
                   <input type="number" min="1" required value={form.capacity} onChange={set("capacity")}
-                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f]" />
+                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-[#22c555]" />
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold text-neutral-600">Location</span>
+                  <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Location</span>
                   <input value={form.location} onChange={set("location")} placeholder="e.g. Main Hall, Terrace"
-                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f]" />
+                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-[#22c555]" />
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold text-neutral-600">Status</span>
+                  <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Status</span>
                   <select value={form.status} onChange={set("status")}
-                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f]">
+                    className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-[#22c555]">
                     <option value="available">Available</option>
                     <option value="occupied">Occupied</option>
                     <option value="reserved">Reserved</option>
@@ -221,7 +221,7 @@ export default function TablesPage() {
                 </label>
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={closeModal} className="rounded-xl border border-neutral-200 px-5 py-2.5 text-sm font-semibold text-neutral-600 hover:bg-neutral-50">Cancel</button>
+                <button type="button" onClick={closeModal} className="rounded-xl border border-neutral-200 px-5 py-2.5 text-sm font-semibold text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800">Cancel</button>
                 <button type="submit" disabled={saving}
                   className="flex items-center gap-2 rounded-xl bg-[#22c51f] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1bad1a] disabled:opacity-60">
                   {saving && <Loader2 size={14} className="animate-spin" />}

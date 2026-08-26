@@ -142,7 +142,7 @@ export function OrdersTable() {
 
   return (
     <section>
-      <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-neutral-100">
+      <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-neutral-100 dark:bg-neutral-900 dark:ring-neutral-800">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="relative max-w-sm flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -151,28 +151,26 @@ export function OrdersTable() {
               placeholder="Search by ID or customer…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-500 focus:border-[#22c51f] focus:outline-none focus:ring-1 focus:ring-green-100"
+              className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-500 focus:border-[#22c51f] focus:outline-none focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-[#22c555]"
             />
           </div>
-          <button className="flex items-center gap-2 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800">
+          <button className="flex items-center gap-2 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800 dark:bg-neutral-700 dark:hover:bg-neutral-600">
             <Download size={15} /> Export
           </button>
         </div>
 
         {loading ? (
           <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-14 animate-pulse rounded-lg bg-neutral-100"
+            {Array.from({ length: 5 }).map((_, i) => (              <div key={i}
+                className="h-14 animate-pulse rounded-lg bg-neutral-100 dark:bg-neutral-800"
               />
             ))}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="border-b border-neutral-200">
-                <tr className="text-xs font-semibold text-neutral-500">
+              <thead className="border-b border-neutral-200 dark:border-neutral-700">
+                <tr className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
                   <th className="px-4 py-3 text-left">Order ID</th>
                   <th className="px-4 py-3 text-left">Customer</th>
                   <th className="px-4 py-3 text-left">Items</th>
@@ -217,18 +215,18 @@ export function OrdersTable() {
                         onClick={() =>
                           router.push(`/dashboard/orders/${order.id}`)
                         }
-                        className="cursor-pointer transition hover:bg-neutral-50"
+                        className="cursor-pointer transition hover:bg-neutral-50 dark:hover:bg-neutral-800"
                       >
-                        <td className="px-4 py-4 text-sm font-semibold text-neutral-900">
+                        <td className="px-4 py-4 text-sm font-semibold text-neutral-900 dark:text-white">
                           #{order.id.slice(-6).toUpperCase()}
                         </td>
-                        <td className="px-4 py-4 text-sm text-neutral-700">
+                        <td className="px-4 py-4 text-sm text-neutral-700 dark:text-neutral-300">
                           {order.customer_name}
                         </td>
-                        <td className="px-4 py-4 text-sm text-neutral-700">
+                        <td className="px-4 py-4 text-sm text-neutral-700 dark:text-neutral-300">
                           {order.items.map((item, i) => (
                             <div key={i}>
-                              <span className="font-semibold text-neutral-900">
+                              <span className="font-semibold text-neutral-900 dark:text-white">
                                 {item.quantity}× {item.name}
                               </span>
                             </div>
@@ -248,15 +246,15 @@ export function OrdersTable() {
                                 className="text-neutral-400"
                               />
                             )}
-                            <span className="text-neutral-700">
+                            <span className="text-neutral-700 dark:text-neutral-300">
                               {order.type}
                             </span>
                           </div>
                         </td>
-                        <td className="px-4 py-4 text-sm font-semibold text-neutral-900">
+                        <td className="px-4 py-4 text-sm font-semibold text-neutral-900 dark:text-white">
                           ${order.total.toFixed(2)}
                         </td>
-                        <td className="px-4 py-4 text-xs text-neutral-500">
+                        <td className="px-4 py-4 text-xs text-neutral-500 dark:text-neutral-400">
                           <span>{time}</span>
                           <br />
                           <span>{date}</span>
@@ -288,7 +286,7 @@ export function OrdersTable() {
                               </button>
                               {actionMenuId === order.id && (
                                 <div
-                                  className="absolute right-0 top-8 z-20 w-44 rounded-xl border border-neutral-200 bg-white py-1.5 shadow-lg"
+                                  className="absolute right-0 top-8 z-20 w-44 rounded-xl border border-neutral-200 bg-white py-1.5 shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {actions.map((action) => (
@@ -300,7 +298,7 @@ export function OrdersTable() {
                                           action.value,
                                         )
                                       }
-                                      className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+                                      className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700"
                                     >
                                       <action.icon
                                         size={14}
@@ -326,7 +324,7 @@ export function OrdersTable() {
         )}
 
         <div className="mt-5 flex items-center justify-between">
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
             {Math.min((page - 1) * PAGE_SIZE + 1, total)}–
             {Math.min(page * PAGE_SIZE, total)} of {total}
           </p>
@@ -334,7 +332,7 @@ export function OrdersTable() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40"
+              className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
             >
               <ChevronLeft size={14} />
             </button>
@@ -348,7 +346,7 @@ export function OrdersTable() {
                 className={`h-7 w-7 rounded text-xs font-semibold ${
                   p === page
                     ? "bg-[#22c51f] text-white"
-                    : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                    : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
                 }`}
               >
                 {p}
@@ -357,7 +355,7 @@ export function OrdersTable() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40"
+              className="grid h-7 w-7 place-items-center rounded border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-40 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
             >
               <ChevronRight size={14} />
             </button>

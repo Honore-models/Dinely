@@ -35,6 +35,8 @@ const restaurantSchema = z.object({
     .string()
     .max(500, "Description must be under 500 characters")
     .optional(),
+  website: z.string().optional(),
+  capacity: z.string().optional(),
 });
 
 type RestaurantFormValues = z.infer<typeof restaurantSchema>;
@@ -107,24 +109,26 @@ export function RestaurantInfoForm() {
       ...values,
       logo: values.logo || "",
       description: values.description || "",
+      website: values.website || "",
+      capacity: values.capacity || "",
     });
     router.push("/onboarding/step-3");
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6" noValidate>
-      <p className="text-sm font-bold text-neutral-400">Step 2 of 4</p>
-      <h1 className="mt-2 text-2xl font-extrabold text-neutral-900">
+      <p className="text-sm font-bold text-neutral-400 dark:text-neutral-500">Step 2 of 4</p>
+      <h1 className="mt-2 text-2xl font-extrabold text-neutral-900 dark:text-white">
         Tell Us About Your Restaurant
       </h1>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
         Add your restaurant details so we can set up your profile and help you
         start managing your business.
       </p>
-      <div className="mt-4 h-px bg-neutral-100" />
+      <div className="mt-4 h-px bg-neutral-100 dark:bg-neutral-800" />
 
       {Object.keys(errors).length > 0 && (
-        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
           Please fix the errors below before continuing.
         </div>
       )}
@@ -140,14 +144,14 @@ export function RestaurantInfoForm() {
 
         {/* Styled Select */}
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-neutral-700">
+          <span className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Cuisine Type
           </span>
           <span className="relative block">
             <select
-              className={`h-12 w-full appearance-none rounded-lg border bg-neutral-50/50 px-4 pr-10 text-sm text-neutral-700 outline-none transition focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80 ${
+              className={`h-12 w-full appearance-none rounded-lg border bg-neutral-50/50 px-4 pr-10 text-sm text-neutral-700 outline-none transition focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:bg-neutral-900 dark:focus:ring-green-900 ${
                 errors.type
-                  ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-100 dark:border-red-700 dark:focus:ring-red-900"
                   : "border-neutral-200"
               }`}
               {...register("type")}
@@ -165,7 +169,7 @@ export function RestaurantInfoForm() {
             />
           </span>
           {errors.type?.message && (
-            <span className="mt-1 block text-xs text-red-500">
+            <span className="mt-1 block text-xs text-red-500 dark:text-red-400">
               {errors.type.message}
             </span>
           )}
@@ -208,29 +212,43 @@ export function RestaurantInfoForm() {
           {...register("email")}
         />
 
+        <Input
+          label="Website"
+          placeholder="https://yourrestaurant.com"
+          error={errors.website?.message}
+          {...register("website")}
+        />
+
+        <Input
+          label="Seating Capacity"
+          placeholder="e.g. 50 seats"
+          error={errors.capacity?.message}
+          {...register("capacity")}
+        />
+
         {/* Styled Textarea */}
         <div className="md:col-span-2">
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-neutral-700">
-              Description <span className="text-neutral-400">(optional)</span>
+            <span className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Description <span className="text-neutral-400 dark:text-neutral-500">(optional)</span>
             </span>
             <textarea
               placeholder="Tell customers what makes your restaurant special..."
               rows={3}
               maxLength={500}
-              className={`w-full resize-none rounded-lg border bg-neutral-50/50 px-4 py-3 text-sm text-neutral-700 outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80 ${
+              className={`w-full resize-none rounded-lg border bg-neutral-50/50 px-4 py-3 text-sm text-neutral-700 outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:bg-neutral-900 dark:focus:ring-green-900 ${
                 errors.description
-                  ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-100 dark:border-red-700 dark:focus:ring-red-900"
                   : "border-neutral-200"
               }`}
               {...register("description")}
             />
-            <span className="mt-1 block text-right text-xs text-neutral-400">
+            <span className="mt-1 block text-right text-xs text-neutral-400 dark:text-neutral-500">
               {description.length}/500
             </span>
           </label>
           {errors.description?.message && (
-            <span className="mt-1 block text-xs text-red-500">
+            <span className="mt-1 block text-xs text-red-500 dark:text-red-400">
               {errors.description.message}
             </span>
           )}
@@ -238,7 +256,7 @@ export function RestaurantInfoForm() {
       </div>
 
       {/* Logo upload */}
-      <label className="mt-5 grid min-h-[120px] cursor-pointer place-items-center rounded-xl border-2 border-dashed border-green-200 bg-green-50/20 text-center transition hover:bg-green-50">
+      <label className="mt-5 grid min-h-[120px] cursor-pointer place-items-center rounded-xl border-2 border-dashed border-green-200 bg-green-50/20 text-center transition hover:bg-green-50 dark:border-green-900 dark:bg-green-950/20 dark:hover:bg-green-950/40">
         <input
           type="file"
           className="sr-only"
@@ -252,19 +270,19 @@ export function RestaurantInfoForm() {
             <img
               src={logoPreview}
               alt="Logo preview"
-              className="mx-auto mb-2 h-16 w-16 rounded-xl object-cover ring-2 ring-green-200"
+              className="mx-auto mb-2 h-16 w-16 rounded-xl object-cover ring-2 ring-green-200 dark:ring-green-800"
             />
           ) : (
             <Upload className="text-[#22c51f]" size={22} />
           )}
-          <span className="mt-1 block text-sm font-bold text-neutral-700">
+          <span className="mt-1 block text-sm font-bold text-neutral-700 dark:text-neutral-300">
             {uploading
               ? "Uploading…"
               : logoPreview
                 ? "Click to change logo"
                 : "Upload your restaurant logo"}
           </span>
-          <span className="mt-1 block text-xs text-neutral-400">
+          <span className="mt-1 block text-xs text-neutral-400 dark:text-neutral-500">
             Max 5 MB · JPEG, PNG, WebP
           </span>
         </span>

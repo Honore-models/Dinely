@@ -59,12 +59,12 @@ export function RatingReviews() {
       />
 
       {loading ? (
-        <div className="mt-4 h-32 animate-pulse rounded-xl bg-neutral-100" />
+        <div className="mt-4 h-32 animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-800" />
       ) : (
         <>
           <div className="mt-4 flex items-center gap-4">
             <div className="text-center">
-              <p className="text-4xl font-bold text-neutral-900">
+              <p className="text-4xl font-bold text-neutral-900 dark:text-white">
                 {avg > 0 ? avg.toFixed(1) : "-"}
               </p>
               <div className="mt-1 flex justify-center gap-0.5">
@@ -84,20 +84,20 @@ export function RatingReviews() {
             <div className="min-w-0 flex-1 space-y-1.5">
               {(data?.starBreakdown ?? []).map((row) => (
                 <div key={row.stars} className="flex items-center gap-2">
-                  <span className="w-3 text-xs font-bold text-neutral-500">
+                  <span className="w-3 text-xs font-bold text-neutral-500 dark:text-neutral-400">
                     {row.stars}
                   </span>
                   <Star
                     size={10}
                     className="shrink-0 fill-amber-400 text-amber-400"
                   />
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-700">
                     <div
                       className="h-full rounded-full bg-amber-400 transition-all"
                       style={{ width: `${row.pct}%` }}
                     />
                   </div>
-                  <span className="w-8 text-right text-xs font-semibold text-neutral-400">
+                  <span className="w-8 text-right text-xs font-semibold text-neutral-400 dark:text-neutral-500">
                     {row.pct}%
                   </span>
                 </div>
@@ -107,19 +107,19 @@ export function RatingReviews() {
 
           {data && data.total > 0 && (
             <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-xl bg-green-50 p-3 text-center">
-                <p className="text-lg font-bold text-[#22c51f]">
+              <div className="rounded-xl bg-green-50 p-3 text-center dark:bg-green-950/50">
+                <p className="text-lg font-bold text-[#22c51f] dark:text-green-400">
                   {positivePct}%
                 </p>
-                <p className="text-xs font-semibold text-neutral-500">
+                <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
                   Positive
                 </p>
               </div>
-              <div className="rounded-xl bg-red-50 p-3 text-center">
-                <p className="text-lg font-bold text-red-500">
+              <div className="rounded-xl bg-red-50 p-3 text-center dark:bg-red-950/50">
+                <p className="text-lg font-bold text-red-500 dark:text-red-400">
                   {100 - positivePct}%
                 </p>
-                <p className="text-xs font-semibold text-neutral-500">
+                <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
                   Negative
                 </p>
               </div>
