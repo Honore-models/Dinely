@@ -9,16 +9,12 @@ import {
   CreditCard,
   LockKeyhole,
   ShieldCheck,
-  User,
-  Building2,
-  MapPin,
   Loader2,
   Check,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
 import { useOnboardingStore, type PlanName } from "@/store/onboardingStore";
-import { VisaIcon, MastercardIcon, AmexIcon } from "../ui/Icons";
 import { restaurantsApi, paymentsApi, authApi } from "@/lib/api";
 
 const planPrices: Record<PlanName, { monthly: number; yearly: number }> = {
@@ -52,7 +48,7 @@ const planFeatures: Record<PlanName, string[]> = {
   ],
 };
 
-type SetupStep = "payment" | "registering" | "creating" | "done" | "error";
+type SetupStep = "payment" | "registering" | "creating" | "processing" | "done" | "error";
 
 export function PaymentForm() {
   const router = useRouter();
@@ -66,42 +62,7 @@ export function PaymentForm() {
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<SetupStep>("payment");
 
-  // Payment form state
-  const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvc, setCardCvc] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [zip, setZip] = useState("");
-
-  const formatCardNumber = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 16);
-    return digits.replace(/(\d{4})(?=\d)/g, "$1 ");
-  };
-
-  const formatExpiry = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 4);
-    if (digits.length >= 3) {
-      return digits.slice(0, 2) + "/" + digits.slice(2);
-    }
-    return digits;
-  };
-
-  // Card validation
-  const cardDigits = cardNumber.replace(/\s/g, "");
-  const isCardValid =
-    cardDigits.length >= 15 && cardExpiry.length >= 4 && cardCvc.length >= 3;
-
   const handleActivate = async () => {
-    if (!isCardValid) {
-      setError(
-        "Please fill in all payment details (card number, expiry, and CVC).",
-      );
-      setStep("error");
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
@@ -125,21 +86,23 @@ export function PaymentForm() {
         billingCycle,
       });
 
-      // Step 3: Try Stripe Checkout (optional - skip if not configured)
+      // Step 3: Create Stripe Checkout session and redirect
+      setStep("processing");
       try {
         const { url } = await paymentsApi.createCheckout(
           selectedPlan,
           billingCycle,
         );
         if (url) {
+          // Redirect to Stripe's secure checkout page
           window.location.href = url;
           return;
         }
       } catch {
-        // Stripe not configured - go straight to dashboard
+        // Stripe not configured — proceed without payment
       }
 
-      // Done - redirect to dashboard
+      // If Stripe not available, go straight to dashboard
       setStep("done");
       setTimeout(() => {
         router.push("/dashboard");
@@ -178,19 +141,38 @@ export function PaymentForm() {
         Complete Your Setup
       </h1>
       <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-        Confirm your plan and add payment details to activate your restaurant
-        account.
+        Confirm your plan and activate your restaurant account.
       </p>
       <div className="mt-4 h-px bg-neutral-100 dark:bg-neutral-800" />
 
-      {/* Loading overlay */}
-      {(step === "registering" || step === "creating") && (
-        <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400">
-          <div className="flex items-center gap-2">
-            <Loader2 size={16} className="animate-spin" />
-            {step === "registering"
-              ? "Creating your account..."
-              : "Setting up your restaurant..."}
+      {/* Status steps */}
+      {(step === "registering" || step === "creating" || step === "processing") && (
+        <div className="mt-4 space-y-2">
+          <div className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm ${step === "registering" ? "border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400" : "text-neutral-400"}`}>
+            {step === "registering" ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <CheckCircle2 size={16} className="text-green-500" />
+            )}
+            Creating your account...
+          </div>
+          <div className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm ${step === "creating" ? "border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400" : step === "processing" ? "text-neutral-400" : "text-neutral-300"}`}>
+            {step === "creating" ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : step === "processing" ? (
+              <CheckCircle2 size={16} className="text-green-500" />
+            ) : (
+              <div className="h-4 w-4 rounded-full border-2 border-neutral-200" />
+            )}
+            Setting up your restaurant...
+          </div>
+          <div className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm ${step === "processing" ? "border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400" : "text-neutral-300"}`}>
+            {step === "processing" ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <div className="h-4 w-4 rounded-full border-2 border-neutral-200" />
+            )}
+            Redirecting to secure payment...
           </div>
         </div>
       )}
@@ -213,157 +195,104 @@ export function PaymentForm() {
       )}
 
       <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_320px]">
-        {/* Payment form */}
+        {/* Payment info */}
         <div className="max-w-lg">
           <h2 className="flex items-center gap-2 text-base font-bold text-neutral-700 dark:text-neutral-300">
             <CreditCard size={18} className="text-[#22c51f]" />
-            Payment Details
+            Payment
           </h2>
 
-          <div className="mt-4 space-y-3">
-            <Input
-              label="Cardholder Name"
-              placeholder="Name on card"
-              icon={<User size={16} />}
-              value={cardName}
-              onChange={(e) => setCardName(e.target.value)}
-            />
-            <label className="block">
-              <span className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                Card Number
+          <div className="mt-4 space-y-4">
+            {/* Security badge */}
+            <div className="flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/50">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#22c51f]">
+                <ShieldCheck size={20} className="text-white" />
               </span>
-              <div className="relative">
-                <CreditCard
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
-                  size={16}
-                />
-                <input
-                  className="h-12 w-full rounded-lg border border-neutral-200 bg-neutral-50/50 pl-10 pr-32 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:bg-neutral-900 dark:focus:ring-green-900"
-                  placeholder="1234 1234 1234 1234"
-                  value={cardNumber}
-                  onChange={(e) =>
-                    setCardNumber(formatCardNumber(e.target.value))
-                  }
-                  maxLength={19}
-                />
-                <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1.5">
-                  <AmexIcon className="h-5 w-[28px]" />
-                  <VisaIcon className="h-5 w-[28px]" />
-                  <MastercardIcon className="h-5 w-[36px]" />
-                </div>
+              <div>
+                <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                  Secure Payment by Stripe
+                </p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Your payment is processed securely by Stripe. We never store your card details.
+                </p>
               </div>
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                label="Expiry"
-                placeholder="MM/YY"
-                value={cardExpiry}
-                onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
-                maxLength={5}
-              />
-              <Input
-                label="CVC"
-                placeholder="123"
-                value={cardCvc}
-                onChange={(e) =>
-                  setCardCvc(e.target.value.replace(/\D/g, "").slice(0, 4))
-                }
-                maxLength={4}
-              />
             </div>
-            {/* Billing Address */}
-            <div className="pt-2">
-              <h3 className="mb-3 text-sm font-bold text-neutral-700 dark:text-neutral-300">
-                Billing Address
+
+            {/* How it works */}
+            <div className="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-800">
+              <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
+                How payment works
               </h3>
-              <div className="space-y-3">
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                    Country
+              <ol className="mt-3 space-y-3">
+                <li className="flex items-start gap-3">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-green-100 text-xs font-bold text-[#22c51f] dark:bg-green-900">
+                    1
                   </span>
-                  <div className="relative">
-                    <MapPin
-                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
-                      size={16}
-                    />
-                    <select
-                      className="h-12 w-full appearance-none rounded-lg border border-neutral-200 bg-neutral-50/50 pl-10 pr-10 text-sm text-neutral-700 outline-none transition focus:border-[#22c51f] focus:bg-white focus:ring-2 focus:ring-green-100/80 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:bg-neutral-900 dark:focus:ring-green-900"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                    >
-                      <option value="">Select country</option>
-                      <option value="RW">Rwanda</option>
-                      <option value="KE">Kenya</option>
-                      <option value="UG">Uganda</option>
-                      <option value="TZ">Tanzania</option>
-                      <option value="CD">Congo (DRC)</option>
-                      <option value="BI">Burundi</option>
-                      <option value="SS">South Sudan</option>
-                      <option value="US">United States</option>
-                      <option value="GB">United Kingdom</option>
-                      <option value="CA">Canada</option>
-                      <option value="DE">Germany</option>
-                      <option value="FR">France</option>
-                      <option value="ZA">South Africa</option>
-                      <option value="NG">Nigeria</option>
-                      <option value="AE">UAE</option>
-                    </select>
+                  <div>
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-white">
+                      Click &ldquo;Activate Subscription&rdquo;
+                    </p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      You&apos;ll be redirected to Stripe&apos;s secure checkout page
+                    </p>
                   </div>
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <Input
-                    label="City"
-                    placeholder="Kigali"
-                    icon={<Building2 size={16} />}
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                  />
-                  <Input
-                    label="ZIP / Postal Code"
-                    placeholder="00000"
-                    icon={<MapPin size={16} />}
-                    value={zip}
-                    onChange={(e) => setZip(e.target.value)}
-                  />
-                </div>
-              </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-green-100 text-xs font-bold text-[#22c51f] dark:bg-green-900">
+                    2
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-white">
+                      Enter your card details
+                    </p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      Pay securely with credit/debit card on Stripe&apos;s page
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-green-100 text-xs font-bold text-[#22c51f] dark:bg-green-900">
+                    3
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-white">
+                      Start managing your restaurant
+                    </p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      You&apos;ll be redirected back to your dashboard
+                    </p>
+                  </div>
+                </li>
+              </ol>
             </div>
-            {/* Security notice */}
-            <div className="flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 p-3 dark:border-green-900 dark:bg-green-950/50">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#22c51f]">
-                <ShieldCheck size={18} className="text-white" />
-              </span>
-              <p className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
-                Your payment is secure and encrypted. You will only be charged
-                after confirmation.
-              </p>
-            </div>{" "}
+
             <Button
               type="button"
               size="lg"
               className="w-full"
               onClick={handleActivate}
-              disabled={
-                loading || step === "registering" || step === "creating"
+              loading={loading || step === "registering" || step === "creating" || step === "processing"}
+              loadingText={
+                step === "registering"
+                  ? "Creating account..."
+                  : step === "creating"
+                    ? "Setting up restaurant..."
+                    : step === "processing"
+                      ? "Redirecting to Stripe..."
+                      : "Processing..."
               }
             >
-              {loading || step === "registering" || step === "creating" ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  Setting up...
-                </>
-              ) : (
-                <>
-                  <LockKeyhole size={18} />
-                  Activate Subscription
-                </>
-              )}
+              <LockKeyhole size={18} />
+              Activate Subscription
             </Button>
+
+            <div className="flex items-center justify-center gap-2 text-xs text-neutral-400 dark:text-neutral-500">
+              <ExternalLink size={12} />
+              <span>Powered by Stripe</span>
+            </div>
+
             <p className="flex items-start gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
-              <ShieldCheck
-                className="mt-0.5 shrink-0 text-[#22c51f]"
-                size={14}
-              />{" "}
+              <ShieldCheck className="mt-0.5 shrink-0 text-[#22c51f]" size={14} />{" "}
               By proceeding, you agree to our{" "}
               <Link href="/privacy" className="font-semibold text-[#22c51f]">
                 Terms of Service
