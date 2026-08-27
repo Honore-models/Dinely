@@ -188,9 +188,10 @@ export function OwnerInfoForm() {
         <Button
           type="submit"
           size="lg"
-          disabled={isSubmitting}
+          loading={isSubmitting}
+          loadingText="Creating account..."
         >
-          {isSubmitting ? "Creating account..." : "Next Step"}
+          Next Step
         </Button>
       </div>
     </form>

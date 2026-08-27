@@ -1,125 +1,76 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Mail, LockKeyhole, User, UtensilsCrossed } from "lucide-react";
-import { AuthFormPanel } from "@/components/auth/AuthFormPanel";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { User, UtensilsCrossed } from "lucide-react";
+import { DinelyLogo } from "@/components/brand/DinelyLogo";
 
 export default function RegisterPage() {
-  const { registerCustomer, loading, error } = useAuth();
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    password: "",
-  });
-
-  const set =
-    (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await registerCustomer(form);
-  };
+  const router = useRouter();
 
   return (
-    <AuthFormPanel
-      wide
-      title="Create your account"
-      subtitle="Join Dinely to explore and order from the best restaurants."
-      footer={
-        <div className="space-y-2 text-center">
-          <p className="text-xs text-neutral-600 sm:text-sm">
+    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-12 dark:bg-neutral-950">
+      <div className="w-full max-w-md">
+        <div className="mb-8 flex justify-center">
+          <DinelyLogo width={120} height={42} />
+        </div>
+
+        <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <h1 className="text-center text-2xl font-extrabold text-neutral-900 dark:text-white">
+            Join Dinely
+          </h1>
+          <p className="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400">
+            Choose how you want to use Dinely
+          </p>
+
+          <div className="mt-8 space-y-4">
+            {/* Customer option */}
+            <button
+              type="button"
+              onClick={() => router.push("/register-customer")}
+              className="group flex w-full items-center gap-4 rounded-2xl border-2 border-neutral-200 bg-white p-5 text-left transition-all hover:border-[#22c51f] hover:bg-green-50/30 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-[#22c555]"
+            >
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-green-100 to-emerald-100 transition group-hover:from-green-200 group-hover:to-emerald-200 dark:from-green-900 dark:to-emerald-900">
+                <User size={24} className="text-[#22c51f] dark:text-green-400" />
+              </div>
+              <div>
+                <p className="text-base font-bold text-neutral-900 dark:text-white">
+                  I&apos;m a Customer
+                </p>
+                <p className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">
+                  Explore restaurants, order food, and make reservations
+                </p>
+              </div>
+            </button>
+
+            {/* Owner option */}
+            <button
+              type="button"
+              onClick={() => router.push("/onboarding/step-1")}
+              className="group flex w-full items-center gap-4 rounded-2xl border-2 border-neutral-200 bg-white p-5 text-left transition-all hover:border-[#22c51f] hover:bg-green-50/30 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-[#22c555]"
+            >
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 transition group-hover:from-amber-200 group-hover:to-orange-200 dark:from-amber-900 dark:to-orange-900">
+                <UtensilsCrossed size={24} className="text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <p className="text-base font-bold text-neutral-900 dark:text-white">
+                  I&apos;m a Restaurant Owner
+                </p>
+                <p className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">
+                  Manage your restaurant, menu, orders, and bookings
+                </p>
+              </div>
+            </button>
+          </div>
+
+          <p className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
             Already have an account?{" "}
             <Link href="/login" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
               Sign in
             </Link>
           </p>
-          <p className="text-xs text-neutral-600 sm:text-sm">
-            Own a restaurant?{" "}
-            <Link
-              href="/onboarding/step-1"
-              className="inline-flex items-center gap-1 font-semibold text-neutral-700 hover:text-neutral-900"
-            >
-              <UtensilsCrossed size={13} />
-              Register as owner
-            </Link>
-          </p>
         </div>
-      }
-    >
-      <form className="grid grid-cols-2 gap-x-3 gap-y-3" onSubmit={handleSubmit}>
-        {error && (
-          <div className="col-span-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
-        <Input
-          size="compact"
-          label="First name"
-          placeholder="Robert"
-          icon={<User size={16} />}
-          value={form.firstName}
-          onChange={set("firstName")}
-          required
-        />
-        <Input
-          size="compact"
-          label="Last name"
-          placeholder="Fisher"
-          icon={<User size={16} />}
-          value={form.lastName}
-          onChange={set("lastName")}
-          required
-        />
-        <div className="col-span-2">
-          <Input
-            size="compact"
-            label="Email address"
-            type="email"
-            placeholder="you@example.com"
-            icon={<Mail size={16} />}
-            value={form.email}
-            onChange={set("email")}
-            required
-          />
-        </div>
-        <div className="col-span-2">
-          <Input
-            size="compact"
-            label="Phone number"
-            type="tel"
-            placeholder="+250 784 000 000"
-            value={form.phone}
-            onChange={set("phone")}
-            required
-          />
-        </div>
-        <div className="col-span-2">
-          <Input
-            size="compact"
-            label="Password"
-            type="password"
-            placeholder="Min. 8 characters"
-            icon={<LockKeyhole size={16} />}
-            value={form.password}
-            onChange={set("password")}
-            required
-          />
-        </div>
-        <Button
-          type="submit"
-          className="col-span-2 h-10 w-full rounded-lg text-sm"
-          disabled={loading}
-        >
-          {loading ? "Creating account..." : "Create account"}
-        </Button>
-      </form>
-    </AuthFormPanel>
+      </div>
+    </div>
   );
 }

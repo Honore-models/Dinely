@@ -100,9 +100,10 @@ export default function CustomerRegisterPage() {
             <Button
               type="submit"
               className="h-11 w-full rounded-xl text-sm"
-              disabled={loading}
+              loading={loading}
+              loadingText="Creating account..."
             >
-              {loading ? "Creating account..." : "Create account"}
+              Create account
             </Button>
           </form>
 
@@ -119,7 +120,7 @@ export default function CustomerRegisterPage() {
           <p className="mt-3 text-center text-xs text-neutral-400 dark:text-neutral-500">
             Want to list your restaurant?{" "}
             <Link
-              href="/onboarding/step-1"
+              href="/register"
               className="font-semibold text-neutral-600 hover:underline dark:text-neutral-300"
             >
               Register as owner

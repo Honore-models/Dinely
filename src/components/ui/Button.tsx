@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { Loader2 } from "lucide-react";
 
 const variants = {
   primary: "bg-[#22c51f] text-white hover:bg-[#1bad1a] border-[#22c51f] dark:bg-[#22c555] dark:hover:bg-[#1aad1a]",
@@ -15,6 +16,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: "sm" | "md" | "lg";
   href?: string;
   className?: string;
+  loading?: boolean;
+  loadingText?: string;
 }
 
 const sizeClasses = {
@@ -29,8 +32,12 @@ export function Button({
   size = "md",
   href,
   className = "",
+  loading = false,
+  loadingText,
+  disabled,
   ...props
 }: ButtonProps) {
+  const isDisabled = disabled || loading;
   if (variant === "animated") {
     const baseClasses = `relative z-[1] inline-flex h-12 items-center justify-center overflow-hidden rounded-[10px] bg-[#22c51f] px-8 text-sm font-bold text-white cursor-pointer transition-colors duration-300 hover:text-[#22c51f] dark:bg-[#22c555] dark:hover:text-[#22c555] ${className}`;
 
@@ -47,8 +54,13 @@ export function Button({
     }
 
     return (
-      <button className={`${baseClasses} ${afterClasses}`} {...props}>
-        {inner}
+      <button
+        className={`${baseClasses} ${afterClasses} ${isDisabled ? "pointer-events-none opacity-60" : ""}`}
+        disabled={isDisabled}
+        {...props}
+      >
+        {loading && <Loader2 size={16} className="animate-spin" />}
+        {loading && loadingText ? loadingText : inner}
       </button>
     );
   }
@@ -64,8 +76,9 @@ export function Button({
   }
 
   return (
-    <button className={classes} {...props}>
-      {children}
+    <button className={`${classes} ${isDisabled ? "pointer-events-none opacity-60" : ""}`} disabled={isDisabled} {...props}>
+      {loading && <Loader2 size={16} className="animate-spin" />}
+      {loading && loadingText ? loadingText : children}
     </button>
   );
 }

@@ -145,13 +145,12 @@ export default function SettingsPage() {
             className="inline-flex items-center gap-2 rounded-lg bg-[#22c51f] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1bad1a] disabled:opacity-60"
           >
             {saving ? (
-              <Loader2 size={16} className="animate-spin" />
+              <><Loader2 size={16} className="animate-spin" /> Saving…</>
             ) : saved ? (
-              <CheckCircle2 size={16} />
+              <><CheckCircle2 size={16} /> Saved!</>
             ) : (
-              <Save size={16} />
+              <><Save size={16} /> Save changes</>
             )}
-            {saving ? "Saving…" : saved ? "Saved!" : "Save changes"}
           </button>
         }
       />

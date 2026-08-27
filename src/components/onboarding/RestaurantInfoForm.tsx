@@ -289,8 +289,8 @@ export function RestaurantInfoForm() {
       </label>
 
       <div className="mt-6 flex justify-end">
-        <Button type="submit" size="lg" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Next Step"}
+        <Button type="submit" size="lg" loading={isSubmitting} loadingText="Saving...">
+          Next Step
         </Button>
       </div>
     </form>

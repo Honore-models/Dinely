@@ -368,8 +368,7 @@ export function MenuPageClient() {
                   disabled={saving}
                   className="flex items-center gap-2 rounded-xl bg-[#22c51f] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1bad1a] disabled:opacity-60"
                 >
-                  {saving && <Loader2 size={14} className="animate-spin" />}
-                  {editing ? "Save changes" : "Add item"}
+                  {saving ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : editing ? "Save changes" : "Add item"}
                 </button>
               </div>
             </form>

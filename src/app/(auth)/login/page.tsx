@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Mail, LockKeyhole } from "lucide-react";
+import { Mail, LockKeyhole, User, UtensilsCrossed } from "lucide-react";
 import { AuthDivider } from "@/components/auth/AuthDivider";
 import { AuthFormPanel } from "@/components/auth/AuthFormPanel";
 import { AuthGoogleButton } from "@/components/auth/AuthGoogleButton";
@@ -28,19 +28,29 @@ export default function LoginPage() {
       title="Welcome back"
       subtitle="Sign in to your Dinely account."
       footer={
-        <div className="space-y-2 text-center">
-          <p className="text-xs text-neutral-600 sm:text-sm">
-            New owner?{" "}
+        <div className="space-y-3 text-center">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            Don&apos;t have an account yet?{" "}
             <Link href="/register" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
-              Register restaurant
+              Sign up
             </Link>
           </p>
-          <p className="text-xs text-neutral-600 sm:text-sm">
-            New customer?{" "}
-            <Link href="/register-customer" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
-              Create account
+          <div className="flex items-center justify-center gap-4">
+            <Link
+              href="/register-customer"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+            >
+              <User size={13} />
+              Customer
             </Link>
-          </p>
+            <Link
+              href="/onboarding/step-1"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+            >
+              <UtensilsCrossed size={13} />
+              Restaurant Owner
+            </Link>
+          </div>
         </div>
       }
     >
@@ -84,10 +94,11 @@ export default function LoginPage() {
         </div>
         <Button
           className="h-10 w-full rounded-lg text-sm"
-          disabled={loading}
           type="submit"
+          loading={loading}
+          loadingText="Signing in..."
         >
-          {loading ? "Signing in..." : "Sign in"}
+          Sign in
         </Button>
         <AuthDivider />
         <AuthGoogleButton label="Continue with Google" />

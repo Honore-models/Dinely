@@ -52,10 +52,11 @@ export default function ForgotPasswordPage() {
           />
           <Button
             className="h-10 w-full rounded-lg text-sm"
-            disabled={loading}
             type="submit"
+            loading={loading}
+            loadingText="Sending..."
           >
-            {loading ? "Sending..." : "Send reset link"}
+            Send reset link
           </Button>
         </form>
       )}

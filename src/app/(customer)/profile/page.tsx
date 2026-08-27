@@ -8,6 +8,7 @@ import {
   Heart,
   Lock,
   LogOut,
+  Loader2,
   MapPin,
   ShoppingBag,
   User,
@@ -126,9 +127,9 @@ export default function ProfilePage() {
             type="button"
             onClick={handleSave}
             disabled={loading}
-            className="mt-4 w-full rounded-xl bg-[#22c51f] py-2.5 text-sm font-bold text-white transition hover:bg-[#1bad1a] disabled:opacity-60"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#22c51f] py-2.5 text-sm font-bold text-white transition hover:bg-[#1bad1a] disabled:opacity-60"
           >
-            {loading ? "Saving..." : "Save Changes"}
+            {loading ? <><Loader2 size={16} className="animate-spin" /> Saving...</> : "Save Changes"}
           </button>
         </div>
       )}

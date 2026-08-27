@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: "Dinely",
   description:
     "Discover restaurants and manage bookings, menus, and performance.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 // Inline script to apply theme before React hydrates (prevents flash)

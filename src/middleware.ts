@@ -62,7 +62,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // ── Auth pages: redirect already-logged-in users away ────────────────────
-  if (pathname === "/login" || pathname === "/register") {
+  if (pathname === "/login" || pathname === "/register" || pathname === "/register-customer") {
     if (token) {
       const session = await verifyToken(token);
       if (session?.role === "owner") {
@@ -88,5 +88,6 @@ export const config = {
     "/favourites/:path*",
     "/login",
     "/register",
+    "/register-customer",
   ],
 };

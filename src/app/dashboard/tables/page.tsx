@@ -224,8 +224,7 @@ export default function TablesPage() {
                 <button type="button" onClick={closeModal} className="rounded-xl border border-neutral-200 px-5 py-2.5 text-sm font-semibold text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800">Cancel</button>
                 <button type="submit" disabled={saving}
                   className="flex items-center gap-2 rounded-xl bg-[#22c51f] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1bad1a] disabled:opacity-60">
-                  {saving && <Loader2 size={14} className="animate-spin" />}
-                  {editing ? "Save" : "Add Table"}
+                  {saving ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : editing ? "Save" : "Add Table"}
                 </button>
               </div>
             </form>

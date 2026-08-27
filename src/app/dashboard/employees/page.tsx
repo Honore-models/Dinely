@@ -291,8 +291,7 @@ export default function EmployeesPage() {
                   disabled={saving}
                   className="flex items-center gap-2 rounded-xl bg-[#22c51f] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1bad1a] disabled:opacity-60"
                 >
-                  {saving && <Loader2 size={14} className="animate-spin" />}
-                  {editing ? "Save changes" : "Add employee"}
+                  {saving ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : editing ? "Save changes" : "Add employee"}
                 </button>
               </div>
             </form>
