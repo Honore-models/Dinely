@@ -28,8 +28,9 @@ export function useFavourites() {
       setFavourites(list);
       setFavouriteIds(new Set(list.map((r) => r.id)));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to load favourites";
-      // If 401, user isn't logged in — show empty state instead of error
+      const msg =
+        err instanceof Error ? err.message : "Failed to load favourites";
+      // If 401, user isn't logged in - show empty state instead of error
       if (msg.includes("401") || msg.includes("Unauthorized")) {
         setFavourites([]);
         setFavouriteIds(new Set());
@@ -61,7 +62,9 @@ export function useFavourites() {
         load();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update favourites");
+      setError(
+        err instanceof Error ? err.message : "Failed to update favourites",
+      );
     }
   };
 

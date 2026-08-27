@@ -31,11 +31,7 @@ const plans = [
       "Basic analytics",
       "Email support",
     ],
-    notIncluded: [
-      "Table bookings",
-      "Customer insights",
-      "Multi-restaurant",
-    ],
+    notIncluded: ["Table bookings", "Customer insights", "Multi-restaurant"],
   },
   {
     name: "Professional",
@@ -97,7 +93,9 @@ const faqs = [
 ];
 
 export default function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
+    "monthly",
+  );
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const getPrice = (plan: (typeof plans)[number]) =>
@@ -106,9 +104,7 @@ export default function PricingPage() {
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
       <SoftwareAppJsonLd />
-      <FAQJsonLd
-        faqs={faqs.map((f) => ({ question: f.q, answer: f.a }))}
-      />
+      <FAQJsonLd faqs={faqs.map((f) => ({ question: f.q, answer: f.a }))} />
       {/* ── Hero ────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#22c51f] to-[#189816] px-6 py-20 lg:px-8">
         <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
@@ -125,7 +121,8 @@ export default function PricingPage() {
             <span className="text-yellow-300">With Your Restaurant</span>
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base text-white/80 lg:text-lg">
-            Start free, upgrade when you&apos;re ready. All plans include a 14-day free trial with no credit card required.
+            Start free, upgrade when you&apos;re ready. All plans include a
+            14-day free trial with no credit card required.
           </p>
         </div>
       </section>
@@ -188,7 +185,9 @@ export default function PricingPage() {
                   <span className="text-4xl font-extrabold text-neutral-900 dark:text-white">
                     ${price}
                   </span>
-                  <span className="text-sm text-neutral-500 dark:text-neutral-400">/month</span>
+                  <span className="text-sm text-neutral-500 dark:text-neutral-400">
+                    /month
+                  </span>
                 </div>
                 {billingCycle === "yearly" ? (
                   <div className="mt-1 flex items-center gap-2">
@@ -224,10 +223,7 @@ export default function PricingPage() {
                       key={feature}
                       className="flex items-start gap-2.5 text-sm text-neutral-400 dark:text-neutral-600"
                     >
-                      <X
-                        size={16}
-                        className="mt-0.5 shrink-0"
-                      />
+                      <X size={16} className="mt-0.5 shrink-0" />
                       {feature}
                     </li>
                   ))}
@@ -259,8 +255,12 @@ export default function PricingPage() {
               <ShieldCheck size={20} className="text-[#22c51f]" />
             </div>
             <div>
-              <p className="text-sm font-bold text-neutral-900 dark:text-white">SSL Secured</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">256-bit encryption</p>
+              <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                SSL Secured
+              </p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                256-bit encryption
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -268,8 +268,12 @@ export default function PricingPage() {
               <CreditCard size={20} className="text-[#22c51f]" />
             </div>
             <div>
-              <p className="text-sm font-bold text-neutral-900 dark:text-white">Stripe Payments</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">PCI compliant</p>
+              <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                Stripe Payments
+              </p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                PCI compliant
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -277,8 +281,12 @@ export default function PricingPage() {
               <CheckCircle2 size={20} className="text-[#22c51f]" />
             </div>
             <div>
-              <p className="text-sm font-bold text-neutral-900 dark:text-white">14-Day Free Trial</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">No credit card required</p>
+              <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                14-Day Free Trial
+              </p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                No credit card required
+              </p>
             </div>
           </div>
         </div>
@@ -338,7 +346,8 @@ export default function PricingPage() {
             Ready to Grow Your Restaurant?
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-sm text-white/80 lg:text-base">
-            Join 500+ restaurants already using Dinely. Start your free trial today — no credit card required.
+            Join 500+ restaurants already using Dinely. Start your free trial
+            today - no credit card required.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link

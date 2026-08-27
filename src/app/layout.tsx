@@ -9,7 +9,8 @@ const outfit = Outfit({
   weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://dinely.vercel.app";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://dinely.vercel.app";
 const SITE_NAME = "Dinely";
 const DEFAULT_DESCRIPTION =
   "Dinely is the all-in-one platform for restaurant management and food ordering. Discover restaurants, manage menus, track orders, and grow your business.";
@@ -17,7 +18,7 @@ const DEFAULT_DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — Restaurant Management & Food Ordering Platform`,
+    default: `${SITE_NAME} - Restaurant Management & Food Ordering Platform`,
     template: `%s | ${SITE_NAME}`,
   },
   description: DEFAULT_DESCRIPTION,
@@ -52,20 +53,20 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — Restaurant Management & Food Ordering Platform`,
+    title: `${SITE_NAME} - Restaurant Management & Food Ordering Platform`,
     description: DEFAULT_DESCRIPTION,
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} — Restaurant Management Platform`,
+        alt: `${SITE_NAME} - Restaurant Management Platform`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} — Restaurant Management & Food Ordering Platform`,
+    title: `${SITE_NAME} - Restaurant Management & Food Ordering Platform`,
     description: DEFAULT_DESCRIPTION,
     images: ["/og-image.png"],
     creator: "@dinely",
@@ -102,7 +103,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${outfit.variable} antialiased`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${outfit.variable} antialiased`}
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

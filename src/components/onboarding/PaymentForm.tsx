@@ -48,7 +48,13 @@ const planFeatures: Record<PlanName, string[]> = {
   ],
 };
 
-type SetupStep = "payment" | "registering" | "creating" | "processing" | "done" | "error";
+type SetupStep =
+  | "payment"
+  | "registering"
+  | "creating"
+  | "processing"
+  | "done"
+  | "error";
 
 export function PaymentForm() {
   const router = useRouter();
@@ -99,7 +105,7 @@ export function PaymentForm() {
           return;
         }
       } catch {
-        // Stripe not configured — proceed without payment
+        // Stripe not configured - proceed without payment
       }
 
       // If Stripe not available, go straight to dashboard
@@ -136,7 +142,9 @@ export function PaymentForm() {
 
   return (
     <div className="mt-2">
-      <p className="text-sm font-bold text-neutral-400 dark:text-neutral-500">Step 4 of 4</p>
+      <p className="text-sm font-bold text-neutral-400 dark:text-neutral-500">
+        Step 4 of 4
+      </p>
       <h1 className="mt-2 text-2xl font-extrabold text-neutral-900 dark:text-white">
         Complete Your Setup
       </h1>
@@ -146,9 +154,13 @@ export function PaymentForm() {
       <div className="mt-4 h-px bg-neutral-100 dark:bg-neutral-800" />
 
       {/* Status steps */}
-      {(step === "registering" || step === "creating" || step === "processing") && (
+      {(step === "registering" ||
+        step === "creating" ||
+        step === "processing") && (
         <div className="mt-4 space-y-2">
-          <div className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm ${step === "registering" ? "border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400" : "text-neutral-400"}`}>
+          <div
+            className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm ${step === "registering" ? "border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400" : "text-neutral-400"}`}
+          >
             {step === "registering" ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
@@ -156,7 +168,9 @@ export function PaymentForm() {
             )}
             Creating your account...
           </div>
-          <div className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm ${step === "creating" ? "border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400" : step === "processing" ? "text-neutral-400" : "text-neutral-300"}`}>
+          <div
+            className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm ${step === "creating" ? "border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400" : step === "processing" ? "text-neutral-400" : "text-neutral-300"}`}
+          >
             {step === "creating" ? (
               <Loader2 size={16} className="animate-spin" />
             ) : step === "processing" ? (
@@ -166,7 +180,9 @@ export function PaymentForm() {
             )}
             Setting up your restaurant...
           </div>
-          <div className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm ${step === "processing" ? "border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400" : "text-neutral-300"}`}>
+          <div
+            className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm ${step === "processing" ? "border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400" : "text-neutral-300"}`}
+          >
             {step === "processing" ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
@@ -213,7 +229,8 @@ export function PaymentForm() {
                   Secure Payment by Stripe
                 </p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Your payment is processed securely by Stripe. We never store your card details.
+                  Your payment is processed securely by Stripe. We never store
+                  your card details.
                 </p>
               </div>
             </div>
@@ -233,7 +250,8 @@ export function PaymentForm() {
                       Click &ldquo;Activate Subscription&rdquo;
                     </p>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      You&apos;ll be redirected to Stripe&apos;s secure checkout page
+                      You&apos;ll be redirected to Stripe&apos;s secure checkout
+                      page
                     </p>
                   </div>
                 </li>
@@ -271,7 +289,12 @@ export function PaymentForm() {
               size="lg"
               className="w-full"
               onClick={handleActivate}
-              loading={loading || step === "registering" || step === "creating" || step === "processing"}
+              loading={
+                loading ||
+                step === "registering" ||
+                step === "creating" ||
+                step === "processing"
+              }
               loadingText={
                 step === "registering"
                   ? "Creating account..."
@@ -292,7 +315,10 @@ export function PaymentForm() {
             </div>
 
             <p className="flex items-start gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
-              <ShieldCheck className="mt-0.5 shrink-0 text-[#22c51f]" size={14} />{" "}
+              <ShieldCheck
+                className="mt-0.5 shrink-0 text-[#22c51f]"
+                size={14}
+              />{" "}
               By proceeding, you agree to our{" "}
               <Link href="/privacy" className="font-semibold text-[#22c51f]">
                 Terms of Service
@@ -337,7 +363,9 @@ export function PaymentForm() {
           </div>
 
           <p className="mt-3 flex justify-between text-sm font-bold">
-            <span className="text-neutral-900 dark:text-white">Total Due Today</span>
+            <span className="text-neutral-900 dark:text-white">
+              Total Due Today
+            </span>
             <span className="text-[#22c51f]">${total.toFixed(2)}</span>
           </p>
 
@@ -363,7 +391,9 @@ export function PaymentForm() {
 
           {/* Restaurant info preview */}
           <div className="mt-4 border-t border-neutral-100 pt-4 dark:border-neutral-800">
-            <h3 className="text-sm font-bold text-neutral-700 dark:text-neutral-300">Restaurant</h3>
+            <h3 className="text-sm font-bold text-neutral-700 dark:text-neutral-300">
+              Restaurant
+            </h3>
             <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
               {restaurantInfo.name || "Not set"}
             </p>

@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { OrganizationJsonLd, WebsiteJsonLd, SoftwareAppJsonLd } from "../components/seo/JsonLd";
+import {
+  OrganizationJsonLd,
+  WebsiteJsonLd,
+  SoftwareAppJsonLd,
+} from "../components/seo/JsonLd";
 import { HeroSection } from "../components/landing/HeroSection";
 import { Header } from "../components/landing/Header";
 import { OurStorySection } from "../components/landing/OurStorySection";
@@ -11,11 +15,11 @@ import { WhatWeServeSection } from "../components/landing/WhatWeServeSection";
 import { Footer } from "../components/landing/Footer";
 
 export const metadata: Metadata = {
-  title: "Dinely — Restaurant Management & Food Ordering Platform",
+  title: "Dinely - Restaurant Management & Food Ordering Platform",
   description:
     "Discover restaurants, order food, manage bookings, and grow your restaurant business with Dinely. The all-in-one platform for diners and restaurant owners.",
   openGraph: {
-    title: "Dinely — Restaurant Management & Food Ordering Platform",
+    title: "Dinely - Restaurant Management & Food Ordering Platform",
     description:
       "Discover restaurants, order food, manage bookings, and grow your restaurant business with Dinely.",
     url: "/",

@@ -49,7 +49,7 @@ export function useRestaurant(restaurantId?: string) {
           if (data) {
             setRestaurant(data as unknown as Restaurant);
           } else if (retries < maxRetries) {
-            // Restaurant might not be linked yet — retry after a short delay
+            // Restaurant might not be linked yet - retry after a short delay
             retries++;
             setTimeout(load, 1500);
             return;
@@ -68,7 +68,9 @@ export function useRestaurant(restaurantId?: string) {
       }
     };
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [restaurantId]);
 
   const update = async (data: Partial<Restaurant>) => {
