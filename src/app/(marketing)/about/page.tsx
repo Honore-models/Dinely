@@ -1,4 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description:
+    "Learn about Dinely's mission to connect diners with amazing restaurants and empower restaurant owners with powerful management tools.",
+  openGraph: {
+    title: "About Us | Dinely",
+    description:
+      "Learn about Dinely's mission to connect diners with amazing restaurants and empower restaurant owners.",
+    url: "/about",
+  },
+};
 import {
   UtensilsCrossed,
   Heart,
@@ -79,7 +92,7 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
       {/* ── Hero ────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#0f3d12] via-[#1a7a20] to-[#2ecc28] px-6 py-20 lg:px-8">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#22c51f] to-[#189816] px-6 py-20 lg:px-8">
         <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-black/10 blur-xl" />
 
@@ -289,7 +302,7 @@ export default function AboutPage() {
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
       <section className="px-6 pb-20 lg:px-8">
-        <div className="mx-auto max-w-4xl overflow-hidden rounded-3xl bg-gradient-to-br from-[#0f3d12] via-[#1a7a20] to-[#2ecc28] p-10 text-center md:p-14">
+        <div className="mx-auto max-w-4xl overflow-hidden rounded-3xl bg-gradient-to-br from-[#22c51f] to-[#189816] p-10 text-center md:p-14">
           <h2 className="text-3xl font-extrabold text-white md:text-4xl">
             Ready to Get Started?
           </h2>
