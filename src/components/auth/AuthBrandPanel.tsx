@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Check } from "lucide-react";
 import { DinelyLogo } from "../brand/DinelyLogo";
 
@@ -13,7 +14,9 @@ export function AuthBrandPanel() {
       <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
       <div className="pointer-events-none absolute -bottom-20 -left-16 h-56 w-56 rounded-full bg-black/10 blur-xl" />
 
-      <DinelyLogo width={132} height={48} onDark priority />
+      <Link href="/">
+        <DinelyLogo width={132} height={48} onDark priority />
+      </Link>
 
       <div className="relative max-w-sm">
         <h2 className="text-3xl font-bold leading-tight tracking-tight text-white xl:text-4xl">

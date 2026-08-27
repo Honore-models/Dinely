@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes } from "react";
+import { useRouter } from "next/navigation";
 
 function GoogleIcon() {
   return (
@@ -25,12 +26,24 @@ function GoogleIcon() {
 
 interface AuthGoogleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;
+  redirect?: string;
 }
 
-export function AuthGoogleButton({ label, className = "", ...props }: AuthGoogleButtonProps) {
+export function AuthGoogleButton({ label, className = "", redirect, ...props }: AuthGoogleButtonProps) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    const params = new URLSearchParams();
+    if (redirect) {
+      params.set("redirect", redirect);
+    }
+    router.push(`/api/auth/google${params.toString() ? `?${params.toString()}` : ""}`);
+  };
+
   return (
     <button
       type="button"
+      onClick={handleClick}
       className={`inline-flex h-10 w-full items-center justify-center gap-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-medium text-neutral-700 transition hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22c51f] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700 ${className}`}
       {...props}
     >

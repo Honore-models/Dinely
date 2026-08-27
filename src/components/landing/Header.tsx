@@ -5,6 +5,8 @@ import { useState } from "react";
 import { Menu, Search, ShoppingCart, X } from "lucide-react";
 import { DinelyLogo } from "../brand/DinelyLogo";
 import { Button } from "../ui/Button";
+import { SearchModal } from "../ui/SearchModal";
+import { useSearchModal } from "@/hooks/useSearchModal";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -14,6 +16,7 @@ const navLinks = [
 ];
 
 export function Header() {
+  const { open: searchOpen, toggle: toggleSearch, close: closeSearch } = useSearchModal();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -41,7 +44,9 @@ export function Header() {
         <div className="flex items-center gap-3">
           <button
             type="button"
+            onClick={toggleSearch}
             className="grid h-9 w-9 place-items-center rounded-lg text-neutral-600 transition hover:bg-neutral-50"
+            aria-label="Search"
           >
             <Search size={18} />
           </button>
@@ -69,6 +74,9 @@ export function Header() {
           </button>
         </div>
       </div>
+
+      {/* Search Modal */}
+      <SearchModal open={searchOpen} onClose={closeSearch} />
 
       {/* Mobile menu */}
       {mobileOpen && (

@@ -17,6 +17,8 @@ import { useCartStore } from "@/store/cartStore";
 import { useAuth } from "@/hooks/useAuth";
 import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
 import { NotificationDropdown } from "@/components/ui/NotificationDropdown";
+import { SearchModal } from "@/components/ui/SearchModal";
+import { useSearchModal } from "@/hooks/useSearchModal";
 
 const navLinks = [
   { label: "Home", href: "/home" },
@@ -31,6 +33,7 @@ export function CustomerTopNav() {
   const totalItems = useCartStore((s) => s.totalItems());
   const { user, logout } = useAuth();
 
+  const { open: searchOpen, toggle: toggleSearch, close: closeSearch } = useSearchModal();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -105,19 +108,19 @@ export function CustomerTopNav() {
             })}
           </nav>
 
-          {/* Desktop search */}
+          {/* Desktop search trigger */}
           <div className="hidden max-w-xs flex-1 md:block">
-            <div className="relative">
-              <Search
-                size={15}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
-              />
-              <input
-                type="text"
-                placeholder="Search restaurants..."
-                className="w-full rounded-full border border-neutral-200 bg-neutral-50 py-2 pl-9 pr-4 text-sm text-neutral-800 outline-none placeholder:text-neutral-400 transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-emerald-500 dark:focus:bg-neutral-900"
-              />
-            </div>
+            <button
+              type="button"
+              onClick={toggleSearch}
+              className="flex w-full items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 py-2 pl-3.5 pr-4 text-left text-sm text-neutral-400 transition hover:border-neutral-300 hover:bg-white dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-500 dark:hover:border-neutral-600 dark:hover:bg-neutral-700"
+            >
+              <Search size={15} />
+              <span className="flex-1">Search restaurants...</span>
+              <kbd className="hidden items-center gap-0.5 rounded-md border border-neutral-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-neutral-500 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-400 xl:flex">
+                ⌘K
+              </kbd>
+            </button>
           </div>
 
           {/* Right actions */}
@@ -248,17 +251,17 @@ export function CustomerTopNav() {
               })}
             </nav>
             <div className="mt-3 border-t border-neutral-100 pt-3">
-              <div className="relative">
-                <Search
-                  size={15}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
-                />
-                <input
-                  type="text"
-                  placeholder="Search restaurants..."
-                  className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2.5 pl-9 pr-4 text-sm text-neutral-800 outline-none placeholder:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500"
-                />
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  toggleSearch();
+                }}
+                className="flex w-full items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-left text-sm text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-500"
+              >
+                <Search size={15} />
+                Search restaurants...
+              </button>
             </div>
           </div>
         )}
@@ -300,6 +303,8 @@ export function CustomerTopNav() {
           </div>
         </div>
       )}
+      {/* Search Modal */}
+      <SearchModal open={searchOpen} onClose={closeSearch} />
     </>
   );
 }

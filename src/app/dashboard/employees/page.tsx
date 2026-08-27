@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
 import { EmployeeCard } from "@/components/dashboard/EmployeeCard";
-import { Download, Loader2, Plus, X } from "lucide-react";
+import { Download, Loader2, Plus, Search, X } from "lucide-react";
 import { employeesApi } from "@/lib/api";
 
 interface Employee {
@@ -37,6 +37,7 @@ export default function EmployeesPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -127,6 +128,17 @@ export default function EmployeesPage() {
     }
   };
 
+  const filtered = useMemo(() => {
+    if (!search.trim()) return employees;
+    const q = search.toLowerCase();
+    return employees.filter(
+      (e) =>
+        `${e.firstName} ${e.lastName}`.toLowerCase().includes(q) ||
+        e.email.toLowerCase().includes(q) ||
+        e.role.toLowerCase().includes(q),
+    );
+  }, [employees, search]);
+
   return (
     <>
       <DashboardPageHeader
@@ -146,6 +158,22 @@ export default function EmployeesPage() {
           </div>
         }
       />
+
+      {/* Search */}
+      {!loading && employees.length > 0 && (
+        <div className="mb-6">
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <input
+              type="text"
+              placeholder="Search by name, email, or role..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-500 focus:border-[#22c51f] focus:outline-none focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-[#22c555]"
+            />
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -167,9 +195,15 @@ export default function EmployeesPage() {
             Add your first employee
           </button>
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400">
+            No employees match your search
+          </p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {employees.map((emp) => (
+          {filtered.map((emp) => (
             <EmployeeCard
               key={emp.id}
               name={`${emp.firstName} ${emp.lastName}`}

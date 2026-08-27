@@ -10,10 +10,11 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-12 dark:bg-neutral-950">
-      <div className="w-full max-w-md">
-        <div className="mb-8 flex justify-center">
-          <DinelyLogo width={120} height={42} />
-        </div>
+      <div className="w-full max-w-md">          <div className="mb-8 flex justify-center">
+            <Link href="/">
+              <DinelyLogo width={120} height={42} />
+            </Link>
+          </div>
 
         <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <h1 className="text-center text-2xl font-extrabold text-neutral-900 dark:text-white">

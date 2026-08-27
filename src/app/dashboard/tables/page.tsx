@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
-import { Loader2, Plus, Pencil, Trash2, X } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, X, Search } from "lucide-react";
 import { tablesApi } from "@/lib/api";
 
 interface Table {
@@ -36,6 +36,7 @@ export default function TablesPage() {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -98,6 +99,17 @@ export default function TablesPage() {
     } catch { /* ignore */ }
   };
 
+  const filtered = useMemo(() => {
+    if (!search.trim()) return tables;
+    const q = search.toLowerCase();
+    return tables.filter(
+      (t) =>
+        String(t.number).includes(q) ||
+        (t.location && t.location.toLowerCase().includes(q)) ||
+        t.status.toLowerCase().includes(q),
+    );
+  }, [tables, search]);
+
   const stats = {
     total: tables.length,
     available: tables.filter((t) => t.status === "available").length,
@@ -116,6 +128,20 @@ export default function TablesPage() {
           </button>
         }
       />
+
+      {/* Search */}
+      <div className="mb-6">
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+          <input
+            type="text"
+            placeholder="Search by number, location, or status..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-500 focus:border-[#22c51f] focus:outline-none focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-[#22c555]"
+          />
+        </div>
+      </div>
 
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -140,14 +166,16 @@ export default function TablesPage() {
         </div>
       ) : tables.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white py-16 text-center dark:border-neutral-800 dark:bg-neutral-900">
-          <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400">No tables yet</p>
+          <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400">
+            {search ? "No tables match your search" : "No tables yet"}
+          </p>
           <button onClick={openAdd} className="mt-4 rounded-full bg-[#22c51f] px-6 py-2 text-sm font-bold text-white hover:bg-[#1bad1a]">
             Add your first table
           </button>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {tables.map((table) => (
+          {filtered.map((table) => (
             <div key={table.id} className="rounded-2xl border border-neutral-100 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
               <div className="flex items-start justify-between">
                 <div>
