@@ -11,7 +11,7 @@ export {
   type JWTPayload,
 } from "@/lib/jwt";
 
-// ─── Password helpers (server-side only, NOT Edge-compatible) ─────────────────
+// ─── Password helpers (server-side only, NOT Edge-compatible)
 
 export async function hashPassword(plain: string): Promise<string> {
   return bcrypt.hash(plain, 12);
