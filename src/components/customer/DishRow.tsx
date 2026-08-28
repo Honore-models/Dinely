@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 
@@ -29,6 +30,7 @@ export function DishRow({
 
   const cartItem = items.find((i) => i.menuItemId === id);
   const quantity = cartItem?.quantity ?? 0;
+  const [imgError, setImgError] = useState(false);
 
   const handleAdd = () => {
     addItem({ menuItemId: id, name, price, quantity: 1, image, restaurantId, restaurantName });
@@ -41,8 +43,15 @@ export function DishRow({
     <div className="flex items-center gap-4 rounded-xl border border-neutral-100 bg-white p-4 shadow-sm transition hover:shadow-md">
       {/* Image */}
       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
-        {image ? (
-          <Image src={image} alt={name} fill className="object-cover" sizes="80px" />
+        {image && !imgError ? (
+          <Image
+            src={image}
+            alt={name}
+            fill
+            className="object-cover"
+            sizes="80px"
+            onError={() => setImgError(true)}
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-2xl">🍽️</div>
         )}

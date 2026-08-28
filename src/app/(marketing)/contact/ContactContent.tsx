@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -19,6 +20,10 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-white px-6 py-20">
       <div className="mx-auto max-w-5xl">
+        <div className="mb-8">
+          <BackToHomeButton />
+        </div>
+
         <div className="text-center">
           <p className="text-xs font-bold uppercase tracking-wider text-[#22c51f]">
             Get In Touch

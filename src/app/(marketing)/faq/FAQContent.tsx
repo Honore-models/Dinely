@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FAQJsonLd } from "@/components/seo/JsonLd";
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
 
 const faqs = [
   {
@@ -43,6 +44,10 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-white px-6 py-20">
+      <div className="mx-auto max-w-3xl mb-8">
+        <BackToHomeButton />
+      </div>
+
       <FAQJsonLd
         faqs={faqs.map((f) => ({ question: f.q, answer: f.a }))}
       />
