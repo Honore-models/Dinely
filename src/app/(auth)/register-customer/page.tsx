@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/hooks/useAuth";
 import { DinelyLogo } from "@/components/brand/DinelyLogo";
+import { AuthGoogleButton } from "@/components/auth/AuthGoogleButton";
 
 export default function CustomerRegisterPage() {
   const { registerCustomer, loading, error } = useAuth();
@@ -44,7 +45,22 @@ export default function CustomerRegisterPage() {
             Join Dinely to explore and order from the best restaurants.
           </p>
 
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+          <div className="mt-6">
+            <AuthGoogleButton label="Continue with Google" redirect="/home" />
+          </div>
+
+          <div className="relative my-5">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-neutral-200 dark:border-neutral-700" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-3 text-neutral-400 dark:bg-neutral-900 dark:text-neutral-500">
+                or continue with email
+              </span>
+            </div>
+          </div>
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {error && (
               <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                 {error}

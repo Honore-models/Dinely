@@ -40,7 +40,7 @@ const roles = [
       "Rate & review your experiences",
     ],
     cta: "Create Account",
-    href: "/register",
+    href: "/register-customer",
     color: "amber" as const,
   },
 ];
