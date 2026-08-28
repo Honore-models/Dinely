@@ -19,9 +19,8 @@ export default function CustomerRegisterPage() {
     password: "",
   });
 
-  const set =
-    (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +50,6 @@ export default function CustomerRegisterPage() {
                 {error}
               </div>
             )}
-
             <div className="grid grid-cols-2 gap-3">
               <Input
                 label="First name"
@@ -70,7 +68,6 @@ export default function CustomerRegisterPage() {
                 required
               />
             </div>
-
             <Input
               label="Email address"
               type="email"
@@ -80,7 +77,6 @@ export default function CustomerRegisterPage() {
               onChange={set("email")}
               required
             />
-
             <Input
               label="Phone number"
               type="tel"
@@ -88,17 +84,17 @@ export default function CustomerRegisterPage() {
               value={form.phone}
               onChange={set("phone")}
               required
-            />              <Input
-                label="Password"
-                type="password"
-                placeholder="Min. 8 characters"
-                icon={<LockKeyhole size={16} />}
-                togglePassword
-                value={form.password}
-                onChange={set("password")}
-                required
-              />
-
+            />{" "}
+            <Input
+              label="Password"
+              type="password"
+              placeholder="Min. 8 characters"
+              icon={<LockKeyhole size={16} />}
+              togglePassword
+              value={form.password}
+              onChange={set("password")}
+              required
+            />
             <Button
               type="submit"
               className="h-11 w-full rounded-xl text-sm"
@@ -129,16 +125,6 @@ export default function CustomerRegisterPage() {
               className="font-semibold text-[#22c51f] hover:underline"
             >
               Sign in
-            </Link>
-          </p>
-
-          <p className="mt-3 text-center text-xs text-neutral-400 dark:text-neutral-500">
-            Want to list your restaurant?{" "}
-            <Link
-              href="/register"
-              className="font-semibold text-neutral-600 hover:underline dark:text-neutral-300"
-            >
-              Register as owner
             </Link>
           </p>
         </div>
