@@ -29,9 +29,9 @@ export default function CustomerRegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-12 dark:bg-neutral-950">
+    <div className="flex min-h-screen items-start justify-center bg-neutral-50 px-4 pt-10 pb-12 dark:bg-neutral-950">
       <div className="w-full max-w-md">
-        <div className="mb-8 flex justify-center">
+        <div className="mb-5 flex justify-center">
           <Link href="/">
             <DinelyLogo width={120} height={42} />
           </Link>
