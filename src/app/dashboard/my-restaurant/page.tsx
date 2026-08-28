@@ -97,7 +97,7 @@ export default function MyRestaurantPage() {
     if (!file) return;
     setUploadingLogo(true);
     try {
-      const { url } = await uploadApi.upload(file);
+      const { url } = await uploadApi.upload(file, "dinely/restaurants");
       setForm((p) => ({ ...p, logo: url }));
     } catch {
       /* ignore */

@@ -63,7 +63,7 @@ const STATUS_OPTIONS: {
 
 const PAGE_SIZE = 10;
 
-export function OrdersTable() {
+export function OrdersTable({ refreshKey }: { refreshKey?: number } = {}) {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [total, setTotal] = useState(0);
@@ -88,7 +88,7 @@ export function OrdersTable() {
 
   useEffect(() => {
     load();
-  }, [load]);
+  }, [load, refreshKey]);
 
   // Close action menu on outside click
   useEffect(() => {

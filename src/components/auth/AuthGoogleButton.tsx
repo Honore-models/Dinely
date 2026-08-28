@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { ButtonHTMLAttributes } from "react";
 import { useRouter } from "next/navigation";
 
@@ -31,8 +32,10 @@ interface AuthGoogleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> 
 
 export function AuthGoogleButton({ label, className = "", redirect, ...props }: AuthGoogleButtonProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleClick = () => {
+    setLoading(true);
     const params = new URLSearchParams();
     if (redirect) {
       params.set("redirect", redirect);
@@ -44,11 +47,19 @@ export function AuthGoogleButton({ label, className = "", redirect, ...props }: 
     <button
       type="button"
       onClick={handleClick}
-      className={`inline-flex h-10 w-full items-center justify-center gap-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-medium text-neutral-700 transition hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22c51f] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700 ${className}`}
+      disabled={loading}
+      className={`inline-flex h-10 w-full items-center justify-center gap-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-medium text-neutral-700 transition hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22c51f] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700 disabled:opacity-60 ${className}`}
       {...props}
     >
-      <GoogleIcon />
-      {label}
+      {loading ? (
+        <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+      ) : (
+        <GoogleIcon />
+      )}
+      {loading ? "Redirecting…" : label}
     </button>
   );
 }

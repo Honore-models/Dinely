@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Loader2, Plus, Pencil, Trash2, X, Search } from "lucide-react";
 import { tablesApi } from "@/lib/api";
 
@@ -83,12 +84,15 @@ export default function TablesPage() {
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this table?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await tablesApi.delete(id);
-      setTables((prev) => prev.filter((t) => t.id !== id));
+      await tablesApi.delete(deleteTarget);
+      setTables((prev) => prev.filter((t) => t.id !== deleteTarget));
     } catch { /* ignore */ }
+    setDeleteTarget(null);
   };
 
   const toggleStatus = async (table: Table) => {
@@ -186,7 +190,7 @@ export default function TablesPage() {
                   <button onClick={() => openEdit(table)} className="grid h-7 w-7 place-items-center rounded-lg text-neutral-400 hover:bg-neutral-100 hover:text-[#22c51f] dark:hover:bg-neutral-800">
                     <Pencil size={13} />
                   </button>
-                  <button onClick={() => handleDelete(table.id)} className="grid h-7 w-7 place-items-center rounded-lg text-neutral-400 hover:bg-red-50 hover:text-red-500">
+                  <button onClick={() => setDeleteTarget(table.id)} className="grid h-7 w-7 place-items-center rounded-lg text-neutral-400 hover:bg-red-50 hover:text-red-500">
                     <Trash2 size={13} />
                   </button>
                 </div>
@@ -210,6 +214,16 @@ export default function TablesPage() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Table"
+        message="Are you sure you want to delete this table? This action cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+      />
 
       {/* Modal */}
       {showModal && (

@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { Heart, Star } from "lucide-react";
+import { Heart, Loader2, Star } from "lucide-react";
 import { useState } from "react";
+import { favouritesApi } from "@/lib/api";
 
 interface RestaurantDetailHeaderProps {
   name: string;
@@ -12,8 +13,11 @@ interface RestaurantDetailHeaderProps {
   coverImage: string;
   logoImage?: string;
   tagline?: string;
+  restaurantId?: string;
+  isFavourite?: boolean;
   onOrderNow?: () => void;
   onBookTable?: () => void;
+  onFavouriteToggle?: () => void;
 }
 
 export function RestaurantDetailHeader({
@@ -23,10 +27,32 @@ export function RestaurantDetailHeader({
   reviewCount,
   coverImage,
   tagline,
+  restaurantId,
+  isFavourite = false,
   onOrderNow,
   onBookTable,
+  onFavouriteToggle,
 }: RestaurantDetailHeaderProps) {
-  const [fav, setFav] = useState(false);
+  const [fav, setFav] = useState(isFavourite);
+  const [favLoading, setFavLoading] = useState(false);
+
+  const handleFav = async () => {
+    if (!restaurantId) return;
+    setFavLoading(true);
+    try {
+      if (fav) {
+        await favouritesApi.remove(restaurantId);
+      } else {
+        await favouritesApi.add(restaurantId);
+      }
+      setFav((v) => !v);
+      onFavouriteToggle?.();
+    } catch {
+      // ignore
+    } finally {
+      setFavLoading(false);
+    }
+  };
 
   return (
     <div className="relative w-full overflow-hidden rounded-2xl" style={{ height: 340 }}>
@@ -78,14 +104,19 @@ export function RestaurantDetailHeader({
           </div>
           <button
             type="button"
-            onClick={() => setFav((v) => !v)}
+            onClick={handleFav}
+            disabled={favLoading}
             aria-label={fav ? "Remove from favourites" : "Add to favourites"}
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/40 bg-white/20 backdrop-blur-sm transition hover:bg-white/30"
           >
-            <Heart
-              size={18}
-              className={fav ? "fill-red-400 text-red-400" : "text-white"}
-            />
+            {favLoading ? (
+              <Loader2 size={18} className="animate-spin text-white" />
+            ) : (
+              <Heart
+                size={18}
+                className={fav ? "fill-red-400 text-red-400" : "text-white"}
+              />
+            )}
           </button>
         </div>
       </div>

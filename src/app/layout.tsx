@@ -85,12 +85,11 @@ export const metadata: Metadata = {
   },
 };
 
-// Inline script to apply theme before React hydrates (prevents flash)
 const themeScript = `
 (function() {
   try {
     var t = localStorage.getItem('dinely-theme');
-    var d = t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var d = t === 'dark';
     document.documentElement.classList.remove('light', 'dark');
     document.documentElement.classList.add(d ? 'dark' : 'light');
   } catch(e) {}

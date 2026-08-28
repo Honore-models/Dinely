@@ -6,14 +6,12 @@ import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Loader2,
-  Pencil,
   Trash2,
-  Star,
-  Tag,
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
 import { menuApi } from "@/lib/api";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 interface MenuItem {
   id: string;
@@ -62,14 +60,17 @@ export default function MenuItemDetailPage() {
     }
   };
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const handleDelete = async () => {
-    if (!item || !confirm("Delete this menu item?")) return;
+    if (!item) return;
     try {
       await menuApi.delete(item.id);
       router.push("/dashboard/menu");
     } catch {
       // ignore
     }
+    setShowDeleteConfirm(false);
   };
 
   if (loading) {
@@ -122,7 +123,7 @@ export default function MenuItemDetailPage() {
             {item.available ? "Available" : "Unavailable"}
           </button>
           <button
-            onClick={handleDelete}
+            onClick={() => setShowDeleteConfirm(true)}
             className="flex items-center gap-2 rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-500 hover:bg-red-50"
           >
             <Trash2 size={14} />
@@ -130,6 +131,16 @@ export default function MenuItemDetailPage() {
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Delete Menu Item"
+        message="Are you sure you want to delete this menu item? This action cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+      />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         {/* Main content */}

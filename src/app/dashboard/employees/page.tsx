@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
 import { EmployeeCard } from "@/components/dashboard/EmployeeCard";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Download, Loader2, Plus, Search, X } from "lucide-react";
 import { employeesApi } from "@/lib/api";
 
@@ -118,14 +119,17 @@ export default function EmployeesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Remove this employee?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await employeesApi.delete(id);
-      setEmployees((prev) => prev.filter((e) => e.id !== id));
+      await employeesApi.delete(deleteTarget);
+      setEmployees((prev) => prev.filter((e) => e.id !== deleteTarget));
     } catch {
       /* ignore */
     }
+    setDeleteTarget(null);
   };
 
   const filtered = useMemo(() => {
@@ -214,11 +218,21 @@ export default function EmployeesPage() {
               phone={emp.phone}
               isActive
               onEdit={() => openEdit(emp)}
-              onDelete={() => handleDelete(emp.id)}
+              onDelete={() => setDeleteTarget(emp.id)}
             />
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Remove Employee"
+        message="Are you sure you want to remove this employee? This action cannot be undone."
+        confirmText="Remove"
+        variant="danger"
+      />
 
       {/* Add / Edit Modal */}
       {showModal && (

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, Heart, MapPin, Star } from "lucide-react";
+import { Clock, Heart, Loader2, MapPin, Star } from "lucide-react";
 import { useState } from "react";
 
 interface RestaurantCardProps {
@@ -32,12 +32,18 @@ export function RestaurantCard({
 }: RestaurantCardProps) {
   const [fav, setFav] = useState(isFavourite);
   const [imgError, setImgError] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
 
-  const handleFav = (e: React.MouseEvent) => {
+  const handleFav = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setFavLoading(true);
     setFav((v) => !v);
-    onToggleFavourite?.(id);
+    try {
+      await onToggleFavourite?.(id);
+    } finally {
+      setFavLoading(false);
+    }
   };
 
   const displayImage =
@@ -72,17 +78,22 @@ export function RestaurantCard({
           <button
             type="button"
             onClick={handleFav}
+            disabled={favLoading}
             aria-label={fav ? "Remove from favourites" : "Add to favourites"}
             className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-all hover:bg-white hover:scale-110 active:scale-95 dark:bg-neutral-800/90 dark:hover:bg-neutral-700"
           >
-            <Heart
-              size={16}
-              className={
-                fav
-                  ? "fill-red-500 text-red-500"
-                  : "text-neutral-400 transition-colors group-hover:text-neutral-500"
-              }
-            />
+            {favLoading ? (
+              <Loader2 size={16} className="animate-spin text-red-400" />
+            ) : (
+              <Heart
+                size={16}
+                className={
+                  fav
+                    ? "fill-red-500 text-red-500"
+                    : "text-neutral-400 transition-colors group-hover:text-neutral-500"
+                }
+              />
+            )}
           </button>
 
           {/* Rating badge (bottom-left) */}

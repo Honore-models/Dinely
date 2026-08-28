@@ -17,8 +17,8 @@ export function DinelyLogo({
   onDark = false,
   priority = false,
 }: DinelyLogoProps) {
-  const { resolvedTheme } = useTheme();
-  const useDarkLogo = onDark || resolvedTheme === "dark";
+  const { theme } = useTheme();
+  const useDarkLogo = onDark || theme === "dark";
 
   return (
     <Image

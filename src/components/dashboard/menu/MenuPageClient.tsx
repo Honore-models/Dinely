@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Search, Plus, Loader2, X, Upload } from "lucide-react";
 import { DashboardPageHeader } from "../DashboardPageHeader";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { menuApi, uploadApi } from "@/lib/api";
 
 interface MenuItem {
@@ -99,7 +100,7 @@ export function MenuPageClient() {
     if (!file) return;
     setUploading(true);
     try {
-      const { url } = await uploadApi.upload(file);
+      const { url } = await uploadApi.upload(file, "dinely/menu");
       setForm((p) => ({ ...p, image: url }));
     } catch {
       // ignore
@@ -135,14 +136,17 @@ export function MenuPageClient() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this menu item?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await menuApi.delete(id);
-      setItems((prev) => prev.filter((i) => i.id !== id));
+      await menuApi.delete(deleteTarget);
+      setItems((prev) => prev.filter((i) => i.id !== deleteTarget));
     } catch {
       // ignore
     }
+    setDeleteTarget(null);
   };
 
   const categories = [...new Set(items.map((i) => i.category))].sort();
@@ -250,8 +254,8 @@ export function MenuPageClient() {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(item.id)}
-                    className="rounded-lg bg-white/90 px-2.5 py-1 text-xs font-semibold text-red-500 shadow-sm hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-700"
+                    onClick={() => setDeleteTarget(item.id)}
+                    className="rounded-lg bg-white/90 px-2.5 py-1 text-xs font-semibold text-red-500 shadow-sm hover:bg-white"
                   >
                     Delete
                   </button>
@@ -279,6 +283,16 @@ export function MenuPageClient() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Menu Item"
+        message="Are you sure you want to delete this menu item? This action cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+      />
 
       {/* Add / Edit Modal */}
       {showModal && (

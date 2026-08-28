@@ -111,6 +111,7 @@ export default function RestaurantPage() {
             : "0"
         }
         coverImage={coverImage}
+        restaurantId={id}
         onOrderNow={() => router.push(`/restaurants/${id}/menu`)}
         onBookTable={() => router.push(`/restaurants/${id}/info`)}
       />

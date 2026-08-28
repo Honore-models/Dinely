@@ -63,7 +63,7 @@ export default function OrdersPage() {
             return (
               <Link
                 key={order.id}
-                href={order.status === "Active" || order.status === "Pending" ? `/orders/track` : "#"}
+                href={order.status === "Active" || order.status === "Pending" ? `/orders/track?orderId=${order.id}` : "#"}
                 className="block overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm transition hover:shadow-md"
               >
                 <div className="flex items-center justify-between p-5">

@@ -1,6 +1,7 @@
 "use client";
 
-import { Mail, Phone, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Loader2, Mail, Phone, Pencil, Trash2 } from "lucide-react";
 
 interface EmployeeCardProps {
   name: string;
@@ -18,6 +19,17 @@ interface EmployeeCardProps {
 export function EmployeeCard({
   name, role, department, hireDate, email, phone, image, isActive = true, onEdit, onDelete,
 }: EmployeeCardProps) {
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await onDelete?.();
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-neutral-100 dark:bg-neutral-900 dark:ring-neutral-800">
       <div className="mb-4 flex items-start justify-between">
@@ -53,10 +65,11 @@ export function EmployeeCard({
           )}
           {onDelete && (
             <button
-              onClick={onDelete}
-              className="grid h-8 w-8 place-items-center rounded-lg text-neutral-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="grid h-8 w-8 place-items-center rounded-lg text-neutral-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950 disabled:opacity-60"
             >
-              <Trash2 size={14} />
+              {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
             </button>
           )}
         </div>

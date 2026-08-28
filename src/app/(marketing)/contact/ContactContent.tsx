@@ -4,6 +4,17 @@ import { useState } from "react";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSending(true);
+    // Simulate sending
+    setTimeout(() => {
+      setSending(false);
+      setSubmitted(true);
+    }, 1200);
+  };
 
   return (
     <div className="min-h-screen bg-white px-6 py-20">
@@ -85,10 +96,7 @@ export default function ContactPage() {
               </div>
             ) : (
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setSubmitted(true);
-                }}
+                onSubmit={handleSubmit}
                 className="space-y-5"
               >
                 <div className="grid gap-5 sm:grid-cols-2">
@@ -151,9 +159,20 @@ export default function ContactPage() {
                 </div>
                 <button
                   type="submit"
-                  className="h-12 w-full rounded-xl bg-[#22c51f] text-sm font-bold text-white transition hover:bg-[#1bad1a]"
+                  disabled={sending}
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#22c51f] text-sm font-bold text-white transition hover:bg-[#1bad1a] disabled:opacity-60"
                 >
-                  Send Message
+                  {sending ? (
+                    <>
+                      <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Sending…
+                    </>
+                  ) : (
+                    "Send Message"
+                  )}
                 </button>
               </form>
             )}

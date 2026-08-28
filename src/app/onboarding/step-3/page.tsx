@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Award, Check, Zap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -59,6 +60,7 @@ const plans: {
 
 export default function StepThreePage() {
   const router = useRouter();
+  const [navigating, setNavigating] = useState(false);
   const { selectedPlan, setSelectedPlan, billingCycle, setBillingCycle } =
     useOnboardingStore();
 
@@ -197,7 +199,12 @@ export default function StepThreePage() {
         <Button
           type="button"
           size="lg"
-          onClick={() => router.push("/onboarding/step-4")}
+          onClick={() => {
+            setNavigating(true);
+            router.push("/onboarding/step-4");
+          }}
+          loading={navigating}
+          loadingText="Loading..."
         >
           Next Step
         </Button>

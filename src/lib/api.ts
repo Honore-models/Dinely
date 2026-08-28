@@ -404,12 +404,13 @@ export const paymentsApi = {
 // ─── Upload ───────────────────────────────────────────────────────────────────
 
 export const uploadApi = {
-  upload: async (file: File): Promise<{ url: string }> => {
+  upload: async (file: File, folder?: string): Promise<{ url: string; publicId?: string }> => {
     const form = new FormData();
     form.append("file", file);
+    if (folder) form.append("folder", folder);
     const res = await fetch("/api/upload", { method: "POST", body: form });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Upload failed");
-    return data as { url: string };
+    return data as { url: string; publicId?: string };
   },
 };

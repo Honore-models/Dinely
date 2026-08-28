@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Clock, Globe, MapPin, Phone, Timer, Loader2 } from "lucide-react";
-import { restaurantsApi } from "@/lib/api";
+import { Clock, Globe, MapPin, Phone, Timer, Loader2, CalendarCheck, Users, CheckCircle2 } from "lucide-react";
+import { restaurantsApi, bookingsApi } from "@/lib/api";
 
 interface Restaurant {
   id: string;
@@ -27,10 +27,49 @@ const tabs = [
 
 export default function InfoPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.restaurantId as string;
 
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Booking form state
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingTime, setBookingTime] = useState("19:00");
+  const [partySize, setPartySize] = useState("2");
+  const [bookingNotes, setBookingNotes] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+
+  const timeSlots = [
+    "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
+    "17:00", "17:30", "18:00", "18:30", "19:00", "19:30",
+    "20:00", "20:30", "21:00",
+  ];
+
+  const handleBooking = async () => {
+    if (!bookingDate) {
+      setBookingError("Please select a date");
+      return;
+    }
+    setBookingLoading(true);
+    setBookingError(null);
+    try {
+      await bookingsApi.create({
+        restaurantId: id,
+        date: bookingDate,
+        time: bookingTime,
+        partySize: parseInt(partySize),
+        notes: bookingNotes || undefined,
+      });
+      setBookingSuccess(true);
+    } catch (err) {
+      setBookingError(err instanceof Error ? err.message : "Failed to create booking");
+    } finally {
+      setBookingLoading(false);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -201,6 +240,114 @@ export default function InfoPage() {
                 <p className="mt-2 text-sm leading-relaxed text-neutral-600">
                   {restaurant.description}
                 </p>
+              </div>
+            )}
+          </div>
+
+          {/* Booking Form */}
+          <div className="mt-8 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+            <h2 className="flex items-center gap-2 text-lg font-bold text-neutral-900">
+              <CalendarCheck size={20} className="text-[#22c51f]" />
+              Book a Table
+            </h2>
+
+            {bookingSuccess ? (
+              <div className="mt-5 flex flex-col items-center py-8 text-center">
+                <div className="grid h-14 w-14 place-items-center rounded-full bg-green-100">
+                  <CheckCircle2 size={28} className="text-[#22c51f]" />
+                </div>
+                <h3 className="mt-4 text-lg font-bold text-neutral-900">Booking Confirmed!</h3>
+                <p className="mt-1 text-sm text-neutral-500">
+                  Your table has been reserved for {bookingDate} at {bookingTime}.
+                </p>
+                <p className="mt-1 text-xs text-neutral-400">Party of {partySize}</p>
+                <div className="mt-5 flex gap-3">
+                  <Link
+                    href="/orders"
+                    className="rounded-xl border border-[#22c51f] px-5 py-2.5 text-sm font-bold text-[#22c51f] transition hover:bg-green-50"
+                  >
+                    View My Bookings
+                  </Link>
+                  <button
+                    onClick={() => { setBookingSuccess(false); setBookingDate(""); setBookingTime("19:00"); setPartySize("2"); setBookingNotes(""); }}
+                    className="rounded-xl bg-[#22c51f] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1bad1a]"
+                  >
+                    Book Another
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-5 space-y-4">
+                <p className="text-sm text-neutral-500">Reserve your spot at {restaurant.name}.</p>
+
+n                {bookingError && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-600">
+                    {bookingError}
+                  </div>
+                )}
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-semibold text-neutral-600">Date *</span>
+                    <input
+                      type="date"
+                      value={bookingDate}
+                      onChange={(e) => setBookingDate(e.target.value)}
+                      min={new Date().toISOString().split("T")[0]}
+                      required
+                      className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-semibold text-neutral-600">Time *</span>
+                    <select
+                      value={bookingTime}
+                      onChange={(e) => setBookingTime(e.target.value)}
+                      className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
+                    >
+                      {timeSlots.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-semibold text-neutral-600">Party Size *</span>
+                    <div className="relative">
+                      <Users size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                      <select
+                        value={partySize}
+                        onChange={(e) => setPartySize(e.target.value)}
+                        className="w-full rounded-xl border border-neutral-200 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
+                      >
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20].map((n) => (
+                          <option key={n} value={n}>{n} {n === 1 ? "person" : "people"}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </label>
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-semibold text-neutral-600">Special Requests</span>
+                    <input
+                      type="text"
+                      value={bookingNotes}
+                      onChange={(e) => setBookingNotes(e.target.value)}
+                      placeholder="e.g. Birthday, high chair"
+                      className="w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-[#22c51f] focus:ring-1 focus:ring-green-100"
+                    />
+                  </label>
+                </div>
+
+                <button
+                  onClick={handleBooking}
+                  disabled={bookingLoading || !bookingDate}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#22c51f] py-3 text-sm font-bold text-white transition hover:bg-[#1bad1a] disabled:opacity-60"
+                >
+                  {bookingLoading ? (
+                    <><Loader2 size={16} className="animate-spin" /> Booking...</>
+                  ) : (
+                    <><CalendarCheck size={16} /> Reserve Table</>
+                  )}
+                </button>
               </div>
             )}
           </div>

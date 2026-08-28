@@ -27,8 +27,8 @@ function MobileStepIndicator({ currentStep }: { currentStep: number }) {
                 isCompleted
                   ? "bg-[#22c51f] text-white"
                   : isActive
-                    ? "bg-[#22c51f] text-white ring-2 ring-green-200 dark:ring-green-800"
-                    : "border-2 border-green-200 text-green-600 dark:border-green-800 dark:text-green-400"
+                    ? "bg-[#22c51f] text-white ring-2 ring-green-200"
+                    : "border-2 border-green-200 text-green-600"
               }`}
             >
               {isCompleted ? "✓" : stepNum}
@@ -36,7 +36,7 @@ function MobileStepIndicator({ currentStep }: { currentStep: number }) {
             {i < stepLabels.length - 1 && (
               <div
                 className={`h-0.5 flex-1 rounded-full transition-colors ${
-                  stepNum < currentStep ? "bg-[#22c51f]" : "bg-green-100 dark:bg-green-900"
+                  stepNum < currentStep ? "bg-[#22c51f]" : "bg-green-100"
                 }`}
               />
             )}
@@ -53,7 +53,7 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
   const backHref = currentStep <= 1 ? "/" : `/onboarding/step-${currentStep - 1}`;
 
   return (
-    <main className="grid h-screen overflow-hidden bg-white dark:bg-neutral-950 lg:grid-cols-[340px_1fr] xl:grid-cols-[360px_1fr]">
+    <main className="grid h-screen overflow-hidden bg-white lg:grid-cols-[340px_1fr] xl:grid-cols-[360px_1fr]">
       <div className="hidden lg:block">
         <StepperProgress currentStep={currentStep} />
       </div>
@@ -66,7 +66,7 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
           </div>
           <Link
             href={backHref}
-            className="mb-6 inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#22c51f] px-4 py-1.5 text-sm font-bold text-[#22c51f] transition-colors hover:bg-green-50 dark:hover:bg-green-950"
+            className="mb-6 inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#22c51f] px-4 py-1.5 text-sm font-bold text-[#22c51f] transition-colors hover:bg-green-50"
           >
             <ChevronLeft size={20} /> {currentStep === 4 ? "Go back to plans" : "Back"}
           </Link>

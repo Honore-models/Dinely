@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ChevronRight, CreditCard, Loader2 } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { ordersApi } from "@/lib/api";
+import { PromptModal } from "@/components/ui/PromptModal";
 
 const DELIVERY_FEE = 1.09;
 const SERVICE_FEE = 0.5;
@@ -26,6 +27,7 @@ export default function CheckoutPage() {
   const [instructions, setInstructions] = useState("");
   const [placing, setPlacing] = useState(false);
   const [placeError, setPlaceError] = useState<string | null>(null);
+  const [showAddressModal, setShowAddressModal] = useState(false);
 
   const handlePlaceOrder = async () => {
     if (items.length === 0) return;
@@ -95,10 +97,7 @@ export default function CheckoutPage() {
               <span>{address}</span>
               <button
                 type="button"
-                onClick={() => {
-                  const newAddr = prompt("Enter new address", address);
-                  if (newAddr) setAddress(newAddr);
-                }}
+                onClick={() => setShowAddressModal(true)}
                 className="font-bold text-[#22c51f] transition hover:underline"
               >
                 Change
@@ -235,6 +234,16 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+      <PromptModal
+        open={showAddressModal}
+        onClose={() => setShowAddressModal(false)}
+        onConfirm={(val) => setAddress(val)}
+        title="Delivery Address"
+        message="Enter your delivery address"
+        defaultValue={address}
+        placeholder="Street, City, Country"
+        confirmText="Save Address"
+      />
     </div>
   );
 }

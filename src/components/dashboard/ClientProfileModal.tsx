@@ -1,5 +1,5 @@
-import React from "react";
-import { Mail, Tag, Phone, MoreHorizontal, X } from "lucide-react";
+import React, { useState } from "react";
+import { Loader2, Mail, Tag, Phone, MoreHorizontal, X } from "lucide-react";
 
 interface Client {
   id: string;
@@ -64,7 +64,13 @@ export default function ClientProfileModal({
         </div>
 
         <div className="flex items-center justify-center gap-4">
-          <button className="rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white">
+          <button
+            onClick={() => {
+              window.location.href = `tel:${client.phone}`;
+            }}
+            className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+          >
+            <Phone size={14} />
             Call
           </button>
           <button

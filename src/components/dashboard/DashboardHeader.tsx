@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, LogOut, Mail, Settings, User } from "lucide-react";
+import { ChevronDown, Loader2, LogOut, Mail, Settings, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { authApi } from "@/lib/api";
@@ -48,10 +48,17 @@ export function DashboardHeader() {
     }
   }, [dropdownOpen]);
 
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const handleLogout = async () => {
     setDropdownOpen(false);
-    await authApi.logout();
-    router.push("/login");
+    setLoggingOut(true);
+    try {
+      await authApi.logout();
+      router.push("/login");
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   return (
@@ -118,10 +125,15 @@ export function DashboardHeader() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950"
+                disabled={loggingOut}
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950 disabled:opacity-60"
               >
-                <LogOut size={15} />
-                Sign out
+                {loggingOut ? (
+                  <Loader2 size={15} className="animate-spin" />
+                ) : (
+                  <LogOut size={15} />
+                )}
+                {loggingOut ? "Signing out…" : "Sign out"}
               </button>
             </div>
           )}

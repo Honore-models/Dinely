@@ -89,12 +89,12 @@ export function RestaurantInfoForm() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      alert("File size must be under 5MB");
+      // File too large — silently ignore (or could show inline error)
       return;
     }
     setUploading(true);
     try {
-      const { url } = await uploadApi.upload(file);
+      const { url } = await uploadApi.upload(file, "dinely/restaurants");
       setValue("logo", url, { shouldValidate: true });
       setLogoPreview(url);
     } catch {

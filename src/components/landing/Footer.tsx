@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { DinelyLogo } from "../brand/DinelyLogo";
+import { Toast } from "@/components/ui/Toast";
 
 const footerLinks = {
   "Customer Service": [
@@ -64,6 +66,8 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const [showToast, setShowToast] = useState(false);
+
   return (
     <footer className="relative overflow-hidden bg-white px-6 pt-10 pb-0">
       <div className="relative mx-auto max-w-7xl">
@@ -126,7 +130,7 @@ export function Footer() {
               />
               <button
                 type="button"
-                onClick={() => alert("Thank you for subscribing!")}
+                onClick={() => setShowToast(true)}
                 className="h-11 rounded-lg bg-[#22c51f] text-xs font-bold text-white transition hover:bg-[#1bad1a]"
               >
                 Subscribe Now
@@ -135,6 +139,12 @@ export function Footer() {
           </div>
         </div>
       </div>
+      <Toast
+        open={showToast}
+        onClose={() => setShowToast(false)}
+        message="Thank you for subscribing!"
+        type="success"
+      />
     </footer>
   );
 }

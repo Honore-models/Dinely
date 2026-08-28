@@ -11,25 +11,33 @@ interface Counts { total: number; active: number; completed: number; cancelled: 
 
 export default function OrdersPage() {
   const [counts, setCounts] = useState<Counts>({ total: 0, active: 0, completed: 0, cancelled: 0 });
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const fetchCounts = async () => {
+    try {
+      const [all, active, completed, cancelled] = await Promise.all([
+        ordersApi.list({ limit: 1 }),
+        ordersApi.list({ status: "Active", limit: 1 }),
+        ordersApi.list({ status: "Completed", limit: 1 }),
+        ordersApi.list({ status: "Cancelled", limit: 1 }),
+      ]);
+      setCounts({
+        total: all.total,
+        active: active.total,
+        completed: completed.total,
+        cancelled: cancelled.total,
+      });
+    } catch { /* ignore */ }
+  };
 
   useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const [all, active, completed, cancelled] = await Promise.all([
-          ordersApi.list({ limit: 1 }),
-          ordersApi.list({ status: "Active", limit: 1 }),
-          ordersApi.list({ status: "Completed", limit: 1 }),
-          ordersApi.list({ status: "Cancelled", limit: 1 }),
-        ]);
-        setCounts({
-          total: all.total,
-          active: active.total,
-          completed: completed.total,
-          cancelled: cancelled.total,
-        });
-      } catch { /* ignore */ }
-    };
     fetchCounts();
+    // Poll every 15 seconds for real-time order updates
+    const interval = setInterval(() => {
+      fetchCounts();
+      setRefreshKey((k) => k + 1);
+    }, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -46,11 +54,9 @@ export default function OrdersPage() {
           <MetricsCard title="Completed Orders" value={String(counts.completed)} variant="success" />
           <MetricsCard title="Cancelled Orders" value={String(counts.cancelled)} variant="danger" />
         </div>
-      </DashboardSection>
-
-      <DashboardSection>
-        <OrdersTable />
-      </DashboardSection>
+      </DashboardSection>        <DashboardSection>
+          <OrdersTable refreshKey={refreshKey} />
+        </DashboardSection>
     </>
   );
 }
