@@ -40,16 +40,43 @@ export function useNotifications() {
     return () => clearInterval(interval);
   }, [load]);
 
-  const markAsRead = useCallback((id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-    setUnreadCount((prev) => Math.max(0, prev - 1));
-  }, []);
+  const markAsRead = useCallback(
+    async (id: string) => {
+      // Optimistic update
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
 
-  const markAllAsRead = useCallback(() => {
+      // Persist to server
+      try {
+        await fetch("/api/notifications", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ markAll: false }),
+        });
+      } catch {
+        // Server persist failed, but local state is already updated
+      }
+    },
+    [],
+  );
+
+  const markAllAsRead = useCallback(async () => {
+    // Optimistic update
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     setUnreadCount(0);
+
+    // Persist to server
+    try {
+      await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markAll: true }),
+      });
+    } catch {
+      // Server persist failed, but local state is already updated
+    }
   }, []);
 
   return {

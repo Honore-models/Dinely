@@ -56,12 +56,12 @@ interface Review {
 }
 
 const statusColors: Record<string, string> = {
-  Pending: "bg-amber-50 text-amber-600",
-  Active: "bg-blue-50 text-blue-600",
-  Completed: "bg-emerald-50 text-emerald-600",
-  Cancelled: "bg-red-50 text-red-500",
-  Confirmed: "bg-emerald-50 text-emerald-600",
-  "No-show": "bg-red-50 text-red-500",
+  Pending: "bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400",
+  Active: "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400",
+  Completed: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400",
+  Cancelled: "bg-red-50 text-red-500 dark:bg-red-950 dark:text-red-400",
+  Confirmed: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400",
+  "No-show": "bg-red-50 text-red-500 dark:bg-red-950 dark:text-red-400",
 };
 
 function timeAgo(dateStr: string) {
@@ -164,7 +164,7 @@ export default function ClientDetailPage() {
       <div className="mb-4">
         <Link
           href="/dashboard/clients"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition hover:text-neutral-900"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white"
         >
           <ArrowLeft size={16} />
           Back to Clients
@@ -178,77 +178,77 @@ export default function ClientDetailPage() {
 
       {/* ── Stats Cards ─────────────────────────────────────────────────── */}
       <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-blue-600">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
               <ClipboardList size={18} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-neutral-900">{client.orderCount}</p>
-              <p className="text-xs font-semibold text-neutral-500">Orders</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">{client.orderCount}</p>
+              <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">Orders</p>
             </div>
           </div>
         </div>
-        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-50 text-amber-600">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400">
               <CalendarCheck size={18} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-neutral-900">{client.bookingCount}</p>
-              <p className="text-xs font-semibold text-neutral-500">Bookings</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">{client.bookingCount}</p>
+              <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">Bookings</p>
             </div>
           </div>
         </div>
-        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
               <Utensils size={18} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-neutral-900">
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 ${client.totalSpent.toFixed(0)}
               </p>
-              <p className="text-xs font-semibold text-neutral-500">Total Spent</p>
+              <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">Total Spent</p>
             </div>
           </div>
         </div>
-        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-rose-50 text-rose-600">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
               <Star size={18} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-neutral-900">
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white">
                 {client.avgRating ? `${client.avgRating}` : "-"}
               </p>
-              <p className="text-xs font-semibold text-neutral-500">Avg Rating</p>
+              <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">Avg Rating</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* ── Contact Info ────────────────────────────────────────────────── */}
-      <div className="mb-6 rounded-xl border border-neutral-100 bg-white p-5 shadow-sm">
-        <h3 className="mb-3 text-sm font-bold text-neutral-900">Contact Information</h3>
+      <div className="mb-6 rounded-xl border border-neutral-100 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <h3 className="mb-3 text-sm font-bold text-neutral-900 dark:text-white">Contact Information</h3>
         <div className="flex flex-wrap gap-6">
-          <div className="flex items-center gap-2 text-sm text-neutral-600">
-            <Mail size={14} className="text-neutral-400" />
+          <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+            <Mail size={14} className="text-neutral-400 dark:text-neutral-500" />
             {client.email || "No email"}
           </div>
-          <div className="flex items-center gap-2 text-sm text-neutral-600">
-            <Phone size={14} className="text-neutral-400" />
+          <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+            <Phone size={14} className="text-neutral-400 dark:text-neutral-500" />
             {client.phone || "No phone"}
           </div>
-          <div className="flex items-center gap-2 text-sm text-neutral-600">
-            <Clock size={14} className="text-neutral-400" />
+          <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+            <Clock size={14} className="text-neutral-400 dark:text-neutral-500" />
             Last active: {client.lastActivity ? timeAgo(client.lastActivity) : "Never"}
           </div>
         </div>
       </div>
 
       {/* ── Tabs ────────────────────────────────────────────────────────── */}
-      <div className="mb-6 flex gap-1 rounded-xl border border-neutral-200 bg-white p-1">
+      <div className="mb-6 flex gap-1 rounded-xl border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-900">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -259,7 +259,7 @@ export default function ClientDetailPage() {
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
                 activeTab === tab.key
                   ? "bg-[#22c555] text-white shadow-sm"
-                  : "text-neutral-500 hover:bg-neutral-50"
+                  : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800"
               }`}
             >
               <Icon size={16} />
@@ -268,7 +268,7 @@ export default function ClientDetailPage() {
                 className={`ml-1 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
                   activeTab === tab.key
                     ? "bg-white/20 text-white"
-                    : "bg-neutral-100 text-neutral-500"
+                    : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
                 }`}
               >
                 {tab.count}
@@ -279,7 +279,7 @@ export default function ClientDetailPage() {
       </div>
 
       {/* ── Tab Content ─────────────────────────────────────────────────── */}
-      <div className="rounded-xl border border-neutral-100 bg-white shadow-sm">
+      <div className="rounded-xl border border-neutral-100 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
         {activeTab === "orders" && (
           <div>
             {orders.length === 0 ? (
@@ -287,30 +287,30 @@ export default function ClientDetailPage() {
                 No orders from this customer yet.
               </p>
             ) : (
-              <div className="divide-y divide-neutral-100">
+              <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {orders.map((order) => (
                   <Link
                     key={order.id}
                     href={`/dashboard/orders/${order.id}`}
-                    className="flex items-center gap-4 px-5 py-4 transition hover:bg-neutral-50/50"
+                    className="flex items-center gap-4 px-5 py-4 transition hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50"
                   >
-                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600">
+                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
                       <ClipboardList size={18} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="truncate text-sm font-semibold text-neutral-900">
+                        <p className="truncate text-sm font-semibold text-neutral-900 dark:text-white">
                           {order.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
                         </p>
                         <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${statusColors[order.status] || ""}`}>
                           {order.status}
                         </span>
                       </div>
-                      <p className="mt-0.5 text-xs text-neutral-500">
+                      <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                         {order.type} · {timeAgo(order.created_at)}
                       </p>
                     </div>
-                    <p className="shrink-0 text-sm font-bold text-neutral-900">
+                    <p className="shrink-0 text-sm font-bold text-neutral-900 dark:text-white">
                       ${order.total.toFixed(2)}
                     </p>
                   </Link>
@@ -327,22 +327,22 @@ export default function ClientDetailPage() {
                 No bookings from this customer yet.
               </p>
             ) : (
-              <div className="divide-y divide-neutral-100">
+              <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {bookings.map((booking) => (
                   <div key={booking.id} className="flex items-center gap-4 px-5 py-4">
-                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600">
+                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400">
                       <CalendarCheck size={18} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm font-semibold text-neutral-900">
+                        <p className="text-sm font-semibold text-neutral-900 dark:text-white">
                           {booking.date} at {booking.time}
                         </p>
                         <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${statusColors[booking.status] || ""}`}>
                           {booking.status}
                         </span>
                       </div>
-                      <p className="mt-0.5 text-xs text-neutral-500">
+                      <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                         Party of {booking.party_size}
                         {booking.notes ? ` · ${booking.notes}` : ""}
                       </p>
@@ -361,7 +361,7 @@ export default function ClientDetailPage() {
                 No reviews from this customer yet.
               </p>
             ) : (
-              <div className="divide-y divide-neutral-100">
+              <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {reviews.map((review) => (
                   <div key={review.id} className="px-5 py-4">
                     <div className="flex items-center justify-between">
@@ -373,7 +373,7 @@ export default function ClientDetailPage() {
                             className={
                               i <= review.rating
                                 ? "fill-amber-400 text-amber-400"
-                                : "text-neutral-200"
+                                : "text-neutral-200 dark:text-neutral-700"
                             }
                           />
                         ))}
@@ -383,7 +383,7 @@ export default function ClientDetailPage() {
                       </span>
                     </div>
                     {review.comment && (
-                      <p className="mt-2 text-sm text-neutral-600">
+                      <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                         {review.comment}
                       </p>
                     )}

@@ -118,10 +118,28 @@ export const restaurantsApi = {
 // ─── Menu ─────────────────────────────────────────────────────────────────────
 
 export const menuApi = {
-  list: (restaurantId?: string) =>
-    apiFetch<{ data: Record<string, unknown>[] }>(
-      restaurantId ? `/menu?restaurantId=${restaurantId}` : "/menu",
-    ),
+  list: (
+    restaurantId?: string,
+    filters?: {
+      search?: string;
+      category?: string;
+      mealTime?: string;
+      priceRange?: string;
+      available?: boolean;
+    },
+  ) => {
+    const qs = new URLSearchParams();
+    if (restaurantId) qs.set("restaurantId", restaurantId);
+    if (filters?.search) qs.set("search", filters.search);
+    if (filters?.category) qs.set("category", filters.category);
+    if (filters?.mealTime) qs.set("mealTime", filters.mealTime);
+    if (filters?.priceRange) qs.set("priceRange", filters.priceRange);
+    if (filters?.available) qs.set("available", "true");
+    const q = qs.toString();
+    return apiFetch<{ data: Record<string, unknown>[] }>(
+      `/menu${q ? `?${q}` : ""}`,
+    );
+  },
 
   get: (id: string) =>
     apiFetch<{ data: Record<string, unknown> }>(`/menu/${id}`),

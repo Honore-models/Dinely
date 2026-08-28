@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { Play } from "lucide-react";
+import { useState } from "react";
+import { Play, X } from "lucide-react";
+
+const DinelyIntroVideo =
+  "https://res.cloudinary.com/cwh3nqgb/video/upload/dinely/videos/dinely-intro.mp4";
 
 const stats = [
   { value: "10K+", label: "Restaurants Onboarded" },
@@ -13,6 +17,8 @@ const stats = [
 const teamAvatars = ["/man1.webp", "/woman.jpg", "/man2.jpg"];
 
 export function OurStorySection() {
+  const [showVideo, setShowVideo] = useState(false);
+
   return (
     <section className="bg-white px-6 py-20">
       <div className="mx-auto max-w-7xl">
@@ -73,7 +79,7 @@ export function OurStorySection() {
             <p className="mt-6 text-sm leading-relaxed text-neutral-500">
               At Dinely, every restaurant is carefully selected and every dish
               is crafted with love. We connect amazing restaurants with hungry
-              customers -giving owners the tools to thrive and diners the
+              customers - giving owners the tools to thrive and diners the
               experiences they deserve. That&apos;s the Dinely promise.
             </p>
 
@@ -108,12 +114,7 @@ export function OurStorySection() {
               </div>
               <button
                 type="button"
-                onClick={() =>
-                  window.open(
-                    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                    "_blank",
-                  )
-                }
+                onClick={() => setShowVideo(true)}
                 className="flex items-center gap-2 text-sm font-bold text-neutral-900 transition hover:text-[#22c51f]"
               >
                 <span className="grid h-10 w-10 place-items-center rounded-full border-2 border-neutral-200 text-[#22c51f]">
@@ -125,6 +126,35 @@ export function OurStorySection() {
           </div>
         </div>
       </div>
+
+      {/* Video Modal */}
+      {showVideo && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+          onClick={() => setShowVideo(false)}
+        >
+          <div
+            className="relative w-full max-w-3xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setShowVideo(false)}
+              className="absolute -top-12 right-0 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+            >
+              <X size={20} />
+            </button>
+            <div className="overflow-hidden rounded-2xl bg-black shadow-2xl">
+              <video
+                src={DinelyIntroVideo}
+                controls
+                autoPlay
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

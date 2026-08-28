@@ -20,13 +20,37 @@ export async function GET(req: NextRequest) {
     restaurantId = session.restaurantId;
   }
 
+  const search = searchParams.get("search") || "";
+  const category = searchParams.get("category") || "";
+  const mealTime = searchParams.get("mealTime") || "";
+  const priceRange = searchParams.get("priceRange") || "";
+  const availableOnly = searchParams.get("available") === "true";
+
   try {
-    const { data: items, error } = await supabase
+    let query = supabase
       .from("menu_items")
       .select("*")
       .eq("restaurant_id", restaurantId)
       .order("category", { ascending: true })
       .order("name", { ascending: true });
+
+    if (search) {
+      query = query.or(`name.ilike.%${search}%,category.ilike.%${search}%,description.ilike.%${search}%`);
+    }
+    if (category) {
+      query = query.eq("category", category);
+    }
+    if (mealTime) {
+      query = query.contains("meal_times", [mealTime]);
+    }
+    if (priceRange) {
+      query = query.eq("price_range", priceRange);
+    }
+    if (availableOnly) {
+      query = query.eq("available", true);
+    }
+
+    const { data: items, error } = await query;
 
     if (error) throw error;
 

@@ -14,11 +14,15 @@ interface MenuItem {
   description?: string;
   image?: string;
   available?: boolean;
+  meal_times?: string[];
+  price_range?: string;
 }
 
 const CATEGORIES = [
   "Pizza", "Chicken", "Pasta", "Salad", "Desserts", "Burger", "Seafood", "Drinks", "Other",
 ];
+const MEAL_TIMES = ["Breakfast", "Lunch", "Dinner", "Snack"];
+const PRICE_RANGES = ["$5 - $10", "$10 - $20", "$20 - $30", "Above $30"];
 
 const EMPTY_FORM = {
   name: "",
@@ -29,11 +33,31 @@ const EMPTY_FORM = {
   available: true,
 };
 
+function FilterSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border-b border-neutral-100 py-4 last:border-0 last:pb-0 first:pt-0 dark:border-neutral-800">
+      <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+        {title}
+      </h3>
+      <ul className="mt-3 space-y-2.5">{children}</ul>
+    </div>
+  );
+}
+
 export function MenuPageClient() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedMealTimes, setSelectedMealTimes] = useState<string[]>([]);
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
+  const [availableOnly, setAvailableOnly] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<MenuItem | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -44,18 +68,34 @@ export function MenuPageClient() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await menuApi.list();
+      const { data } = await menuApi.list(undefined, {
+        search: query || undefined,
+        category: selectedCategory || undefined,
+        mealTime: selectedMealTimes.length === 1 ? selectedMealTimes[0] : undefined,
+        priceRange: selectedPriceRanges.length === 1 ? selectedPriceRanges[0] : undefined,
+        available: availableOnly || undefined,
+      });
       setItems(data as unknown as MenuItem[]);
     } catch {
       // ignore
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [query, selectedCategory, selectedMealTimes, selectedPriceRanges, availableOnly]);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  const toggleMealTime = (t: string) =>
+    setSelectedMealTimes((prev) =>
+      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t],
+    );
+
+  const togglePriceRange = (r: string) =>
+    setSelectedPriceRanges((prev) =>
+      prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r],
+    );
 
   const filtered = useMemo(() => {
     return items.filter((item) => {
@@ -65,9 +105,15 @@ export function MenuPageClient() {
         item.category.toLowerCase().includes(query.toLowerCase());
       const matchesCategory =
         !selectedCategory || item.category === selectedCategory;
-      return matchesQuery && matchesCategory;
+      const matchesMealTime =
+        selectedMealTimes.length === 0 ||
+        (item.meal_times ?? []).some((t) => selectedMealTimes.includes(t));
+      const matchesPriceRange =
+        selectedPriceRanges.length === 0 ||
+        selectedPriceRanges.includes(item.price_range ?? "");
+      return matchesQuery && matchesCategory && matchesMealTime && matchesPriceRange;
     });
-  }, [items, query, selectedCategory]);
+  }, [items, query, selectedCategory, selectedMealTimes, selectedPriceRanges]);
 
   const openAdd = () => {
     setEditing(null);
@@ -166,44 +212,145 @@ export function MenuPageClient() {
         }
       />
 
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1 max-w-md">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
-            size={18}
-          />
-          <input
-            type="search"
-            placeholder="Search menu items..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="h-11 w-full rounded-lg border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-2 focus:ring-green-100/80 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-[#22c555]"
-          />
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={() => setSelectedCategory("")}
-            className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
-              !selectedCategory
-                ? "bg-[#22c51f] text-white"
-                : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
-            }`}
-          >
-            All
-          </button>
-          {categories.map((cat) => (
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row">
+        {/* Sidebar filters */}
+        <div className="w-full shrink-0 rounded-xl border border-neutral-200/70 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 lg:w-[220px]">
+          <p className="mb-1 text-sm font-bold text-neutral-900 dark:text-white">Filters</p>
+          <p className="mb-2 text-xs font-medium text-neutral-400">Refine your menu view</p>
+
+          {/* Category */}
+          <FilterSection title="Category">
+            <li>
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                <input
+                  type="radio"
+                  checked={!selectedCategory}
+                  onChange={() => setSelectedCategory("")}
+                  className="h-4 w-4 border-neutral-300 text-[#22c51f] focus:ring-[#22c51f]/30"
+                />
+                All
+              </label>
+            </li>
+            {categories.map((cat) => (
+              <li key={cat}>
+                <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                  <input
+                    type="radio"
+                    checked={selectedCategory === cat}
+                    onChange={() => setSelectedCategory(selectedCategory === cat ? "" : cat)}
+                    className="h-4 w-4 border-neutral-300 text-[#22c51f] focus:ring-[#22c51f]/30"
+                  />
+                  {cat}
+                </label>
+              </li>
+            ))}
+          </FilterSection>
+
+          {/* Meal times */}
+          <FilterSection title="Meal times">
+            {MEAL_TIMES.map((t) => (
+              <li key={t}>
+                <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                  <input
+                    type="checkbox"
+                    checked={selectedMealTimes.includes(t)}
+                    onChange={() => toggleMealTime(t)}
+                    className="h-4 w-4 rounded border-neutral-300 text-[#22c51f] focus:ring-[#22c51f]/30"
+                  />
+                  {t}
+                </label>
+              </li>
+            ))}
+          </FilterSection>
+
+          {/* Price ranges */}
+          <FilterSection title="Price">
+            {PRICE_RANGES.map((r) => (
+              <li key={r}>
+                <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                  <input
+                    type="checkbox"
+                    checked={selectedPriceRanges.includes(r)}
+                    onChange={() => togglePriceRange(r)}
+                    className="h-4 w-4 rounded border-neutral-300 text-[#22c51f] focus:ring-[#22c51f]/30"
+                  />
+                  {r}
+                </label>
+              </li>
+            ))}
+          </FilterSection>
+
+          {/* Available only */}
+          <FilterSection title="Availability">
+            <li>
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                <input
+                  type="checkbox"
+                  checked={availableOnly}
+                  onChange={() => setAvailableOnly(!availableOnly)}
+                  className="h-4 w-4 rounded border-neutral-300 text-[#22c51f] focus:ring-[#22c51f]/30"
+                />
+                Available only
+              </label>
+            </li>
+          </FilterSection>
+
+          {/* Clear all */}
+          {(selectedCategory || selectedMealTimes.length > 0 || selectedPriceRanges.length > 0 || availableOnly) && (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(selectedCategory === cat ? "" : cat)}
+              onClick={() => {
+                setSelectedCategory("");
+                setSelectedMealTimes([]);
+                setSelectedPriceRanges([]);
+                setAvailableOnly(false);
+              }}
+              className="mt-3 w-full rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-500 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+
+        {/* Search + category pills */}
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="relative max-w-md">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              size={18}
+            />
+            <input
+              type="search"
+              placeholder="Search menu items..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="h-11 w-full rounded-lg border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-2 focus:ring-green-100/80 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-[#22c555]"
+            />
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setSelectedCategory("")}
               className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                selectedCategory === cat
+                !selectedCategory
                   ? "bg-[#22c51f] text-white"
                   : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
               }`}
             >
-              {cat}
+              All
             </button>
-          ))}
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(selectedCategory === cat ? "" : cat)}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                  selectedCategory === cat
+                    ? "bg-[#22c51f] text-white"
+                    : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
