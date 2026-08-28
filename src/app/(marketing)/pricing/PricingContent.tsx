@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ToggleBilling } from "@/components/ui/ToggleBilling";
-import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
+import { MarketingNavBar } from "@/components/ui/MarketingNavBar";
 
 const plans = [
   {
@@ -104,13 +104,7 @@ export default function PricingPage() {
 
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
-      {/* ── Back to Home ───────────────────────────────────────────── */}
-      <div className="px-6 pt-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <BackToHomeButton />
-        </div>
-      </div>
-
+      <MarketingNavBar activePage="/pricing" />
       <SoftwareAppJsonLd />
       <FAQJsonLd faqs={faqs.map((f) => ({ question: f.q, answer: f.a }))} />
       {/* ── Hero ────────────────────────────────────────────────────── */}

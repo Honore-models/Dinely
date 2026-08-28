@@ -59,27 +59,6 @@ export function HeroSection() {
               />
             </div>
 
-            {/* Floating card -Owner */}
-            <div className="animate-float-card-1 absolute -bottom-2 left-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white/90 backdrop-blur-sm px-4 py-3 shadow-lg md:bottom-8 md:-left-6">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#e8f5e9]">
-                <Image
-                  src="/man1.webp"
-                  alt="Robert Fisher"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-neutral-900">
-                  Robert Fisher
-                </p>
-                <p className="text-xs text-neutral-500">Restaurant Owner</p>
-              </div>
-              <div className="ml-1 grid h-8 w-8 place-items-center rounded-full bg-[#22c51f] text-white">
-                <Star size={14} className="fill-white" />
-              </div>
-            </div>
-
             {/* Floating card -Dish */}
             <div className="animate-float-card-2 absolute -bottom-2 right-4 flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white/90 backdrop-blur-sm px-4 py-3 shadow-lg md:bottom-20 md:-right-6">
               <div className="relative h-10 w-10 overflow-hidden rounded-full bg-neutral-100">

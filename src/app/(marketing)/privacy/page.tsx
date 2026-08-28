@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
+import { MarketingNavBar } from "@/components/ui/MarketingNavBar";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -14,12 +14,9 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-white px-6 py-20">
-      <div className="mx-auto max-w-3xl">
-        <div className="mb-8">
-          <BackToHomeButton />
-        </div>
-
+    <div className="min-h-screen bg-white">
+      <MarketingNavBar />
+      <div className="mx-auto max-w-3xl px-6 py-20">
         <h1 className="text-4xl font-extrabold text-neutral-900">Privacy Policy</h1>
         <p className="mt-4 text-sm text-neutral-500">Last updated: August 25, 2026</p>
 

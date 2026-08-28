@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FAQJsonLd } from "@/components/seo/JsonLd";
-import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
+import { MarketingNavBar } from "@/components/ui/MarketingNavBar";
 
 const faqs = [
   {
@@ -43,15 +43,12 @@ export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-white px-6 py-20">
-      <div className="mx-auto max-w-3xl mb-8">
-        <BackToHomeButton />
-      </div>
-
+    <div className="min-h-screen bg-white">
+      <MarketingNavBar activePage="/faq" />
+      <div className="mx-auto max-w-3xl px-6 py-20">
       <FAQJsonLd
         faqs={faqs.map((f) => ({ question: f.q, answer: f.a }))}
       />
-      <div className="mx-auto max-w-3xl">
         <div className="text-center">
           <p className="text-xs font-bold uppercase tracking-wider text-[#22c51f]">
             Help Center

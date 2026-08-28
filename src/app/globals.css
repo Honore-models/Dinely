@@ -115,22 +115,7 @@ main:focus-visible {
   }
 }
 
-/* Hero floating card animations */
-@keyframes float-card-1 {
-  0%, 100% {
-    transform: translateY(0px) translateX(0px);
-  }
-  25% {
-    transform: translateY(-8px) translateX(3px);
-  }
-  50% {
-    transform: translateY(-4px) translateX(-2px);
-  }
-  75% {
-    transform: translateY(-10px) translateX(1px);
-  }
-}
-
+/* Hero floating card animation */
 @keyframes float-card-2 {
   0%, 100% {
     transform: translateY(0px) translateX(0px);
@@ -155,11 +140,6 @@ main:focus-visible {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.animate-float-card-1 {
-  animation: float-card-1 6s ease-in-out infinite;
-  animation-delay: 0.5s;
 }
 
 .animate-float-card-2 {

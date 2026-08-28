@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
+import { MarketingNavBar } from "@/components/ui/MarketingNavBar";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -92,12 +92,7 @@ const milestones = [
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
-      {/* ── Back to Home ───────────────────────────────────────────── */}
-      <div className="px-6 pt-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <BackToHomeButton />
-        </div>
-      </div>
+      <MarketingNavBar activePage="/about" />
 
       {/* ── Hero ────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#22c51f] to-[#189816] px-6 py-20 lg:px-8">
