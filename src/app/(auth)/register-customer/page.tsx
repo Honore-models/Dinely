@@ -29,7 +29,7 @@ export default function CustomerRegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-start justify-center bg-neutral-50 px-4 pt-10 pb-12 dark:bg-neutral-950">
+    <div className="flex min-h-screen items-start justify-center bg-neutral-50 px-4 pt-8 pb-16 dark:bg-neutral-950">
       <div className="w-full max-w-md">
         <div className="mb-5 flex justify-center">
           <Link href="/">
@@ -37,7 +37,7 @@ export default function CustomerRegisterPage() {
           </Link>
         </div>
 
-        <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-white">
             Create your account
           </h1>
