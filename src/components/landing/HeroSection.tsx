@@ -49,7 +49,7 @@ export function HeroSection() {
           {/* Right image */}
           <div className="relative">
             {/* Main food image - no background */}
-            <div className="relative mx-auto h-[420px] w-[420px] md:h-[520px] md:w-[520px]">
+            <div className="relative mx-auto aspect-square w-full max-w-[320px] sm:max-w-[420px] md:max-w-[520px]">
               <Image
                 src="/Order_food.png"
                 alt="Delicious food"

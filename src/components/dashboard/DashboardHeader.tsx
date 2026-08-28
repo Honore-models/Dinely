@@ -8,6 +8,7 @@ import { useRestaurant } from "@/hooks/useRestaurant";
 import { authApi } from "@/lib/api";
 import { DarkModeToggle } from "../ui/DarkModeToggle";
 import { NotificationDropdown } from "../ui/NotificationDropdown";
+import { Menu } from "lucide-react";
 
 function formatToday() {
   const now = new Date();
@@ -19,7 +20,11 @@ function formatToday() {
   });
 }
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onMenuToggle?: () => void;
+}
+
+export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
   const { user } = useAuth();
   const { restaurant } = useRestaurant();
   const router = useRouter();
@@ -62,11 +67,21 @@ export function DashboardHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-neutral-200/80 bg-white/95 px-5 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/95 lg:px-8">
-      <p className="min-w-0 truncate text-xs font-medium text-neutral-500 dark:text-neutral-400 sm:text-sm">
-        <span className="hidden text-neutral-400 dark:text-neutral-500 sm:inline">Today · </span>
-        {formatToday()}
-      </p>
+    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-neutral-200/80 bg-white/95 px-4 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/95 sm:px-5 lg:px-8">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onMenuToggle}
+          className="grid h-9 w-9 place-items-center rounded-lg text-neutral-600 transition hover:bg-neutral-100 lg:hidden dark:text-neutral-400 dark:hover:bg-neutral-800"
+          aria-label="Toggle sidebar"
+        >
+          <Menu size={20} />
+        </button>
+        <p className="min-w-0 truncate text-xs font-medium text-neutral-500 dark:text-neutral-400 sm:text-sm">
+          <span className="hidden text-neutral-400 dark:text-neutral-500 sm:inline">Today · </span>
+          {formatToday()}
+        </p>
+      </div>
 
       <div className="flex shrink-0 items-center gap-1 sm:gap-2">
         <button

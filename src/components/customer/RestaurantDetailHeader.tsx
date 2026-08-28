@@ -55,7 +55,7 @@ export function RestaurantDetailHeader({
   };
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl" style={{ height: 340 }}>
+    <div className="relative w-full overflow-hidden rounded-2xl min-h-[280px] sm:min-h-[340px]">
       {/* Cover image */}
       <Image
         src={coverImage}
@@ -76,7 +76,7 @@ export function RestaurantDetailHeader({
         )}
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold leading-tight text-white drop-shadow-sm">
+            <h1 className="text-2xl font-extrabold leading-tight text-white drop-shadow-sm sm:text-3xl">
               {name}
             </h1>
             <p className="mt-0.5 text-sm font-medium text-white/80">{type}</p>
@@ -85,18 +85,18 @@ export function RestaurantDetailHeader({
               <span className="font-bold text-white">{rating.toFixed(1)}</span>
               <span className="text-white/60">({reviewCount} Reviews)</span>
             </div>
-            <div className="mt-3 flex items-center gap-3">
+            <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={onOrderNow}
-                className="rounded-full bg-[#22c51f] px-5 py-2 text-sm font-bold text-white transition hover:bg-[#1bad1a]"
+                className="rounded-full bg-[#22c51f] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#1bad1a] sm:px-5 sm:text-sm"
               >
                 Order Now
               </button>
               <button
                 type="button"
                 onClick={onBookTable}
-                className="rounded-full border border-white px-5 py-2 text-sm font-bold text-white transition hover:bg-white/10"
+                className="rounded-full border border-white px-4 py-2 text-xs font-bold text-white transition hover:bg-white/10 sm:px-5 sm:text-sm"
               >
                 Book a Table
               </button>

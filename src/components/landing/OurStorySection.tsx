@@ -84,7 +84,7 @@ export function OurStorySection() {
             </p>
 
             {/* Stats */}
-            <div className="mt-8 grid grid-cols-4 gap-4">
+            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {stats.map((stat) => (
                 <div key={stat.label}>
                   <p className="text-2xl font-extrabold text-neutral-900">

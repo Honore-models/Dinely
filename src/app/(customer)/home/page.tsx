@@ -87,46 +87,48 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950">
       {/* ── Hero banner ─────────────────────────────────────────────────────── */}
-      <section className="mx-4 mt-4 overflow-hidden rounded-2xl bg-gradient-to-br from-[#e8f5e9] to-[#f1f8e9] px-8 py-8 dark:from-[#0a1f0c] dark:to-[#0c2a0e] lg:mx-8 lg:px-12">
+      <section className="mx-4 mt-4 overflow-hidden rounded-2xl bg-gradient-to-br from-[#e8f5e9] to-[#f1f8e9] px-5 py-6 dark:from-[#0a1f0c] dark:to-[#0c2a0e] sm:px-8 sm:py-8 lg:mx-8 lg:px-12">
         <div className="flex items-center justify-between">
           <div className="max-w-md">
-            <h1 className="text-3xl font-extrabold leading-tight text-neutral-900 dark:text-white md:text-4xl">
+            <h1 className="text-2xl font-extrabold leading-tight text-neutral-900 dark:text-white sm:text-3xl md:text-4xl">
               Discover the best
-              <br />
-              Restaurants near you.
+              <br className="hidden sm:block" />
+              {' '}Restaurants near you.
             </h1>
-            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-300">
+            <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-300 sm:text-sm">
               Explore top-rated restaurants, delicious cuisines
-              <br />
+              <br className="hidden sm:block" />
               and exclusive offers all in one place
             </p>
 
-            <div className="mt-5 flex items-center gap-2 rounded-xl border border-neutral-200 bg-white p-1.5 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
+            <div className="mt-5 flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-1.5 shadow-sm dark:border-neutral-700 dark:bg-neutral-800 sm:flex-row sm:items-center sm:p-1.5">
               <button
                 type="button"
-                className="flex shrink-0 items-center gap-2 rounded-xl bg-neutral-100/80 px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200/70 active:scale-[0.98] dark:bg-neutral-700/80 dark:text-neutral-300 dark:hover:bg-neutral-600/70"
+                className="flex shrink-0 items-center gap-2 rounded-xl bg-neutral-100/80 px-3 py-2.5 text-xs font-medium text-neutral-700 transition hover:bg-neutral-200/70 active:scale-[0.98] dark:bg-neutral-700/80 dark:text-neutral-300 dark:hover:bg-neutral-600/70 sm:px-4 sm:text-sm"
               >
                 <MapPin size={15} className="text-[#22c555]" />
                 <span className="font-semibold">Kigali-Rwanda</span>
                 <ChevronDown size={14} className="text-neutral-400" />
               </button>
-              <input
-                type="text"
-                placeholder="Search for restaurants, cuisines or dishes"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") setSearchQuery(searchInput);
-                }}
-                className="min-w-0 flex-1 bg-transparent py-1.5 text-sm text-neutral-700 outline-none placeholder:text-neutral-400 dark:text-white dark:placeholder:text-neutral-500"
-              />
-              <button
-                type="button"
-                onClick={() => setSearchQuery(searchInput)}
-                className="shrink-0 rounded-xl bg-gradient-to-r from-[#22c555] to-[#1bad1a] px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-green-200 transition-all hover:shadow-lg hover:shadow-green-300 active:scale-[0.97]"
-              >
-                Search
-              </button>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="Search restaurants, cuisines or dishes"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") setSearchQuery(searchInput);
+                  }}
+                  className="min-w-0 flex-1 bg-transparent py-1.5 text-xs text-neutral-700 outline-none placeholder:text-neutral-400 dark:text-white dark:placeholder:text-neutral-500 sm:text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery(searchInput)}
+                  className="shrink-0 rounded-xl bg-gradient-to-r from-[#22c555] to-[#1bad1a] px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-green-200 transition-all hover:shadow-lg hover:shadow-green-300 active:scale-[0.97] sm:px-5 sm:text-sm"
+                >
+                  Search
+                </button>
+              </div>
             </div>
           </div>
 

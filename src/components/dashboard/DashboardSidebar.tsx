@@ -14,7 +14,12 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function DashboardSidebar() {
+interface DashboardSidebarProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [bookingsOpen, setBookingsOpen] = useState(
@@ -38,9 +43,17 @@ export function DashboardSidebar() {
   };
 
   return (
-    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-neutral-200/80 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-      <div className="px-6 py-6">
+    <aside className={`fixed inset-y-0 left-0 z-50 flex h-full w-64 shrink-0 flex-col border-r border-neutral-200/80 bg-white transition-transform duration-200 dark:border-neutral-800 dark:bg-neutral-900 lg:static lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <div className="flex items-center justify-between px-6 py-6">
         <DinelyLogo width={108} height={38} />
+        <button
+          type="button"
+          onClick={onClose}
+          className="grid h-8 w-8 place-items-center rounded-lg text-neutral-400 hover:bg-neutral-100 lg:hidden"
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
       </div>
 
       <div className="px-6 pb-2">

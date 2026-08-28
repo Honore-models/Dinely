@@ -64,7 +64,7 @@ export function SpecialDishesSection() {
           {dishes.map((dish) => (
             <div
               key={dish.name}
-              className="group min-w-[260px] snap-center overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 md:min-w-[280px]"
+              className="group min-w-[240px] snap-center overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 sm:min-w-[260px] md:min-w-[280px]"
             >
               {/* Image with green ring */}
               <div className="relative bg-gradient-to-b from-[#e8f5e9] to-white px-6 pt-8 pb-4">

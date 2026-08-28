@@ -123,7 +123,7 @@ export default function CheckoutPage() {
           {/* Delivery time */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
             <h2 className="text-base font-bold text-neutral-900">Delivery Time</h2>
-            <div className="mt-3 grid grid-cols-3 gap-3">
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
               {(
                 [
                   { id: "asap", title: "ASAP", subtitle: "30-40 min" },
