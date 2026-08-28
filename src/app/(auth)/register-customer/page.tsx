@@ -45,22 +45,7 @@ export default function CustomerRegisterPage() {
             Join Dinely to explore and order from the best restaurants.
           </p>
 
-          <div className="mt-6">
-            <AuthGoogleButton label="Continue with Google" redirect="/home" />
-          </div>
-
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-neutral-200 dark:border-neutral-700" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-white px-3 text-neutral-400 dark:bg-neutral-900 dark:text-neutral-500">
-                or continue with email
-              </span>
-            </div>
-          </div>
-
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             {error && (
               <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
                 {error}
@@ -103,17 +88,16 @@ export default function CustomerRegisterPage() {
               value={form.phone}
               onChange={set("phone")}
               required
-            />
-
-            <Input
-              label="Password"
-              type="password"
-              placeholder="Min. 8 characters"
-              icon={<LockKeyhole size={16} />}
-              value={form.password}
-              onChange={set("password")}
-              required
-            />
+            />              <Input
+                label="Password"
+                type="password"
+                placeholder="Min. 8 characters"
+                icon={<LockKeyhole size={16} />}
+                togglePassword
+                value={form.password}
+                onChange={set("password")}
+                required
+              />
 
             <Button
               type="submit"
@@ -125,7 +109,20 @@ export default function CustomerRegisterPage() {
             </Button>
           </form>
 
-          <p className="mt-5 text-center text-sm text-neutral-500 dark:text-neutral-400">
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-neutral-200 dark:border-neutral-700" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-3 text-neutral-400 dark:bg-neutral-900 dark:text-neutral-500">
+                or
+              </span>
+            </div>
+          </div>
+
+          <AuthGoogleButton label="Continue with Google" redirect="/home" />
+
+          <p className="mt-4 text-center text-sm text-neutral-500 dark:text-neutral-400">
             Already have an account?{" "}
             <Link
               href="/login"

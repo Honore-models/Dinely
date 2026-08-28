@@ -76,6 +76,7 @@ export default function LoginPage() {
           type="password"
           placeholder="Enter your password"
           icon={<LockKeyhole size={16} />}
+          togglePassword
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
