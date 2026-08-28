@@ -15,9 +15,56 @@ interface PhoneInputProps
   label?: string;
   error?: string;
   size?: "default" | "compact";
+  /** Full phone number including dial code, e.g. "+250784955081" */
   value?: string;
   onChange?: (e: { target: { value: string; name?: string } }) => void;
   onCountryChange?: (country: Country) => void;
+}
+
+/**
+ * Try to match a raw phone string against known dial codes.
+ * Returns the longest matching country, or undefined.
+ */
+function detectCountryFromNumber(raw: string): Country | undefined {
+  const stripped = raw.replace(/[^0-9+]/g, "");
+  if (!stripped.startsWith("+")) return undefined;
+  const digits = stripped.slice(1); // strip leading +
+  // Sort countries by dial code length descending so we match longest first
+  const sorted = [...countries].sort(
+    (a, b) => b.dialCode.length - a.dialCode.length,
+  );
+  return sorted.find((c) => digits.startsWith(c.dialCode.slice(1))); // dialCode includes +
+}
+
+/**
+ * Given a full phone number value and the current dial code,
+ * return just the local number part (without the dial code and without +).
+ */
+function stripDialCode(full: string, dialCode: string): string {
+  const stripped = full.replace(/[^0-9]/g, "");
+  const dialDigits = dialCode.replace(/[^0-9]/g, "");
+  if (stripped.startsWith(dialDigits)) {
+    return stripped.slice(dialDigits.length);
+  }
+  return full.replace(/[^0-9\s\-()]/g, "");
+}
+
+/**
+ * Format a local number string with spaces for readability.
+ * e.g. "784955081" -> "784 955 081"
+ */
+function formatLocalNumber(num: string): string {
+  const digits = num.replace(/[^0-9]/g, "");
+  if (digits.length <= 3) return digits;
+  // Group in chunks of 3 from the right
+  const parts: string[] = [];
+  let remaining = digits;
+  while (remaining.length > 3) {
+    parts.unshift(remaining.slice(-3));
+    remaining = remaining.slice(0, -3);
+  }
+  if (remaining) parts.unshift(remaining);
+  return parts.join(" ");
 }
 
 export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
@@ -42,17 +89,35 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLInputElement>(null);
 
+    // Derive the local number (display value) from the full value
+    const localNumber = stripDialCode(value, selectedCountry.dialCode);
+
     const filtered = searchCountries(searchQuery);
 
     const selectCountry = useCallback(
       (country: Country) => {
+        // Preserve the local number and rebuild the full value with the new dial code
+        const local = stripDialCode(value, selectedCountry.dialCode);
+        const digits = local.replace(/[^0-9]/g, "");
+        const fullNumber = digits ? country.dialCode + digits : "";
         setSelectedCountry(country);
         setDropdownOpen(false);
         setSearchQuery("");
         onCountryChange?.(country);
+        // Emit the new full value
+        onChange?.({ target: { value: fullNumber, name } });
       },
-      [onCountryChange],
+      [onCountryChange, value, selectedCountry.dialCode, name, onChange],
     );
+
+    // Auto-detect country from the value when it starts with +
+    useEffect(() => {
+      if (!value) return;
+      const detected = detectCountryFromNumber(value);
+      if (detected && (detected.code !== selectedCountry.code || detected.dialCode !== selectedCountry.dialCode)) {
+        setSelectedCountry(detected);
+      }
+    }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -74,12 +139,16 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
       }
     }, [dropdownOpen]);
 
-    // Handle phone input change
+    // Handle phone input change: prepend the dial code to whatever the user types
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value;
-      // Strip any leading dial code that the user might type
-      const cleaned = raw.replace(/[^0-9+\-\s()]/g, "");
-      onChange?.({ target: { value: cleaned, name } });
+      const digits = raw.replace(/[^0-9]/g, "");
+      if (!digits) {
+        onChange?.({ target: { value: "", name } });
+        return;
+      }
+      const fullNumber = selectedCountry.dialCode + digits;
+      onChange?.({ target: { value: fullNumber, name } });
     };
 
     return (
@@ -177,7 +246,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
           <input
             ref={ref}
             type="tel"
-            value={value}
+            value={localNumber}
             onChange={handleInputChange}
             className={`min-w-0 flex-1 bg-transparent px-3 outline-none placeholder:text-neutral-400 dark:text-white dark:placeholder:text-neutral-500 ${
               compact ? "text-sm" : "text-base font-medium"
