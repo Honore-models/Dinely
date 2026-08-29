@@ -779,7 +779,7 @@ const EXTRA_MENUS: Record<
       price: 2.0,
       description: "Spiced tea brewed with cardamom, ginger, and cinnamon.",
       image:
-        "https://images.unsplash.com/photo-1571934811356-5cc061b6201f?w=400&q=80",
+        "https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=400&q=80",
     },
   ],
   "Desserts & Chocolates": [

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { Globe, MapPin, Phone, Timer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RestaurantDetailHeader } from "@/components/customer/RestaurantDetailHeader";
 import { restaurantsApi, menuApi } from "@/lib/api";
 
@@ -50,6 +50,11 @@ export default function RestaurantPage() {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  const handleImageError = useCallback((id: string) => {
+    setFailedImages((prev) => new Set(prev).add(id));
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -186,13 +191,14 @@ export default function RestaurantPage() {
               {popular.map((dish) => (
                 <div key={dish.id} className="flex items-center gap-4">
                   <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
-                    {dish.image ? (
+                    {dish.image && !failedImages.has(dish.id) ? (
                       <Image
                         src={dish.image}
                         alt={dish.name}
                         fill
                         className="object-cover"
                         sizes="96px"
+                        onError={() => handleImageError(dish.id)}
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-3xl">
