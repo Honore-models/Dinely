@@ -65,11 +65,12 @@ export async function middleware(req: NextRequest) {
   if (pathname === "/login" || pathname === "/register" || pathname === "/register-customer") {
     if (token) {
       const session = await verifyToken(token);
+      const redirectTo = req.nextUrl.searchParams.get("redirect");
       if (session?.role === "owner") {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
+        return NextResponse.redirect(new URL(redirectTo || "/dashboard", req.url));
       }
       if (session?.role === "customer") {
-        return NextResponse.redirect(new URL("/home", req.url));
+        return NextResponse.redirect(new URL(redirectTo || "/home", req.url));
       }
     }
   }

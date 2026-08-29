@@ -117,12 +117,16 @@ export function useAuth() {
     email: string;
     phone: string;
     password: string;
-  }) => {
+  }, redirectTo?: string) => {
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
       await authApi.registerCustomer(data);
       await fetchMe();
-      router.push("/home");
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else {
+        router.push("/home");
+      }
     } catch (err) {
       setState((s) => ({
         ...s,

@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
+import { useAuth } from "@/hooks/useAuth";
 
 interface DishRowProps {
   id: string;
@@ -24,6 +26,8 @@ export function DishRow({
   restaurantId,
   restaurantName,
 }: DishRowProps) {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const items = useCartStore((s) => s.items);
   const addItem = useCartStore((s) => s.addItem);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
@@ -33,6 +37,10 @@ export function DishRow({
   const [imgError, setImgError] = useState(false);
 
   const handleAdd = () => {
+    if (!authLoading && !user) {
+      router.push("/login?redirect=/cart");
+      return;
+    }
     addItem({ menuItemId: id, name, price, quantity: 1, image, restaurantId, restaurantName });
   };
 

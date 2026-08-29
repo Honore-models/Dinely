@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { LockKeyhole, Mail, User } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -11,6 +12,8 @@ import { AuthGoogleButton } from "@/components/auth/AuthGoogleButton";
 
 export default function CustomerRegisterPage() {
   const { registerCustomer, loading, error } = useAuth();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || undefined;
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -24,7 +27,7 @@ export default function CustomerRegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await registerCustomer(form);
+    await registerCustomer(form, redirect);
   };
 
   return (
@@ -116,12 +119,12 @@ export default function CustomerRegisterPage() {
             </div>
           </div>
 
-          <AuthGoogleButton label="Continue with Google" redirect="/home" />
+          <AuthGoogleButton label="Continue with Google" redirect={redirect || "/home"} />
 
           <p className="mt-4 text-center text-sm text-neutral-500 dark:text-neutral-400">
             Already have an account?{" "}
             <Link
-              href="/login"
+              href={`/login${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`}
               className="font-semibold text-[#22c51f] hover:underline"
             >
               Sign in

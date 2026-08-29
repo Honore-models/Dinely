@@ -31,13 +31,13 @@ export default function LoginPage() {
         <div className="space-y-3 text-center">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             Don&apos;t have an account yet?{" "}
-            <Link href="/register" className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
+            <Link href={`/register-customer${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`} className="font-semibold text-[#22c51f] hover:text-[#1bad1a]">
               Sign up
             </Link>
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link
-              href="/register-customer"
+              href={`/register-customer${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`}
               className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
             >
               <User size={13} />
