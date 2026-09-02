@@ -108,6 +108,7 @@ export const employeeSchema = z.object({
   salary: z.number().nonnegative().optional(),
   startDate: z.string().optional(),
   notes: z.string().optional(),
+  image: z.string().optional(),
 });
 
 // ─── Customer registration ────────────────────────────────────────────────────

@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
         salary: parsed.data.salary || null,
         start_date: parsed.data.startDate || null,
         notes: parsed.data.notes || null,
+        image: parsed.data.image || null,
       })
       .select("id")
       .single();

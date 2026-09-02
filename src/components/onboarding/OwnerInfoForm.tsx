@@ -62,10 +62,9 @@ export function OwnerInfoForm() {
       await authApi.register(values);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
-      if (!msg.includes("already exists") && !msg.includes("already have")) {
-        setSubmitError(msg || "Failed to create account. Please try again.");
-        return;
-      }
+      // Show any registration error including duplicate email
+      setSubmitError(msg || "Failed to create account. Please try again.");
+      return;
     }
 
     router.push("/onboarding/step-2");

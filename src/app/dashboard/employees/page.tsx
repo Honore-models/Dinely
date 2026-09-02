@@ -4,8 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
 import { EmployeeCard } from "@/components/dashboard/EmployeeCard";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Download, Loader2, Plus, Search, X } from "lucide-react";
-import { employeesApi } from "@/lib/api";
+import { Download, Loader2, Plus, Search, Upload, X } from "lucide-react";
+import { employeesApi, uploadApi } from "@/lib/api";
 
 interface Employee {
   id: string;
@@ -17,6 +17,7 @@ interface Employee {
   salary?: number;
   startDate?: string;
   notes?: string;
+  image?: string;
 }
 
 const EMPTY_FORM = {
@@ -28,6 +29,7 @@ const EMPTY_FORM = {
   salary: "",
   startDate: "",
   notes: "",
+  image: "",
 };
 
 export default function EmployeesPage() {
@@ -39,12 +41,26 @@ export default function EmployeesPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const load = async () => {
     setLoading(true);
     try {
       const res = await employeesApi.list();
-      setEmployees(res.data as unknown as Employee[]);
+      // Map snake_case Supabase columns to camelCase
+      const mapped = (res.data as unknown as Record<string, unknown>[]).map((row) => ({
+        id: row.id,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        email: row.email,
+        phone: row.phone,
+        role: row.role,
+        salary: row.salary,
+        startDate: row.start_date,
+        notes: row.notes,
+        image: row.image,
+      }));
+      setEmployees(mapped as Employee[]);
     } catch {
       /* ignore */
     } finally {
@@ -73,6 +89,7 @@ export default function EmployeesPage() {
       salary: emp.salary?.toString() ?? "",
       startDate: emp.startDate ?? "",
       notes: emp.notes ?? "",
+      image: emp.image ?? "",
     });
     setError(null);
     setShowModal(true);
@@ -87,6 +104,21 @@ export default function EmployeesPage() {
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) return;
+    setUploading(true);
+    try {
+      const { url } = await uploadApi.upload(file, "dinely/employees");
+      setForm((prev) => ({ ...prev, image: url }));
+    } catch {
+      // Upload failed silently
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -100,6 +132,7 @@ export default function EmployeesPage() {
       salary: form.salary ? parseFloat(form.salary) : undefined,
       startDate: form.startDate || undefined,
       notes: form.notes || undefined,
+      image: form.image || undefined,
     };
     try {
       if (editing) {
@@ -207,8 +240,7 @@ export default function EmployeesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((emp) => (
-            <EmployeeCard
+          {filtered.map((emp) => (              <EmployeeCard
               key={emp.id}
               name={`${emp.firstName} ${emp.lastName}`}
               role={emp.role}
@@ -216,6 +248,7 @@ export default function EmployeesPage() {
               hireDate={emp.startDate ?? "-"}
               email={emp.email}
               phone={emp.phone}
+              image={emp.image}
               isActive
               onEdit={() => openEdit(emp)}
               onDelete={() => setDeleteTarget(emp.id)}
@@ -311,6 +344,49 @@ export default function EmployeesPage() {
                     />
                   </label>
                 ))}
+                <div className="sm:col-span-2">
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">
+                      Profile Photo
+                    </span>
+                    <label className="mt-1 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-neutral-200 bg-neutral-50 px-4 py-4 text-center transition hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700">
+                      <input
+                        type="file"
+                        className="sr-only"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                      />
+                      {form.image ? (
+                        <div className="flex flex-col items-center gap-2">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={form.image}
+                            alt="Employee photo"
+                            className="h-16 w-16 rounded-full object-cover ring-2 ring-green-200 dark:ring-green-800"
+                          />
+                          <span className="text-xs font-semibold text-neutral-500">
+                            {uploading ? "Uploading…" : "Click to change photo"}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-1">
+                          {uploading ? (
+                            <Loader2 size={20} className="animate-spin text-[#22c51f]" />
+                          ) : (
+                            <Upload size={20} className="text-[#22c51f]" />
+                          )}
+                          <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                            {uploading ? "Uploading…" : "Upload profile photo"}
+                          </span>
+                          <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                            Max 5 MB · JPEG, PNG, WebP
+                          </span>
+                        </div>
+                      )}
+                    </label>
+                  </label>
+                </div>
                 <div className="sm:col-span-2">
                   <label className="block">
                     <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">

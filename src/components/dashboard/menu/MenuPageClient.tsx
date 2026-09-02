@@ -505,12 +505,24 @@ export function MenuPageClient() {
                   <span className="mb-1 block text-xs font-semibold text-neutral-600 dark:text-neutral-400">Image</span>
                   <label className="flex h-[42px] w-full cursor-pointer items-center gap-2 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-3 text-sm text-neutral-500 hover:bg-neutral-100 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700">
                     <input type="file" accept="image/*" className="sr-only" onChange={handleImageUpload} />
-                    {uploading ? (
-                      <Loader2 size={14} className="animate-spin" />
+                    {form.image ? (
+                      <div className="flex items-center gap-2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={form.image} alt="Preview" className="h-8 w-8 rounded-md object-cover" />
+                        <span className="text-xs font-medium text-neutral-600 dark:text-neutral-300">
+                          {uploading ? "Uploading…" : "Image uploaded ✓"}
+                        </span>
+                      </div>
                     ) : (
-                      <Upload size={14} />
+                      <>
+                        {uploading ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          <Upload size={14} />
+                        )}
+                        {uploading ? "Uploading…" : "Upload image"}
+                      </>
                     )}
-                    {uploading ? "Uploading..." : form.image ? "Image selected" : "Upload image"}
                   </label>
                 </div>
                 <div className="sm:col-span-2">

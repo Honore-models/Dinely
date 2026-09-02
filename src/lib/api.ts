@@ -359,6 +359,7 @@ export const employeesApi = {
     salary?: number;
     startDate?: string;
     notes?: string;
+    image?: string;
   }) =>
     apiFetch<{ message: string; id: string }>("/employees", {
       method: "POST",

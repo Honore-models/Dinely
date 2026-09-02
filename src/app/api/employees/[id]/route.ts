@@ -74,6 +74,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     if (parsed.data.salary !== undefined) updateData.salary = parsed.data.salary;
     if (parsed.data.startDate !== undefined) updateData.start_date = parsed.data.startDate;
     if (parsed.data.notes !== undefined) updateData.notes = parsed.data.notes;
+    if (parsed.data.image !== undefined) updateData.image = parsed.data.image;
 
     const { error } = await supabase
       .from("employees")
