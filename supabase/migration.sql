@@ -144,6 +144,7 @@ create table if not exists employees (
   salary         numeric(10,2),
   start_date     text,
   notes          text,
+  image          text,
   created_at     timestamptz not null default now(),
   updated_at     timestamptz not null default now(),
   unique (restaurant_id, email)
