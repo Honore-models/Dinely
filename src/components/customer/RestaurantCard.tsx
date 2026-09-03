@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Clock, Heart, Loader2, MapPin, Star } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface RestaurantCardProps {
   id: string;
@@ -33,10 +35,17 @@ export function RestaurantCard({
   const [fav, setFav] = useState(isFavourite);
   const [imgError, setImgError] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleFav = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!authLoading && !user) {
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
     setFavLoading(true);
     setFav((v) => !v);
     try {

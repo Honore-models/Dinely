@@ -249,7 +249,6 @@ export default function EmployeesPage() {
               email={emp.email}
               phone={emp.phone}
               image={emp.image}
-              isActive
               onEdit={() => openEdit(emp)}
               onDelete={() => setDeleteTarget(emp.id)}
             />

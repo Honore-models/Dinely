@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
@@ -27,6 +27,7 @@ export function DishRow({
   restaurantName,
 }: DishRowProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, loading: authLoading } = useAuth();
   const items = useCartStore((s) => s.items);
   const addItem = useCartStore((s) => s.addItem);
@@ -38,7 +39,7 @@ export function DishRow({
 
   const handleAdd = () => {
     if (!authLoading && !user) {
-      router.push("/login?redirect=/cart");
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
     addItem({ menuItemId: id, name, price, quantity: 1, image, restaurantId, restaurantName });

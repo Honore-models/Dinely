@@ -102,7 +102,7 @@ export default function LoginPage() {
           Sign in
         </Button>
         <AuthDivider />
-        <AuthGoogleButton label="Continue with Google" />
+        <AuthGoogleButton label="Continue with Google" redirect={redirect || "/home"} />
       </form>
     </AuthFormPanel>
   );

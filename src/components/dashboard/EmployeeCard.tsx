@@ -11,13 +11,12 @@ interface EmployeeCardProps {
   email: string;
   phone: string;
   image?: string;
-  isActive?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
 export function EmployeeCard({
-  name, role, department, hireDate, email, phone, image, isActive = true, onEdit, onDelete,
+  name, role, department, hireDate, email, phone, image, onEdit, onDelete,
 }: EmployeeCardProps) {
   const [deleting, setDeleting] = useState(false);
 
@@ -43,11 +42,6 @@ export function EmployeeCard({
                 {name.charAt(0)}
               </div>
             )}
-            <div
-              className={`absolute bottom-0.5 right-0.5 h-3.5 w-3.5 rounded-full ring-2 ring-white ${
-                isActive ? "bg-emerald-500" : "bg-red-400"
-              }`}
-            />
           </div>
           <div>
             <h4 className="font-semibold text-neutral-900 dark:text-white">{name}</h4>
