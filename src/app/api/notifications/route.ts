@@ -17,9 +17,11 @@ function generateNotifications(
   role: string,
   data: any,
   lastReadAt: string | null,
+  readNotificationIds: string[],
 ): Notification[] {
   const notifications: Notification[] = [];
   const now = new Date();
+  const readSet = new Set(readNotificationIds);
 
   if (role === "owner") {
     const { orders = [], bookings = [], reviews = [] } = data;
@@ -31,9 +33,11 @@ function generateNotifications(
         title: "New Order Received",
         message: `${order.customer_name || "Customer"} placed a ${order.type} order for $${order.total?.toFixed(2) || "0"}`,
         type: "order",
-        read: lastReadAt
-          ? new Date(order.created_at || now.toISOString()) <= new Date(lastReadAt)
-          : false,
+        read:
+          readSet.has(`order-${order.id}`) ||
+          (lastReadAt
+            ? new Date(order.created_at || now.toISOString()) <= new Date(lastReadAt)
+            : false),
         link: `/dashboard/orders/${order.id}`,
         created_at: order.created_at || now.toISOString(),
       });
@@ -46,9 +50,11 @@ function generateNotifications(
         title: "New Booking",
         message: `${booking.customer_name || "Customer"} booked a table for ${booking.party_size || booking.guests || 2} guests`,
         type: "booking",
-        read: lastReadAt
-          ? new Date(booking.created_at || now.toISOString()) <= new Date(lastReadAt)
-          : false,
+        read:
+          readSet.has(`booking-${booking.id}`) ||
+          (lastReadAt
+            ? new Date(booking.created_at || now.toISOString()) <= new Date(lastReadAt)
+            : false),
         link: "/dashboard/bookings/tables",
         created_at: booking.created_at || now.toISOString(),
       });
@@ -61,9 +67,11 @@ function generateNotifications(
         title: "New Review",
         message: `${review.customer_name || "Customer"} left a ${review.rating}-star review`,
         type: "review",
-        read: lastReadAt
-          ? new Date(review.created_at || now.toISOString()) <= new Date(lastReadAt)
-          : false,
+        read:
+          readSet.has(`review-${review.id}`) ||
+          (lastReadAt
+            ? new Date(review.created_at || now.toISOString()) <= new Date(lastReadAt)
+            : false),
         link: "/dashboard/clients",
         created_at: review.created_at || now.toISOString(),
       });
@@ -84,9 +92,11 @@ function generateNotifications(
         title: `Order ${order.status}`,
         message: statusMessages[order.status] || `Your order status: ${order.status}`,
         type: "order",
-        read: lastReadAt
-          ? new Date(order.created_at || now.toISOString()) <= new Date(lastReadAt)
-          : false,
+        read:
+          readSet.has(`order-${order.id}`) ||
+          (lastReadAt
+            ? new Date(order.created_at || now.toISOString()) <= new Date(lastReadAt)
+            : false),
         link: `/orders`,
         created_at: order.created_at || now.toISOString(),
       });
@@ -119,14 +129,15 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Fetch last_read_at for the user
+    // Fetch read state for the user
     const { data: userProfile } = await supabase
       .from("users")
-      .select("last_read_at")
+      .select("last_read_at, read_notifications")
       .eq("id", session.userId)
       .single();
 
     const lastReadAt = userProfile?.last_read_at || null;
+    const readNotificationIds: string[] = userProfile?.read_notifications || [];
 
     let data: any = {};
 
@@ -173,7 +184,7 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    const notifications = generateNotifications(session.role, data, lastReadAt);
+    const notifications = generateNotifications(session.role, data, lastReadAt, readNotificationIds);
 
     return NextResponse.json({
       data: notifications,
@@ -194,18 +205,44 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const body = await req.json().catch(() => ({}));
-    const { markAll } = body as { markAll?: boolean };
+    const { markAll, id } = body as { markAll?: boolean; id?: string };
 
-    // Update last_read_at to now
     const now = new Date().toISOString();
-    const { error } = await supabase
-      .from("users")
-      .update({ last_read_at: now, updated_at: now })
-      .eq("id", session.userId);
 
-    if (error) throw error;
+    if (markAll) {
+      // Mark all as read: update last_read_at
+      const { error } = await supabase
+        .from("users")
+        .update({ last_read_at: now, updated_at: now })
+        .eq("id", session.userId);
+      if (error) {
+        // Column may not exist yet – fall back to ignoring
+        console.warn("[PATCH /api/notifications] last_read_at update failed:", error.message);
+      }
+    } else if (id) {
+      // Mark individual notification as read: append ID to read_notifications array
+      const { data: user } = await supabase
+        .from("users")
+        .select("read_notifications")
+        .eq("id", session.userId)
+        .single();
 
-    return NextResponse.json({ message: "Notifications marked as read", lastReadAt: now });
+      const existing: string[] = user?.read_notifications || [];
+      if (!existing.includes(id)) {
+        const { error } = await supabase
+          .from("users")
+          .update({
+            read_notifications: [...existing, id],
+            updated_at: now,
+          })
+          .eq("id", session.userId);
+        if (error) {
+          console.warn("[PATCH /api/notifications] read_notifications update failed:", error.message);
+        }
+      }
+    }
+
+    return NextResponse.json({ message: "Notifications marked as read" });
   } catch (err) {
     console.error("[PATCH /api/notifications]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

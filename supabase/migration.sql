@@ -19,6 +19,8 @@ create table if not exists users (
   avatar        text,
   address       text,
   favourites    text[] default '{}',
+  read_notifications text[] default '{}',
+  last_read_at  timestamptz,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );
