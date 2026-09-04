@@ -10,7 +10,6 @@ interface TopOrder {
   price: string;
   image?: string;
 }
-
 interface TopOrdersSectionProps {
   orders: TopOrder[];
 }
