@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { CategoryPills } from "@/components/customer/CategoryPills";
 import { RestaurantCard } from "@/components/customer/RestaurantCard";
+import { SortDropdown } from "@/components/customer/SortDropdown";
+import { getDeliveryInfo } from "@/lib/restaurantData";
 import { useRestaurants } from "@/hooks/useRestaurants";
 import { useFavourites } from "@/hooks/useFavourites";
 
@@ -58,14 +60,11 @@ export default function ExplorePage() {
             className="w-full rounded-xl border border-neutral-200 bg-white py-3 pl-11 pr-4 text-sm text-neutral-800 outline-none placeholder:text-neutral-400 focus:border-[#22c51f] focus:ring-1 focus:ring-green-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:ring-green-900"
           />
         </div>
-        <select
+        <SortDropdown
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-semibold text-neutral-600 outline-none focus:border-[#22c51f] dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
-        >
-          <option>Recommended</option>
-          <option>Rating</option>
-        </select>
+          options={["Recommended", "Rating", "Delivery Time", "Distance"]}
+          onChange={setSortBy}
+        />
       </div>
 
       {/* Categories */}
@@ -107,8 +106,8 @@ export default function ExplorePage() {
                   name={r.name}
                   cuisine={r.type}
                   rating={r.rating ?? 0}
-                  deliveryTime="30 – 40 Min"
-                  deliveryFee="Free delivery"
+                  deliveryTime={getDeliveryInfo(r.id, i).deliveryTime}
+                  deliveryFee={getDeliveryInfo(r.id, i).deliveryFee}
                   image={getImage(r.logo, i)}
                   isFavourite={favouriteIds.has(r.id)}
                   onToggleFavourite={toggleFav}

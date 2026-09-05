@@ -1,18 +1,37 @@
 "use client";
 
 import { useState } from "react";
+import {
+  Flame,
+  Pizza,
+  Salad,
+  Fish,
+  Coffee,
+  Cake,
+  Beef,
+  IceCream,
+  Wine,
+  Utensils,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const categories = [
-  { id: "burgers", label: "Burgers", emoji: "🍔" },
-  { id: "pizza", label: "Pizza", emoji: "🍕" },
-  { id: "salads", label: "Salads", emoji: "🥗" },
-  { id: "sushi", label: "Sushi", emoji: "🍱" },
-  { id: "drinks", label: "Drinks", emoji: "🥤" },
-  { id: "chicken", label: "Chicken", emoji: "🍗" },
-  { id: "desserts", label: "Desserts", emoji: "🍰" },
-  { id: "pasta", label: "Pasta", emoji: "🍝" },
-  { id: "seafood", label: "Seafood", emoji: "🦐" },
-  { id: "coffee", label: "Coffee", emoji: "☕" },
+interface Category {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+const categories: Category[] = [
+  { id: "burgers", label: "Burgers", icon: Flame },
+  { id: "pizza", label: "Pizza", icon: Pizza },
+  { id: "salads", label: "Salads", icon: Salad },
+  { id: "sushi", label: "Sushi", icon: Fish },
+  { id: "drinks", label: "Drinks", icon: Wine },
+  { id: "chicken", label: "Chicken", icon: Utensils },
+  { id: "desserts", label: "Desserts", icon: Cake },
+  { id: "pasta", label: "Pasta", icon: Utensils },
+  { id: "seafood", label: "Seafood", icon: Fish },
+  { id: "coffee", label: "Coffee", icon: Coffee },
 ];
 
 interface CategoryPillsProps {
@@ -44,7 +63,7 @@ export function CategoryPills({ selected, onSelect }: CategoryPillsProps) {
                 : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-white"
             }`}
           >
-            <span className="text-base">{cat.emoji}</span>
+            <cat.icon size={16} />
             <span>{cat.label}</span>
           </button>
         );

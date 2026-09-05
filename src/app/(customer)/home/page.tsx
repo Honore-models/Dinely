@@ -6,6 +6,8 @@ import { ChevronDown, MapPin, Star } from "lucide-react";
 import { useState, useMemo } from "react";
 import { CategoryPills } from "@/components/customer/CategoryPills";
 import { RestaurantCard } from "@/components/customer/RestaurantCard";
+import { SortDropdown } from "@/components/customer/SortDropdown";
+import { getDeliveryInfo } from "@/lib/restaurantData";
 import { useRestaurants } from "@/hooks/useRestaurants";
 import { useFavourites } from "@/hooks/useFavourites";
 
@@ -173,15 +175,11 @@ export default function HomePage() {
             <div className="mt-4">
               <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Sort by</p>
               <div className="relative mt-2">
-                <select
+                <SortDropdown
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full appearance-none rounded-xl border-2 border-green-200 bg-gradient-to-r from-[#22c555]/10 to-[#1bad1a]/10 py-2.5 pl-3 pr-8 text-sm font-semibold text-neutral-700 outline-none transition-all focus:border-[#22c555] focus:shadow-md focus:shadow-green-100 dark:border-green-800 dark:bg-green-950/30 dark:text-neutral-300 dark:focus:border-green-600"
-                >
-                  <option>Recommended</option>
-                  <option>Rating</option>
-                </select>
-                <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#22c555]" />
+                  options={["Recommended", "Rating", "Delivery Time", "Distance"]}
+                  onChange={setSortBy}
+                />
               </div>
             </div>
 
@@ -329,8 +327,8 @@ export default function HomePage() {
                       name={r.name}
                       cuisine={r.type}
                       rating={r.rating ?? 0}
-                      deliveryTime="30 – 40 Min"
-                      deliveryFee="Free delivery Over $25"
+                      deliveryTime={getDeliveryInfo(r.id, i).deliveryTime}
+                      deliveryFee={getDeliveryInfo(r.id, i).deliveryFee}
                       image={getRestaurantImage(r, i)}
                       isFavourite={favouriteIds.has(r.id)}
                       onToggleFavourite={toggleFav}
