@@ -1,84 +1,146 @@
-import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-});
+import {
+  isValidJjumaSignature,
+  parseJjumaWebhook,
+  type JjumaWebhookEvent,
+} from "@/lib/jjuma";
+import { env } from "@/lib/jjuma";
 
 export const runtime = "nodejs";
 
-export async function POST(req: NextRequest) {
-  const sig = req.headers.get("stripe-signature");
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+// Headers specified in the JJuma webhook docs.
+const SIGNATURE_HEADER = "X-Jjuma-Signature";
+const TIMESTAMP_HEADER = "X-Jjuma-Timestamp";
 
-  if (!sig || !webhookSecret) {
-    return NextResponse.json({ error: "Missing Stripe signature" }, { status: 400 });
+// Events worth handling per the guide.
+const KNOWN_EVENTS = [
+  "payment.completed",
+  "payment.failed",
+  "payment.cancelled",
+] as const;
+
+export async function POST(request: Request) {
+  const rawBody = await request.text();
+  const signature =
+    request.headers.get(SIGNATURE_HEADER)?.trim() ?? "";
+  const timestamp =
+    request.headers.get(TIMESTAMP_HEADER)?.trim() ?? "";
+
+  if (!rawBody || !signature || !timestamp) {
+    return NextResponse.json(
+      { message: "Missing webhook data." },
+      { status: 400 },
+    );
   }
 
-  let event: Stripe.Event;
-  try {
-    const rawBody = await req.arrayBuffer();
-    event = stripe.webhooks.constructEvent(Buffer.from(rawBody), sig, webhookSecret);
-  } catch (err) {
-    console.error("[Stripe Webhook] Signature verification failed:", err);
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  if (Number.isNaN(Date.parse(timestamp))) {
+    return NextResponse.json(
+      { message: "Invalid webhook timestamp." },
+      { status: 401 },
+    );
+  }
+
+  if (!isValidJjumaSignature(rawBody, timestamp, signature)) {
+    return NextResponse.json(
+      { message: "Invalid webhook signature." },
+      { status: 401 },
+    );
+  }
+
+  const event = parseJjumaWebhook(rawBody);
+  const eventName = String(event.event ?? "").trim();
+  const payment = event.data ?? {};
+
+  if (!KNOWN_EVENTS.includes(eventName as (typeof KNOWN_EVENTS)[number])) {
+    return NextResponse.json({ status: "ignored" });
+  }
+
+  if (eventName !== "payment.completed") {
+    // payment.failed / payment.cancelled: nothing to mark paid.
+    return NextResponse.json({ status: "ok" });
+  }
+
+  // Validate required fields for a completed payment.
+  if (
+    !payment.order_id ||
+    !payment.transaction_id ||
+    !payment.reference ||
+    payment.amount === undefined ||
+    !payment.currency
+  ) {
+    return NextResponse.json(
+      { message: "Completed payment is missing required fields." },
+      { status: 400 },
+    );
   }
 
   try {
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object as Stripe.Checkout.Session;
-        const { restaurantId, plan, billingCycle } = session.metadata || {};
+    // Reconcile against Supabase state before marking anything paid.
+    // This uses the existing users/restaurants tables. If you later add a
+    // dedicated payments/orders table (like the guide's Prisma Order model),
+    // move this logic there and mirror the guide's markOrderPaid() flow.
+    await reconcileCompletedPayment({
+      orderId: payment.order_id as string,
+      transactionId: payment.transaction_id as string,
+      reference: payment.reference as string,
+      amount: String(payment.amount),
+      currency: (payment.currency as string).toUpperCase(),
+    });
 
-        if (restaurantId) {
-          await supabase
-            .from("restaurants")
-            .update({
-              plan,
-              billing_cycle: billingCycle,
-              stripe_customer_id: session.customer as string,
-              stripe_subscription_id: session.subscription as string,
-              subscription_status: "active",
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", restaurantId);
-        }
-
-        break;
-      }
-
-      case "customer.subscription.updated": {
-        const sub = event.data.object as Stripe.Subscription;
-        await supabase
-          .from("restaurants")
-          .update({
-            subscription_status: sub.status,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("stripe_subscription_id", sub.id);
-        break;
-      }
-
-      case "customer.subscription.deleted": {
-        const sub = event.data.object as Stripe.Subscription;
-        await supabase
-          .from("restaurants")
-          .update({
-            subscription_status: "canceled",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("stripe_subscription_id", sub.id);
-        break;
-      }
-
-      default:
-        break;
-    }
-
-    return NextResponse.json({ received: true });
+    return NextResponse.json({ status: "ok" });
   } catch (err) {
-    console.error("[Stripe Webhook] Handler error:", err);
-    return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
+    console.error("[Jjuma Webhook] Handler error:", err);
+    return NextResponse.json(
+      { message: "Webhook handler failed." },
+      { status: 500 },
+    );
+  }
+}
+
+/**
+ * Idempotently mark a JJuma payment as reconciled in Supabase.
+ * Replace with a dedicated payments table once one exists.
+ */
+async function reconcileCompletedPayment({
+  orderId,
+  transactionId,
+  reference,
+  amount,
+  currency,
+}: {
+  orderId: string;
+  transactionId: string;
+  reference: string;
+  amount: string;
+  currency: string;
+}) {
+  // Currency is expected to be RWF for this project.
+  if (currency !== "RWF") {
+    console.warn(
+      `[Jjuma Webhook] Unexpected currency ${currency} for order ${orderId}.`
+    );
+  }
+
+  // TODO: once you add a payments/orders table with columns like
+  //   jjuma_transaction_id (uuid/text, unique)
+  //   jjuma_reference (text)
+  //   paid_amount (numeric)
+  //   currency (text)
+  //   paid_at (timestamptz)
+  //   payment_status (text)
+  // move this into a Supabase update inside a transaction/row lock, exactly
+  // like the guide's markOrderPaid(). For now we log and store on the user
+  // record as a minimal reconciliation placeholder.
+  const { error } = await supabase
+    .from("users")
+    .update({
+      // Example placeholder fields — replace with real payment tracking.
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", orderId);
+
+  if (error) {
+    throw error;
   }
 }

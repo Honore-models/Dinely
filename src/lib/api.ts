@@ -408,17 +408,15 @@ export const analyticsApi = {
       ordersByStatus: { status: string; count: number }[];
       topItems: { id: string; name: string; quantity: number; revenue: number }[];
     }>(`/analytics${period ? `?period=${period}` : ""}`),
-};
-
-// ─── Payments ─────────────────────────────────────────────────────────────────
-
+};// ─── Payments ─────────────────────────────────────────────────────────────────
 export const paymentsApi = {
   createCheckout: (plan: string, billingCycle: string) =>
-    apiFetch<{ url: string }>("/payments", {
+    apiFetch<{ url: string; checkoutId: string }>("/payments", {
       method: "POST",
       body: JSON.stringify({ plan, billingCycle }),
     }),
 };
+
 
 // ─── Upload ───────────────────────────────────────────────────────────────────
 

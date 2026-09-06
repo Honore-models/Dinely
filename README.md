@@ -1,6 +1,6 @@
 # Dinely SaaS
 
-A full-stack restaurant management SaaS platform built with Next.js 14, Supabase, and Stripe. Restaurant owners can manage menus, orders, bookings, employees, tables, and clients through a professional dashboard - while customers can browse restaurants, place orders, and make reservations.
+A full-stack restaurant management SaaS platform built with Next.js 14, Supabase, and Jjuma. Restaurant owners can manage menus, orders, bookings, employees, tables, and clients through a professional dashboard - while customers can browse restaurants, place orders, and make reservations.
 
 ## Features
 
@@ -42,7 +42,7 @@ A full-stack restaurant management SaaS platform built with Next.js 14, Supabase
 | State | Zustand (persisted onboarding) |
 | Forms | React Hook Form + Zod |
 | Charts | Recharts |
-| Payments | Stripe |
+| Payments | Jjuma |
 | Icons | Lucide React |
 | Animations | Framer Motion |
 
@@ -52,7 +52,7 @@ A full-stack restaurant management SaaS platform built with Next.js 14, Supabase
 
 - Node.js 18+
 - A [Supabase](https://supabase.com) project
-- (Optional) A [Stripe](https://stripe.com) account for payments
+- (Optional) A [Jjuma](https://jjuma.com) account for payments
 
 ### 1. Clone & Install
 
@@ -74,10 +74,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 # Auth
 JWT_SECRET=your-secret-key-min-32-characters-long
 
-# Stripe (optional)
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+# Jjuma (optional)
+# Get these from your JJuma dashboard once you have a merchant account
+JJUMA_API_BASE_URL=https://api.jjuma.com
+JJUMA_PUBLIC_API_KEY=bp_live_pub_your_public_key
+JJUMA_SECRET_API_KEY=bp_live_sec_your_secret_key
+JJUMA_WEBHOOK_SECRET=your_webhook_secret
+JJUMA_CHECKOUT_HOST=pay.jjuma.com
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -167,7 +170,7 @@ All endpoints are under `/api` and return JSON.
 | `/api/reviews` | GET, POST, PATCH, DELETE | Review CRUD |
 | `/api/analytics` | GET | Dashboard analytics (7d/30d/90d) |
 | `/api/favourites` | GET, POST, DELETE | User favourites |
-| `/api/payments` | POST | Stripe checkout session |
+| `/api/payments` | POST | Jjuma checkout session |
 | `/api/upload` | POST | File upload (image) |
 
 ## Onboarding Flow

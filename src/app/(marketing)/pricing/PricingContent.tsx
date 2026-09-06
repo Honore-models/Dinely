@@ -77,7 +77,7 @@ const faqs = [
   },
   {
     q: "What payment methods do you accept?",
-    a: "We accept all major credit and debit cards (Visa, Mastercard, Amex) through our secure payment partner Stripe.",
+    a: "We accept all major credit and debit cards (Visa, Mastercard, Amex) through our secure payment partner Jjuma.",
   },
   {
     q: "What happens when I exceed my order limit?",
@@ -271,10 +271,10 @@ export default function PricingPage() {
             </div>
             <div>
               <p className="text-sm font-bold text-neutral-900 dark:text-white">
-                Stripe Payments
+                Jjuma Payments
               </p>
               <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                PCI compliant
+                Secure card payments
               </p>
             </div>
           </div>

@@ -463,7 +463,7 @@ export default function SettingsPage() {
             <div className="space-y-3">
               {[
                 {
-                  name: "Stripe",
+                  name: "Jjuma",
                   status:
                     restaurant?.subscription_status === "active"
                       ? "Connected"

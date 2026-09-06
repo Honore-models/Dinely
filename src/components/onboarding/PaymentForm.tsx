@@ -92,7 +92,7 @@ export function PaymentForm() {
         billingCycle,
       });
 
-      // Step 3: Create Stripe Checkout session and redirect
+      // Step 3: Create Jjuma Checkout session and redirect
       setStep("processing");
       try {
         const { url } = await paymentsApi.createCheckout(
@@ -100,15 +100,15 @@ export function PaymentForm() {
           billingCycle,
         );
         if (url) {
-          // Redirect to Stripe's secure checkout page
+          // Redirect to Jjuma's secure checkout page
           window.location.href = url;
           return;
         }
       } catch {
-        // Stripe not configured - proceed without payment
+        // Jjuma not configured - proceed without payment
       }
 
-      // If Stripe not available, go straight to dashboard
+      // If Jjuma not available, go straight to dashboard
       setStep("done");
       setTimeout(() => {
         router.push("/dashboard");
@@ -226,10 +226,10 @@ export function PaymentForm() {
               </span>
               <div>
                 <p className="text-sm font-bold text-neutral-900 dark:text-white">
-                  Secure Payment by Stripe
+                  Secure Payment by Jjuma
                 </p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Your payment is processed securely by Stripe. We never store
+                  Your payment is processed securely by Jjuma. We never store
                   your card details.
                 </p>
               </div>
@@ -250,7 +250,7 @@ export function PaymentForm() {
                       Click &ldquo;Activate Subscription&rdquo;
                     </p>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      You&apos;ll be redirected to Stripe&apos;s secure checkout
+                      You&apos;ll be redirected to Jjuma&apos;s secure checkout
                       page
                     </p>
                   </div>
@@ -264,7 +264,7 @@ export function PaymentForm() {
                       Enter your card details
                     </p>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      Pay securely with credit/debit card on Stripe&apos;s page
+                      Pay securely with credit/debit card on Jjuma&apos;s page
                     </p>
                   </div>
                 </li>
@@ -301,7 +301,7 @@ export function PaymentForm() {
                   : step === "creating"
                     ? "Setting up restaurant..."
                     : step === "processing"
-                      ? "Redirecting to Stripe..."
+                      ? "Redirecting to Jjuma..."
                       : "Processing..."
               }
             >
@@ -311,7 +311,7 @@ export function PaymentForm() {
 
             <div className="flex items-center justify-center gap-2 text-xs text-neutral-400 dark:text-neutral-500">
               <ExternalLink size={12} />
-              <span>Powered by Stripe</span>
+              <span>Powered by Jjuma</span>
             </div>
 
             <p className="flex items-start gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
