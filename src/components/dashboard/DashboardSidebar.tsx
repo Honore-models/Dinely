@@ -36,7 +36,8 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
     setLoggingOut(true);
     try {
       await authApi.logout();
-      router.push("/login");
+      router.replace("/");
+      router.refresh();
     } finally {
       setLoggingOut(false);
     }
