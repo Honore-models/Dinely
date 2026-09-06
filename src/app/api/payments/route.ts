@@ -2,33 +2,47 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { createPayment, env } from "@/lib/jjuma";
-import type { PlanName } from "@/types/restaurant";
+import { isJjumaConfigured } from "@/lib/jjuma-env";
+import { createPaymentRecord } from "@/lib/payments";
+import {
+  isPlanName,
+  PAYMENT_CURRENCY,
+  subscriptionTotalUsd,
+  usdToRwf,
+} from "@/lib/pricing";
+import type { BillingCycle, PlanName } from "@/types/restaurant";
 
-// POST /api/payments – create a JJuma payment and return the hosted checkout URL.
-// Keeps the existing { url } contract so the onboarding PaymentForm can redirect.
+/**
+ * POST /api/payments – create a JJuma subscription checkout session.
+ * Returns { url } so the onboarding PaymentForm can redirect.
+ */
 export async function POST(req: NextRequest) {
   const session = await getSession(req);
   if (!session || session.role !== "owner") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: { plan: string; billingCycle: string };
+  if (!isJjumaConfigured()) {
+    return NextResponse.json(
+      { error: "Payments are not configured. Contact support." },
+      { status: 503 },
+    );
+  }
+
+  let body: { plan?: string; billingCycle?: string };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { plan, billingCycle } = body;
+  const plan = body.plan ?? "";
+  const billingCycle = body.billingCycle ?? "";
 
-  if (!["Starter", "Professional", "Enterprise"].includes(plan)) {
-    return NextResponse.json(
-      { error: "Invalid plan." },
-      { status: 400 },
-    );
+  if (!isPlanName(plan)) {
+    return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
   }
-
-  if (!["monthly", "yearly"].includes(billingCycle)) {
+  if (billingCycle !== "monthly" && billingCycle !== "yearly") {
     return NextResponse.json(
       { error: "Invalid billing cycle." },
       { status: 400 },
@@ -36,36 +50,74 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { data: user } = await supabase
-      .from("users")
-      .select("id, email, first_name, last_name")
-      .eq("id", session.userId)
-      .single();
+    const { data: restaurant } = await supabase
+      .from("restaurants")
+      .select("id, subscription_status, plan, billing_cycle")
+      .eq("owner_id", session.userId)
+      .maybeSingle();
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!restaurant) {
+      return NextResponse.json(
+        { error: "Create your restaurant before paying." },
+        { status: 404 },
+      );
     }
 
-    // JJuma create-payment payload — mirrors the guide's shape.
-    // The guide uses one-off order payments; here we reuse the same endpoint
-    // for a subscription checkout. Adjust amount/currency/description once
-    // you confirm the exact plan prices and JJuma product mapping.
-    const amount = planPriceInSmallUnits(plan, billingCycle);
-    const payload = {
-      amount: String(amount),
-      currency: "RWF",
-      description: `Dinely subscription — ${plan} (${billingCycle})`,
-      redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?subscribed=true`,
-      cancel_redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/onboarding/step-4?cancelled=true`,
-      webhook_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/webhook`,
-      external_order_id: session.userId,
-      idempotency_key: `sub-${session.userId}-${plan}-${billingCycle}`,
-    };
+    if (restaurant.subscription_status === "active") {
+      return NextResponse.json(
+        { error: "Subscription is already active." },
+        { status: 409 },
+      );
+    }
 
-    const result = await createPayment(payload);
-    const paymentUrl =
-      result.data?.payment_url ?? result.payment_url ?? "";
+    const typedPlan = plan as PlanName;
+    const typedCycle = billingCycle as BillingCycle;
+    const amountUsd = subscriptionTotalUsd(typedPlan, typedCycle);
+    const amountRwf = usdToRwf(amountUsd);
+    const idempotencyKey = `sub-${restaurant.id}-${typedPlan}-${typedCycle}`;
 
+    const { payment, alreadyPaid } = await createPaymentRecord({
+      kind: "subscription",
+      referenceId: restaurant.id,
+      userId: session.userId,
+      amount: amountRwf,
+      currency: PAYMENT_CURRENCY,
+      idempotencyKey,
+      description: `Dinely ${typedPlan} (${typedCycle})`,
+      plan: typedPlan,
+      billingCycle: typedCycle,
+    });
+
+    if (alreadyPaid) {
+      return NextResponse.json(
+        { error: "This subscription has already been paid." },
+        { status: 409 },
+      );
+    }
+
+    // Keep restaurant plan in sync with what the owner is about to pay for.
+    await supabase
+      .from("restaurants")
+      .update({
+        plan: typedPlan,
+        billing_cycle: typedCycle,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", restaurant.id);
+
+    const appUrl = env.APP_URL.replace(/\/$/, "");
+    const result = await createPayment({
+      amount: String(amountRwf),
+      currency: PAYMENT_CURRENCY,
+      description: `Dinely subscription — ${typedPlan} (${typedCycle})`,
+      redirect_url: `${appUrl}/payment/success?kind=subscription&paymentId=${encodeURIComponent(payment.id)}`,
+      cancel_redirect_url: `${appUrl}/payment/cancelled?kind=subscription&paymentId=${encodeURIComponent(payment.id)}`,
+      webhook_url: `${appUrl}/api/payments/webhook`,
+      external_order_id: payment.id,
+      idempotency_key: idempotencyKey,
+    });
+
+    const paymentUrl = result.data?.payment_url ?? result.payment_url ?? "";
     if (!paymentUrl) {
       return NextResponse.json(
         { error: "JJuma did not return a payment URL." },
@@ -73,7 +125,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Trust check: ensure the returned checkout URL points at JJuma's host.
     const checkoutHost = new URL(paymentUrl).host;
     if (checkoutHost !== env.JJUMA_CHECKOUT_HOST) {
       return NextResponse.json(
@@ -82,13 +133,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Persist a reference so the webhook can reconcile later.
-    await supabase
-      .from("users")
-      .update({ updated_at: new Date().toISOString() })
-      .eq("id", session.userId);
-
-    return NextResponse.json({ url: paymentUrl });
+    return NextResponse.json({ url: paymentUrl, paymentId: payment.id });
   } catch (err) {
     console.error("[POST /api/payments]", err);
     return NextResponse.json(
@@ -96,22 +141,4 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     );
   }
-}
-
-function planPriceInSmallUnits(plan: string, billingCycle: string): number {
-  // Prices shown on the pricing page / onboarding form (in USD).
-  // Convert to RWF at the rate you want to use.
-  const pricesUSD: Record<string, number> = {
-    Starter: billingCycle === "yearly" ? 7 : 9,
-    Professional: billingCycle === "yearly" ? 11 : 14,
-    Enterprise: billingCycle === "yearly" ? 16 : 20,
-  };
-  const usd = pricesUSD[plan] ?? 0;
-  // RWF is commonly expressed in whole francs (no cents).
-  // Replace RWf_PER_USD with the rate you want to charge.
-  const rwfPerUSD = 1350;
-  // If JJuma expects cents/coins for RWF, adjust this multiplier.
-  // If it expects whole francs, use multiplier 1.
-  const subunitMultiplier = 1;
-  return Math.round(usd * rwfPerUSD * subunitMultiplier);
 }

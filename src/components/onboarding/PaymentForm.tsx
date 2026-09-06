@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Award,
   CheckCircle2,
@@ -16,12 +15,12 @@ import {
 import { Button } from "../ui/Button";
 import { useOnboardingStore, type PlanName } from "@/store/onboardingStore";
 import { restaurantsApi, paymentsApi, authApi } from "@/lib/api";
+import {
+  PLAN_PRICES_USD,
+  SUBSCRIPTION_TAX_RATE,
+} from "@/lib/pricing";
 
-const planPrices: Record<PlanName, { monthly: number; yearly: number }> = {
-  Starter: { monthly: 9, yearly: 7 },
-  Professional: { monthly: 14, yearly: 11 },
-  Enterprise: { monthly: 20, yearly: 16 },
-};
+const planPrices = PLAN_PRICES_USD;
 
 const planFeatures: Record<PlanName, string[]> = {
   Starter: [
@@ -57,11 +56,10 @@ type SetupStep =
   | "error";
 
 export function PaymentForm() {
-  const router = useRouter();
   const { selectedPlan, billingCycle, restaurantInfo, ownerInfo } =
     useOnboardingStore();
   const price = planPrices[selectedPlan][billingCycle];
-  const tax = Number((price * 0.1).toFixed(2));
+  const tax = Number((price * SUBSCRIPTION_TAX_RATE).toFixed(2));
   const total = price + tax;
 
   const [loading, setLoading] = useState(false);
@@ -94,25 +92,15 @@ export function PaymentForm() {
 
       // Step 3: Create Jjuma Checkout session and redirect
       setStep("processing");
-      try {
-        const { url } = await paymentsApi.createCheckout(
-          selectedPlan,
-          billingCycle,
-        );
-        if (url) {
-          // Redirect to Jjuma's secure checkout page
-          window.location.href = url;
-          return;
-        }
-      } catch {
-        // Jjuma not configured - proceed without payment
+      const { url } = await paymentsApi.createCheckout(
+        selectedPlan,
+        billingCycle,
+      );
+      if (!url) {
+        throw new Error("Payment checkout did not return a URL.");
       }
-
-      // If Jjuma not available, go straight to dashboard
-      setStep("done");
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 1500);
+      window.location.href = url;
+      return;
     } catch (err) {
       setStep("error");
       setError(

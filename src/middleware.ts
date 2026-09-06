@@ -46,6 +46,7 @@ export async function middleware(req: NextRequest) {
     "/orders",
     "/profile",
     "/favourites",
+    "/payment",
   ];
   if (customerProtected.some((p) => pathname.startsWith(p))) {
     if (!token) {

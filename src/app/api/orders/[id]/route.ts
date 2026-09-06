@@ -73,6 +73,17 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       if (order.restaurant_id !== session.restaurantId) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
+      // Require online payment before kitchen starts the order.
+      if (
+        parsed.data.status === "Active" &&
+        order.payment_method === "jjuma" &&
+        order.payment_status !== "paid"
+      ) {
+        return NextResponse.json(
+          { error: "Online payment is still pending for this order." },
+          { status: 409 },
+        );
+      }
     } else {
       if (order.customer_id !== session.userId) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -91,9 +102,33 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       }
     }
 
+    const updates: Record<string, string> = {
+      status: parsed.data.status,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Cash / COD: mark paid when the restaurant completes the order.
+    if (
+      parsed.data.status === "Completed" &&
+      order.payment_method === "cash" &&
+      order.payment_status !== "paid"
+    ) {
+      updates.payment_status = "paid";
+      updates.paid_at = new Date().toISOString();
+    }
+
+    if (parsed.data.status === "Cancelled") {
+      if (
+        order.payment_status === "awaiting_payment" ||
+        order.payment_status === "unpaid"
+      ) {
+        updates.payment_status = "cancelled";
+      }
+    }
+
     const { error } = await supabase
       .from("orders")
-      .update({ status: parsed.data.status, updated_at: new Date().toISOString() })
+      .update(updates)
       .eq("id", id);
 
     if (error) throw error;

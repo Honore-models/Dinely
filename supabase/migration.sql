@@ -42,15 +42,17 @@ create table if not exists restaurants (
   description         text,
   website             text,
   capacity            text,
-  plan                text not null default 'Professional',
-  billing_cycle       text not null default 'monthly',
-  stripe_customer_id  text,
+  plan                   text not null default 'Professional',
+  billing_cycle          text not null default 'monthly',
+  stripe_customer_id     text,
   stripe_subscription_id text,
-  subscription_status text not null default 'trialing' check (subscription_status in ('active', 'trialing', 'past_due', 'canceled')),
-  rating              numeric(3,1) default 0,
-  review_count        integer default 0,
-  created_at          timestamptz not null default now(),
-  updated_at          timestamptz not null default now()
+  jjuma_subscription_ref text,
+  subscription_paid_at   timestamptz,
+  subscription_status    text not null default 'trialing' check (subscription_status in ('active', 'trialing', 'past_due', 'canceled')),
+  rating                 numeric(3,1) default 0,
+  review_count           integer default 0,
+  created_at             timestamptz not null default now(),
+  updated_at             timestamptz not null default now()
 );
 
 create index if not exists idx_restaurants_owner on restaurants (owner_id);
@@ -81,23 +83,57 @@ create index if not exists idx_menu_category on menu_items (restaurant_id, categ
 
 -- ─── Orders ─────────────────────────────────────────────────
 create table if not exists orders (
-  id               uuid primary key default uuid_generate_v4(),
-  restaurant_id    text not null,
-  customer_id      text not null,
-  customer_name    text not null default '',
-  items            jsonb not null default '[]',
-  type             text not null check (type in ('Delivery', 'Takeaway', 'Dine-in')),
-  status           text not null default 'Pending' check (status in ('Pending', 'Active', 'Completed', 'Cancelled')),
-  total            numeric(10,2) not null default 0,
-  delivery_address text,
-  notes            text,
-  created_at       timestamptz not null default now(),
-  updated_at       timestamptz not null default now()
+  id                   uuid primary key default uuid_generate_v4(),
+  restaurant_id        text not null,
+  customer_id          text not null,
+  customer_name        text not null default '',
+  items                jsonb not null default '[]',
+  type                 text not null check (type in ('Delivery', 'Takeaway', 'Dine-in')),
+  status               text not null default 'Pending' check (status in ('Pending', 'Active', 'Completed', 'Cancelled')),
+  subtotal             numeric(10,2),
+  delivery_fee         numeric(10,2) not null default 0,
+  service_fee          numeric(10,2) not null default 0,
+  total                numeric(10,2) not null default 0,
+  payment_method       text not null default 'cash' check (payment_method in ('jjuma', 'cash')),
+  payment_status       text not null default 'unpaid' check (payment_status in ('unpaid', 'awaiting_payment', 'paid', 'failed', 'cancelled')),
+  jjuma_transaction_id text,
+  jjuma_reference      text,
+  paid_at              timestamptz,
+  delivery_address     text,
+  notes                text,
+  created_at           timestamptz not null default now(),
+  updated_at           timestamptz not null default now()
 );
 
 create index if not exists idx_orders_restaurant on orders (restaurant_id, created_at desc);
 create index if not exists idx_orders_customer on orders (customer_id, created_at desc);
 create index if not exists idx_orders_status on orders (status);
+create index if not exists idx_orders_payment_status on orders (payment_status);
+
+-- ─── Payments (JJuma subscription + order audit trail) ──────
+create table if not exists payments (
+  id                   uuid primary key default uuid_generate_v4(),
+  kind                 text not null check (kind in ('subscription', 'order')),
+  reference_id         text not null,
+  user_id              text not null,
+  amount               numeric(15, 2) not null,
+  currency             text not null default 'RWF',
+  status               text not null default 'pending'
+                         check (status in ('pending', 'paid', 'failed', 'cancelled')),
+  plan                 text,
+  billing_cycle        text,
+  jjuma_transaction_id text unique,
+  jjuma_reference      text,
+  idempotency_key      text not null unique,
+  description          text,
+  paid_at              timestamptz,
+  created_at           timestamptz not null default now(),
+  updated_at           timestamptz not null default now()
+);
+
+create index if not exists idx_payments_reference on payments (kind, reference_id);
+create index if not exists idx_payments_user on payments (user_id, created_at desc);
+create index if not exists idx_payments_status on payments (status);
 
 -- ─── Bookings ───────────────────────────────────────────────
 create table if not exists bookings (
@@ -178,6 +214,7 @@ alter table users enable row level security;
 alter table restaurants enable row level security;
 alter table menu_items enable row level security;
 alter table orders enable row level security;
+alter table payments enable row level security;
 alter table bookings enable row level security;
 alter table restaurant_tables enable row level security;
 alter table employees enable row level security;
@@ -188,6 +225,7 @@ create policy "Service role full access" on users for all using (true) with chec
 create policy "Service role full access" on restaurants for all using (true) with check (true);
 create policy "Service role full access" on menu_items for all using (true) with check (true);
 create policy "Service role full access" on orders for all using (true) with check (true);
+create policy "Service role full access" on payments for all using (true) with check (true);
 create policy "Service role full access" on bookings for all using (true) with check (true);
 create policy "Service role full access" on restaurant_tables for all using (true) with check (true);
 create policy "Service role full access" on employees for all using (true) with check (true);

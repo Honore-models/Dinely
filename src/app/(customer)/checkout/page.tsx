@@ -3,26 +3,30 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ChevronRight, CreditCard, Loader2 } from "lucide-react";
+import {
+  ChevronRight,
+  CreditCard,
+  Loader2,
+  Banknote,
+  ShieldCheck,
+} from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { ordersApi } from "@/lib/api";
 import { PromptModal } from "@/components/ui/PromptModal";
-
-const DELIVERY_FEE = 1.09;
-const SERVICE_FEE = 0.5;
+import { DELIVERY_FEE_USD, SERVICE_FEE_USD } from "@/lib/pricing";
 
 type DeliveryTime = "asap" | "schedule" | "later";
-type PaymentMethod = "card" | "apple" | "google" | "cash";
+type PaymentMethod = "jjuma" | "cash";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const subtotal = useCartStore((s) => s.subtotal());
   const clearCart = useCartStore((s) => s.clearCart);
-  const total = subtotal + DELIVERY_FEE + SERVICE_FEE;
+  const total = subtotal + DELIVERY_FEE_USD + SERVICE_FEE_USD;
 
   const [deliveryTime, setDeliveryTime] = useState<DeliveryTime>("asap");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("jjuma");
   const [address, setAddress] = useState("KN 5 Rd, Kigali, Rwanda");
   const [instructions, setInstructions] = useState("");
   const [placing, setPlacing] = useState(false);
@@ -32,7 +36,6 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async () => {
     if (items.length === 0) return;
 
-    // All items in cart must be from the same restaurant
     const restaurantId = items[0].restaurantId;
 
     setPlacing(true);
@@ -49,7 +52,15 @@ export default function CheckoutPage() {
         type: "Delivery",
         deliveryAddress: address,
         notes: instructions || undefined,
+        paymentMethod,
       });
+
+      if (result.checkoutUrl) {
+        // Leave cart until redirect completes; clear after leaving.
+        clearCart();
+        window.location.href = result.checkoutUrl;
+        return;
+      }
 
       clearCart();
       router.push(`/orders/track?orderId=${result.orderId}`);
@@ -80,19 +91,20 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8">
-      {/* Breadcrumb */}
       <nav className="mb-8 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/home" className="transition hover:text-neutral-800">Home</Link>
+        <Link href="/home" className="transition hover:text-neutral-800">
+          Home
+        </Link>
         <ChevronRight size={14} />
         <span className="font-semibold text-neutral-900">Checkout</span>
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        {/* ── Left: Delivery info ────────────────────────────────────────── */}
         <div className="space-y-6">
-          {/* Delivery address */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
-            <h2 className="text-base font-bold text-neutral-900">Delivery Address</h2>
+            <h2 className="text-base font-bold text-neutral-900">
+              Delivery Address
+            </h2>
             <div className="mt-3 flex items-center justify-between rounded-xl border border-neutral-200 px-4 py-3 text-sm text-neutral-700">
               <span>{address}</span>
               <button
@@ -105,11 +117,12 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Delivery instructions */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
             <h2 className="text-base font-bold text-neutral-900">
               Delivery Instructions{" "}
-              <span className="text-sm font-normal text-neutral-400">(Optional)</span>
+              <span className="text-sm font-normal text-neutral-400">
+                (Optional)
+              </span>
             </h2>
             <textarea
               value={instructions}
@@ -120,14 +133,19 @@ export default function CheckoutPage() {
             />
           </div>
 
-          {/* Delivery time */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
-            <h2 className="text-base font-bold text-neutral-900">Delivery Time</h2>
+            <h2 className="text-base font-bold text-neutral-900">
+              Delivery Time
+            </h2>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
               {(
                 [
                   { id: "asap", title: "ASAP", subtitle: "30-40 min" },
-                  { id: "schedule", title: "Schedule Order", subtitle: "Select time" },
+                  {
+                    id: "schedule",
+                    title: "Schedule Order",
+                    subtitle: "Select time",
+                  },
                   { id: "later", title: "Later", subtitle: "Select Date" },
                 ] as { id: DeliveryTime; title: string; subtitle: string }[]
               ).map(({ id, title, subtitle }) => (
@@ -147,52 +165,76 @@ export default function CheckoutPage() {
                     </span>
                   )}
                   <span className="font-bold">{title}</span>
-                  <span className="mt-0.5 text-xs text-neutral-500">{subtitle}</span>
+                  <span className="mt-0.5 text-xs text-neutral-500">
+                    {subtitle}
+                  </span>
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* ── Right: Payment + summary ───────────────────────────────────── */}
         <div className="space-y-6">
-          {/* Payment methods */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
-            <h2 className="text-base font-bold text-neutral-900">Payment Method</h2>
+            <h2 className="text-base font-bold text-neutral-900">
+              Payment Method
+            </h2>
             <div className="mt-4 space-y-3">
-              {(
-                [
-                  { id: "card", label: "Debit / Credit Card", icon: <CreditCard size={20} className="text-neutral-600" /> },
-                  { id: "apple", label: "Apple Pay", icon: <span className="text-sm font-bold text-neutral-800">🍎 Pay</span> },
-                  { id: "google", label: "Google Pay", icon: <span className="text-sm font-bold text-neutral-800">G Pay</span> },
-                  { id: "cash", label: "Cash on delivery", icon: <span className="text-lg">💵</span> },
-                ] as { id: PaymentMethod; label: string; icon: React.ReactNode }[]
-              ).map(({ id, label, icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setPaymentMethod(id)}
-                  className={`flex w-full items-center gap-4 rounded-xl border px-4 py-3 text-sm font-semibold transition ${
-                    paymentMethod === id
-                      ? "border-[#22c51f] bg-green-50"
-                      : "border-neutral-200 bg-white hover:bg-neutral-50"
-                  }`}
-                >
-                  <span className="w-6 text-center">{icon}</span>
-                  <span className="flex-1 text-left text-neutral-800">{label}</span>
-                  {paymentMethod === id && (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#22c51f]">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#22c51f]" />
-                    </span>
-                  )}
-                </button>
-              ))}
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("jjuma")}
+                className={`flex w-full items-center gap-4 rounded-xl border px-4 py-3 text-sm font-semibold transition ${
+                  paymentMethod === "jjuma"
+                    ? "border-[#22c51f] bg-green-50"
+                    : "border-neutral-200 bg-white hover:bg-neutral-50"
+                }`}
+              >
+                <CreditCard size={20} className="text-neutral-600" />
+                <span className="flex-1 text-left text-neutral-800">
+                  Pay online (card / mobile money)
+                </span>
+                {paymentMethod === "jjuma" && (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#22c51f]">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#22c51f]" />
+                  </span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("cash")}
+                className={`flex w-full items-center gap-4 rounded-xl border px-4 py-3 text-sm font-semibold transition ${
+                  paymentMethod === "cash"
+                    ? "border-[#22c51f] bg-green-50"
+                    : "border-neutral-200 bg-white hover:bg-neutral-50"
+                }`}
+              >
+                <Banknote size={20} className="text-neutral-600" />
+                <span className="flex-1 text-left text-neutral-800">
+                  Cash on delivery
+                </span>
+                {paymentMethod === "cash" && (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#22c51f]">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#22c51f]" />
+                  </span>
+                )}
+              </button>
             </div>
+            {paymentMethod === "jjuma" && (
+              <p className="mt-3 flex items-start gap-2 text-xs text-neutral-500">
+                <ShieldCheck
+                  size={14}
+                  className="mt-0.5 shrink-0 text-[#22c51f]"
+                />
+                You&apos;ll be redirected to Jjuma&apos;s secure checkout. We
+                never store your card details.
+              </p>
+            )}
           </div>
 
-          {/* Order summary */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
-            <h2 className="text-base font-bold text-neutral-900">Order Summary</h2>
+            <h2 className="text-base font-bold text-neutral-900">
+              Order Summary
+            </h2>
             <div className="mt-4 space-y-3">
               <div className="flex justify-between text-sm text-neutral-500">
                 <span>Subtotal</span>
@@ -200,11 +242,11 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-sm text-neutral-500">
                 <span>Delivery Fee</span>
-                <span>${DELIVERY_FEE.toFixed(2)}</span>
+                <span>${DELIVERY_FEE_USD.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm text-neutral-500">
                 <span>Service fee</span>
-                <span>${SERVICE_FEE.toFixed(2)}</span>
+                <span>${SERVICE_FEE_USD.toFixed(2)}</span>
               </div>
               <div className="flex justify-between border-t border-neutral-100 pt-3 text-base font-bold text-neutral-900">
                 <span>Total</span>
@@ -223,13 +265,29 @@ export default function CheckoutPage() {
               className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#22c51f] py-3 text-base font-bold text-white transition hover:bg-[#1bad1a] disabled:opacity-60"
             >
               {placing && <Loader2 size={18} className="animate-spin" />}
-              {placing ? "Placing order..." : "Place order"}
+              {placing
+                ? paymentMethod === "jjuma"
+                  ? "Starting checkout..."
+                  : "Placing order..."
+                : paymentMethod === "jjuma"
+                  ? "Pay & place order"
+                  : "Place order"}
             </button>
             <p className="mt-3 text-center text-xs text-neutral-400">
               By placing an order, you agree to our{" "}
-              <Link href="/privacy" className="font-semibold text-[#22c51f] hover:underline">Terms of Service</Link>
-              {" "}and{" "}
-              <Link href="/privacy" className="font-semibold text-[#22c51f] hover:underline">Privacy policy</Link>
+              <Link
+                href="/privacy"
+                className="font-semibold text-[#22c51f] hover:underline"
+              >
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/privacy"
+                className="font-semibold text-[#22c51f] hover:underline"
+              >
+                Privacy policy
+              </Link>
             </p>
           </div>
         </div>

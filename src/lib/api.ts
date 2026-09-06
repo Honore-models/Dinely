@@ -188,8 +188,14 @@ export const ordersApi = {
     type: "Delivery" | "Takeaway" | "Dine-in";
     deliveryAddress?: string;
     notes?: string;
+    paymentMethod?: "jjuma" | "cash";
   }) =>
-    apiFetch<{ message: string; orderId: string }>("/orders", {
+    apiFetch<{
+      message: string;
+      orderId: string;
+      checkoutUrl?: string;
+      paymentId?: string;
+    }>("/orders", {
       method: "POST",
       body: JSON.stringify(body),
     }),

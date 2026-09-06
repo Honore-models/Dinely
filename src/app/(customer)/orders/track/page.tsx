@@ -23,6 +23,8 @@ interface Order {
   type: "Delivery" | "Takeaway" | "Dine-in";
   total: number;
   status: "Pending" | "Active" | "Completed" | "Cancelled";
+  payment_method?: "jjuma" | "cash";
+  payment_status?: string;
   created_at: string;
   delivery_address?: string;
 }
@@ -234,6 +236,22 @@ export default function OrderTrackPage() {
           <div className="flex justify-between text-sm font-bold text-neutral-900">
             <span>Total</span>
             <span className="text-[#22c51f]">${order.total.toFixed(2)}</span>
+          </div>
+          <div className="mt-2 flex justify-between text-xs text-neutral-500">
+            <span>
+              {order.payment_method === "cash"
+                ? "Cash on delivery"
+                : "Paid online (Jjuma)"}
+            </span>
+            <span className="font-semibold capitalize text-neutral-700">
+              {order.payment_status === "paid"
+                ? "Paid"
+                : order.payment_status === "awaiting_payment"
+                  ? "Awaiting payment"
+                  : order.payment_status === "unpaid"
+                    ? "Pay on delivery"
+                    : order.payment_status ?? "—"}
+            </span>
           </div>
         </div>
 

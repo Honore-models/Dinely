@@ -58,6 +58,7 @@ export const createOrderSchema = z.object({
   type: z.enum(["Delivery", "Takeaway", "Dine-in"]),
   deliveryAddress: z.string().optional(),
   notes: z.string().optional(),
+  paymentMethod: z.enum(["jjuma", "cash"]).default("jjuma"),
 });
 
 export const updateOrderStatusSchema = z.object({

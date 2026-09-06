@@ -74,31 +74,39 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 # Auth
 JWT_SECRET=your-secret-key-min-32-characters-long
 
-# Jjuma (optional)
-# Get these from your JJuma dashboard once you have a merchant account
+# Jjuma payments (required for subscriptions + online order checkout)
+# Get these from your JJuma merchant dashboard
 JJUMA_API_BASE_URL=https://api.jjuma.com
 JJUMA_PUBLIC_API_KEY=bp_live_pub_your_public_key
 JJUMA_SECRET_API_KEY=bp_live_sec_your_secret_key
 JJUMA_WEBHOOK_SECRET=your_webhook_secret
 JJUMA_CHECKOUT_HOST=pay.jjuma.com
+# Optional: USD→RWF rate used when charging JJuma (catalog prices are USD)
+JJUMA_RWF_PER_USD=1350
 
-# App
+# App (used for payment redirects + webhook URL registered with JJuma)
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ### 3. Database Setup
 
-Create the following tables in your Supabase project:
+Run the SQL in `supabase/migration.sql` in the Supabase SQL Editor (fresh projects).
 
-- `users` - id, first_name, last_name, email, phone, password_hash, role, restaurant_id, favourites, address, avatar, created_at, updated_at
-- `restaurants` - id, owner_id, name, type, address, phone, email, opening_hours, logo, description, plan, billing_cycle, subscription_status, rating, review_count, created_at, updated_at
-- `menu_items` - id, restaurant_id, name, category, price, description, image, available, created_at, updated_at
-- `orders` - id, restaurant_id, customer_id, customer_name, items, type, total, status, delivery_address, notes, created_at, updated_at
-- `bookings` - id, restaurant_id, customer_id, customer_name, date, time, party_size, table_id, status, notes, created_at
-- `tables` - id, restaurant_id, number, capacity, location, status, created_at, updated_at
-- `employees` - id, restaurant_id, first_name, last_name, email, phone, role, salary, start_date, notes, created_at, updated_at
-- `reviews` - id, restaurant_id, customer_id, rating, comment, helpful, created_at, updated_at
+If the project already exists, also run `supabase/add_payments.sql` to add the payments table and order payment columns.
 
+Set your production webhook URL in the JJuma dashboard to:
+
+`https://your-domain.com/api/payments/webhook`
+
+### Payments overview
+
+| Flow | How it works |
+|------|----------------|
+| Owner subscription | Onboarding creates the restaurant, then redirects to JJuma. A signed webhook activates `subscription_status`. |
+| Customer order (online) | Order is created unpaid → redirect to JJuma → webhook marks the order paid. |
+| Customer order (cash) | Order is created unpaid (COD). Marked paid when the restaurant completes it. |
+
+Redirects are **not** confirmation — the webhook is the source of truth.
 ### 4. Seed Data (Optional)
 
 ```bash
@@ -170,7 +178,8 @@ All endpoints are under `/api` and return JSON.
 | `/api/reviews` | GET, POST, PATCH, DELETE | Review CRUD |
 | `/api/analytics` | GET | Dashboard analytics (7d/30d/90d) |
 | `/api/favourites` | GET, POST, DELETE | User favourites |
-| `/api/payments` | POST | Jjuma checkout session |
+| `/api/payments` | POST | Owner subscription checkout (JJuma) |
+| `/api/payments/webhook` | POST | Signed JJuma webhooks (source of truth) |
 | `/api/upload` | POST | File upload (image) |
 
 ## Onboarding Flow
@@ -178,7 +187,7 @@ All endpoints are under `/api` and return JSON.
 1. **Step 1 - Owner Info** - Name, email, phone, password → account created
 2. **Step 2 - Restaurant Info** - Name, cuisine, address, hours, phone, email, description, logo
 3. **Step 3 - Plan Selection** - Starter ($9/mo), Professional ($14/mo), Enterprise ($20/mo) with yearly discounts
-4. **Step 4 - Payment** - Card details + order summary → subscription activated
+4. **Step 4 - Payment** - Redirect to Jjuma checkout → webhook activates subscription
 
 ## Scripts
 

@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
 import { createOrderSchema } from "@/lib/validators";
+import { createPayment, env } from "@/lib/jjuma";
+import { isJjumaConfigured } from "@/lib/jjuma-env";
+import { createPaymentRecord } from "@/lib/payments";
+import {
+  DELIVERY_FEE_USD,
+  PAYMENT_CURRENCY,
+  SERVICE_FEE_USD,
+  usdToRwf,
+} from "@/lib/pricing";
 
 // ─── GET /api/orders ──────────────────────────────────────────────────────────
 
@@ -26,6 +35,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ data: [], total: 0 });
       }
       query = query.eq("restaurant_id", session.restaurantId);
+      // Don't show kitchen unfinished online checkouts.
+      query = query.neq("payment_status", "awaiting_payment");
     } else {
       query = query.eq("customer_id", session.userId);
     }
@@ -75,14 +86,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { restaurantId, items, type, deliveryAddress, notes } = parsed.data;
-  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const {
+    restaurantId,
+    items,
+    type,
+    deliveryAddress,
+    notes,
+    paymentMethod,
+  } = parsed.data;
 
   try {
-    // Verify restaurant exists
     const { data: restaurant } = await supabase
       .from("restaurants")
-      .select("id")
+      .select("id, name, subscription_status")
       .eq("id", restaurantId)
       .single();
 
@@ -90,7 +106,55 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Restaurant not found" }, { status: 404 });
     }
 
-    // Get customer name
+    // Price items from the menu DB — never trust browser prices.
+    const menuIds = [...new Set(items.map((i) => i.menuItemId))];
+    const { data: menuRows, error: menuError } = await supabase
+      .from("menu_items")
+      .select("id, name, price, available, restaurant_id")
+      .in("id", menuIds)
+      .eq("restaurant_id", restaurantId);
+
+    if (menuError) throw menuError;
+
+    const menuById = new Map((menuRows ?? []).map((m) => [m.id, m]));
+    const pricedItems: {
+      menuItemId: string;
+      name: string;
+      price: number;
+      quantity: number;
+    }[] = [];
+
+    for (const item of items) {
+      const menu = menuById.get(item.menuItemId);
+      if (!menu) {
+        return NextResponse.json(
+          { error: `Menu item not found: ${item.name}` },
+          { status: 400 },
+        );
+      }
+      if (menu.available === false) {
+        return NextResponse.json(
+          { error: `${menu.name} is currently unavailable.` },
+          { status: 409 },
+        );
+      }
+      pricedItems.push({
+        menuItemId: menu.id,
+        name: menu.name,
+        price: Number(menu.price),
+        quantity: item.quantity,
+      });
+    }
+
+    const subtotal =
+      Math.round(
+        pricedItems.reduce((sum, i) => sum + i.price * i.quantity, 0) * 100,
+      ) / 100;
+    const deliveryFee = type === "Delivery" ? DELIVERY_FEE_USD : 0;
+    const serviceFee = SERVICE_FEE_USD;
+    const total =
+      Math.round((subtotal + deliveryFee + serviceFee) * 100) / 100;
+
     const { data: user } = await supabase
       .from("users")
       .select("first_name, last_name")
@@ -101,16 +165,34 @@ export async function POST(req: NextRequest) {
       ? `${user.first_name} ${user.last_name}`
       : "Guest";
 
+    if (paymentMethod === "jjuma" && !isJjumaConfigured()) {
+      return NextResponse.json(
+        {
+          error:
+            "Online payments are temporarily unavailable. Choose cash on delivery or try again later.",
+        },
+        { status: 503 },
+      );
+    }
+
+    const paymentStatus =
+      paymentMethod === "jjuma" ? "awaiting_payment" : "unpaid";
+
     const { data: newOrder, error } = await supabase
       .from("orders")
       .insert({
         restaurant_id: restaurantId,
         customer_id: session.userId,
         customer_name: customerName,
-        items: items,
+        items: pricedItems,
         type,
         status: "Pending",
-        total: Math.round(total * 100) / 100,
+        subtotal,
+        delivery_fee: deliveryFee,
+        service_fee: serviceFee,
+        total,
+        payment_method: paymentMethod,
+        payment_status: paymentStatus,
         delivery_address: deliveryAddress || null,
         notes: notes || null,
       })
@@ -119,8 +201,76 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
+    if (paymentMethod === "cash") {
+      return NextResponse.json(
+        { message: "Order placed", orderId: newOrder.id },
+        { status: 201 },
+      );
+    }
+
+    // Online (JJuma) checkout
+    const amountRwf = usdToRwf(total);
+    const idempotencyKey = `order-${newOrder.id}`;
+    const { payment, alreadyPaid } = await createPaymentRecord({
+      kind: "order",
+      referenceId: newOrder.id,
+      userId: session.userId,
+      amount: amountRwf,
+      currency: PAYMENT_CURRENCY,
+      idempotencyKey,
+      description: `Order ${newOrder.id.slice(0, 8)} — ${restaurant.name}`,
+    });
+
+    if (alreadyPaid) {
+      return NextResponse.json(
+        { message: "Order already paid", orderId: newOrder.id },
+        { status: 200 },
+      );
+    }
+
+    const appUrl = env.APP_URL.replace(/\/$/, "");
+    const result = await createPayment({
+      amount: String(amountRwf),
+      currency: PAYMENT_CURRENCY,
+      description: `Dinely order — ${restaurant.name}`,
+      redirect_url: `${appUrl}/payment/success?kind=order&orderId=${encodeURIComponent(newOrder.id)}&paymentId=${encodeURIComponent(payment.id)}`,
+      cancel_redirect_url: `${appUrl}/payment/cancelled?kind=order&orderId=${encodeURIComponent(newOrder.id)}&paymentId=${encodeURIComponent(payment.id)}`,
+      webhook_url: `${appUrl}/api/payments/webhook`,
+      external_order_id: payment.id,
+      idempotency_key: idempotencyKey,
+    });
+
+    const paymentUrl = result.data?.payment_url ?? result.payment_url ?? "";
+    if (!paymentUrl) {
+      await supabase
+        .from("orders")
+        .update({
+          payment_status: "failed",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", newOrder.id);
+
+      return NextResponse.json(
+        { error: "Could not start checkout. Please try again." },
+        { status: 502 },
+      );
+    }
+
+    const checkoutHost = new URL(paymentUrl).host;
+    if (checkoutHost !== env.JJUMA_CHECKOUT_HOST) {
+      return NextResponse.json(
+        { error: "Untrusted checkout destination." },
+        { status: 502 },
+      );
+    }
+
     return NextResponse.json(
-      { message: "Order placed", orderId: newOrder.id },
+      {
+        message: "Checkout ready",
+        orderId: newOrder.id,
+        checkoutUrl: paymentUrl,
+        paymentId: payment.id,
+      },
       { status: 201 },
     );
   } catch (err) {

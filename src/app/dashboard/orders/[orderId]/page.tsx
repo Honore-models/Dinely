@@ -19,8 +19,15 @@ interface OrderData {
   customer_email?: string;
   items: OrderItem[];
   type: "Delivery" | "Takeaway" | "Dine-in";
+  subtotal?: number;
+  delivery_fee?: number;
+  service_fee?: number;
   total: number;
   status: "Pending" | "Active" | "Completed" | "Cancelled";
+  payment_method?: "jjuma" | "cash";
+  payment_status?: string;
+  jjuma_transaction_id?: string | null;
+  jjuma_reference?: string | null;
   created_at: string;
   delivery_address?: string;
   notes?: string;
@@ -83,15 +90,27 @@ export default function OrderDetailPage() {
     minute: "2-digit",
   });
 
-  const subtotal = order.total * 0.9;
-  const deliveryFee = order.total * 0.1;
+  const subtotal = order.subtotal ?? order.total;
+  const deliveryFee = order.delivery_fee ?? 0;
+  const paymentMethodLabel =
+    order.payment_method === "cash" ? "Cash on delivery" : "Jjuma (online)";
+  const paymentStatusLabel =
+    order.payment_status === "paid"
+      ? "Paid"
+      : order.payment_status === "awaiting_payment"
+        ? "Awaiting payment"
+        : order.payment_status === "failed"
+          ? "Failed"
+          : order.payment_status === "cancelled"
+            ? "Cancelled"
+            : "Unpaid";
 
   return (
     <OrderDetails
       orderID={`#${order.id.slice(-6).toUpperCase()}`}
       date={date}
       time={time}
-      status={order.status as "Completed" | "Active" | "Cancelled"}
+      status={order.status as "Completed" | "Active" | "Cancelled" | "Pending"}
       customer={{
         name: order.customer_name || "Customer",
         phone: order.customer_email || "-",
@@ -103,13 +122,16 @@ export default function OrderDetailPage() {
         quantity: item.quantity,
         price: `$${item.price.toFixed(2)}`,
       }))}
-      subtotal={`$${subtotal.toFixed(2)}`}
-      deliveryFee={`$${deliveryFee.toFixed(2)}`}
-      total={`$${order.total.toFixed(2)}`}
+      subtotal={`$${Number(subtotal).toFixed(2)}`}
+      deliveryFee={`$${Number(deliveryFee).toFixed(2)}`}
+      total={`$${Number(order.total).toFixed(2)}`}
       payment={{
-        method: "Online Payment",
-        status: order.status === "Completed" ? "Paid" : "Pending",
-        transactionID: `TXN-${order.id.slice(-8).toUpperCase()}`,
+        method: paymentMethodLabel,
+        status: paymentStatusLabel,
+        transactionID:
+          order.jjuma_transaction_id ||
+          order.jjuma_reference ||
+          (order.payment_method === "cash" ? "COD" : "—"),
       }}
     />
   );
