@@ -20,7 +20,7 @@ type JJumaResponse =
 
 async function jjumaRequest(
   path: string,
-  init: RequestInit
+  init: RequestInit,
 ): Promise<JJumaResponse> {
   const response = await fetch(`${env.JJUMA_API_BASE_URL}${path}`, {
     ...init,
@@ -61,7 +61,7 @@ export async function verifyPayment(transactionId: string) {
       headers: {
         Authorization: `Bearer ${env.JJUMA_SECRET_API_KEY}`,
       },
-    }
+    },
   );
 }
 
@@ -72,7 +72,7 @@ export async function verifyPayment(transactionId: string) {
 export function isValidJjumaSignature(
   rawBody: string,
   timestamp: string,
-  signature: string
+  signature: string,
 ): boolean {
   const expected = crypto
     .createHmac("sha256", env.JJUMA_WEBHOOK_SECRET)
@@ -103,9 +103,6 @@ export type JjumaWebhookEvent = {
   };
 };
 
-export function parseJjumaWebhook(
-  rawBody: string
-): JjumaWebhookEvent {
+export function parseJjumaWebhook(rawBody: string): JjumaWebhookEvent {
   return JSON.parse(rawBody) as JjumaWebhookEvent;
 }
-
